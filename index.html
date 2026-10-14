@@ -3,1518 +3,1566 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#1e1b4b" id="metaThemeColor" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>QuantByProf — Revise &amp; Practice</title>
+  <title>QuantByProf v3.0 — Revise • Practice • Arcade</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      transition: background-color 0.25s ease;
-      padding-bottom: 72px;
-    }
-    @media (min-width: 1024px) {
-      body { padding-bottom: 28px; }
-    }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
 
-    /* ==========================================================
-       THEME 1: REVISE SECTION (Royal Indigo & Warm Study Ivory)
-       ========================================================== */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 1. Revise Theme: Royal Indigo & Warm Study Ivory */
     body.theme-revise {
       background-color: #f6f5ff;
       color: #1e1b4b;
     }
-    .revise-banner {
-      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #4338ca 100%);
-    }
-    .revise-formula-box {
+    .revise-card-gradient {
       background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%);
-      border-radius: 14px;
-      padding: 14px 16px;
-      color: #ffffff;
-      font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
     }
 
-    /* ==========================================================
-       THEME 2: QUESTIONS SECTION (Cyber Teal & Crisp Slate Arena)
-       ========================================================== */
+    /* 2. Questions Theme: Cyber Teal & Crisp Slate Arena */
     body.theme-questions {
       background-color: #ecfeff;
-      color: #0f172a;
+      color: #042f2e;
     }
-    .questions-banner {
-      background: linear-gradient(135deg, #042f2e 0%, #115e59 55%, #0d9488 100%);
+    .questions-header-gradient {
+      background: linear-gradient(135deg, #042f2e 0%, #0d9488 100%);
     }
-    .questions-card-accent {
-      border-top: 3px solid #0d9488;
+
+    /* 3. Arcade Theme (v3.0): Electric Amber & Deep Slate */
+    body.theme-arcade {
+      background-color: #0f172a;
+      color: #f8fafc;
     }
+    .arcade-gradient {
+      background: linear-gradient(135deg, #311042 0%, #7c2d12 50%, #b45309 100%);
+    }
+    .arcade-card {
+      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    /* Hide scrollbars for horizontal pill bars */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="theme-revise">
+<body class="theme-revise min-h-screen flex flex-col pb-20">
 
-  <!-- =====================================================================
-       STICKY TOP HEADER WITH TWO MAIN SECTIONS: REVISE & QUESTIONS
-       ===================================================================== -->
-  <header id="appHeader" class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-indigo-100 shadow-2xs transition-colors">
-    <div class="max-w-6xl mx-auto px-3 sm:px-4 h-15 py-2 flex items-center justify-between gap-2">
-
-      <!-- Brand: QuantByProf -->
-      <div class="flex items-center space-x-2.5">
-        <div id="brandBadge" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-700 to-violet-500 flex items-center justify-center text-white font-black text-sm shadow-sm transition-all">
-          QP
-        </div>
-        <div>
-          <div class="flex items-center space-x-1.5">
-            <span class="font-extrabold text-slate-900 tracking-tight text-base sm:text-lg">QuantByProf</span>
-            <span id="modePillHeader" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
-              Revise Mode
-            </span>
-          </div>
-          <p id="modeSubHeader" class="text-[11px] text-slate-500 hidden sm:block">Concise Concept Cards &amp; High-Yield Formulas</p>
-        </div>
+  <!-- TOP NAVIGATION BAR -->
+  <header id="app-header" class="sticky top-0 z-40 shadow-md transition-colors duration-300 bg-[#1e1b4b] text-white">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="font-black text-lg tracking-tight">QuantByProf</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v3.0 Arcade</span>
       </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="window.app.openAddModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">+ Add</button>
+        <button onclick="window.app.openSyncModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">Sync</button>
+      </div>
+    </div>
 
-      <!-- PRIMARY 2-SECTION SWITCHER: REVISE vs QUESTIONS -->
-      <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-        <button
-          id="topBtnRevise"
-          onclick="switchSection('revise')"
-          class="px-3.5 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center space-x-1.5 bg-indigo-600 text-white shadow-xs"
-        >
-          <span>📖</span>
-          <span>Revise</span>
+    <!-- PRIMARY MODE SWITCHER (Revise | Questions | Arcade) -->
+    <div class="max-w-3xl mx-auto px-4 pb-2.5">
+      <div class="grid grid-cols-3 gap-1.5 bg-black/25 p-1 rounded-xl">
+        <button id="tab-revise" onclick="window.app.setSection('revise')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
+          <span>📖 Revise</span>
         </button>
-        <button
-          id="topBtnQuestions"
-          onclick="switchSection('questions')"
-          class="px-3.5 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center space-x-1.5 text-slate-600 hover:text-slate-900"
-        >
-          <span>🎯</span>
-          <span>Questions</span>
+        <button id="tab-questions" onclick="window.app.setSection('questions')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
+          <span>🎯 Questions</span>
+        </button>
+        <button id="tab-arcade" onclick="window.app.setSection('arcade')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
+          <span>🎮 Minigames</span>
         </button>
       </div>
+    </div>
 
-      <!-- Quick Utility Actions -->
-      <div class="hidden sm:flex items-center space-x-1.5">
-        <button onclick="openAddModal()" id="btnAddItem" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition">
-          + Add
-        </button>
-        <button onclick="openSyncModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 transition">
-          Sync
-        </button>
-      </div>
+    <!-- SHARED TOPIC PILL BAR -->
+    <div class="border-t border-white/10 bg-black/15">
+      <div id="topic-bar" class="max-w-3xl mx-auto px-4 py-2 flex space-x-2 overflow-x-auto no-scrollbar"></div>
     </div>
   </header>
 
-  <!-- =====================================================================
-       MAIN WORKSPACE (Responsive Mobile Feed + Laptop 3-Column Layout)
-       ===================================================================== -->
-  <div class="max-w-6xl mx-auto px-0 sm:px-4 pt-2 lg:pt-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-    <!-- LEFT SIDEBAR (Laptop Topic Directory & Section Info) -->
-    <aside class="hidden lg:block lg:col-span-3 sticky top-20 space-y-4">
-      <div id="leftThemeBanner" class="revise-banner rounded-2xl p-4 text-white shadow-sm space-y-1.5">
-        <div class="text-[10px] uppercase tracking-widest opacity-80 font-bold" id="leftBannerTag">SECTION 01 • STUDY</div>
-        <div class="text-base font-extrabold" id="leftBannerTitle">Revise Concepts</div>
-        <p class="text-xs opacity-85 leading-relaxed" id="leftBannerDesc">
-          Concise formulas, recognition triggers, and memory hooks organized by topic.
-        </p>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-1.5">
-        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1 pb-1">Topic Filters</div>
-        <div id="desktopTopicNav" class="space-y-1"></div>
-      </div>
-    </aside>
-
-    <!-- CENTER FEED COLUMN -->
-    <main class="lg:col-span-6 w-full max-w-lg mx-auto space-y-3.5">
-
-      <!-- STICKY FILTER CARD: TOPIC PILLS + SECONDARY STATUS FILTERS -->
-      <section id="filterBarCard" class="bg-white sm:rounded-2xl border-y sm:border border-indigo-100 p-3.5 shadow-2xs space-y-2.5">
-        <!-- Topic Filter Pills (All, Algebra, Number Theory, Geometry, Ratio & Mixtures, Arithmetic) -->
-        <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar" id="topicPillsBar"></div>
-
-        <!-- Secondary Status Filter Pills + Count Indicator -->
-        <div class="flex items-center justify-between pt-2 border-t border-slate-100 gap-2">
-          <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar" id="subFilterBar"></div>
-          <span id="activeCountLabel" class="text-[11px] font-bold text-slate-400 whitespace-nowrap pl-1"></span>
-        </div>
-      </section>
-
-      <!-- CARDS FEED CONTAINER -->
-      <section id="cardsFeedContainer" class="space-y-4 px-2.5 sm:px-0"></section>
-
-    </main>
-
-    <!-- RIGHT SIDEBAR (Laptop Live Progress & Saved Bookmarks Summary) -->
-    <aside class="hidden lg:block lg:col-span-3 sticky top-20 space-y-4">
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-900">Your Progress</span>
-          <button onclick="resetQuestionAttempts()" class="text-[11px] text-rose-600 hover:underline font-semibold">Reset Answers</button>
-        </div>
-        <div id="rightStatsBox" class="space-y-2 text-xs"></div>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-900">🔖 Saved by Topic</span>
-          <button onclick="setSubFilter('saved')" class="text-[11px] text-indigo-600 font-bold hover:underline">View Saved</button>
-        </div>
-        <div id="rightSavedSummary" class="space-y-1.5 text-xs"></div>
-      </div>
-    </aside>
-
+  <!-- SUB-FILTER / ARCADE MODE BAR -->
+  <div id="subfilter-container" class="max-w-3xl w-full mx-auto px-4 pt-3">
+    <div id="subfilter-bar" class="flex space-x-2 overflow-x-auto no-scrollbar pb-1"></div>
   </div>
 
-  <!-- =====================================================================
-       MOBILE BOTTOM BAR (Quick Switch Revise / Questions / Saved / Sync)
-       ===================================================================== -->
-  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 px-4 py-2 flex items-center justify-around shadow-lg">
-    <button onclick="switchSection('revise')" id="mobNavRevise" class="flex flex-col items-center space-y-0.5 text-indigo-600 font-extrabold text-[11px]">
-      <span class="text-base">📖</span>
-      <span>Revise</span>
-    </button>
-    <button onclick="switchSection('questions')" id="mobNavQuestions" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
-      <span class="text-base">🎯</span>
-      <span>Questions</span>
-    </button>
-    <button onclick="setSubFilter(state.subFilter === 'saved' ? 'all' : 'saved')" id="mobNavSaved" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
-      <span class="text-base">🔖</span>
-      <span>Saved</span>
-    </button>
-    <button onclick="openAddModal()" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
-      <span class="text-base">➕</span>
-      <span>Add</span>
-    </button>
-    <button onclick="openSyncModal()" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
-      <span class="text-base">🔄</span>
-      <span>Sync</span>
-    </button>
-  </nav>
+  <!-- MAIN VIEWPORT -->
+  <main id="main-content" class="max-w-3xl w-full mx-auto px-4 pt-3 flex-1"></main>
 
-  <!-- =====================================================================
-       MODAL: ADD CUSTOM CONCEPT OR QUESTION
-       ===================================================================== -->
-  <div id="modalAdd" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
-    <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-xl space-y-3 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b pb-2.5">
-        <h3 class="text-sm font-bold text-slate-900" id="modalAddTitle">Add Custom Item</h3>
-        <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+  <!-- CONCEPT SHIELD / REFERENCE POPUP MODAL -->
+  <div id="concept-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-indigo-400/30 bg-[#1e1b4b] text-white p-5">
+      <div class="flex justify-between items-start mb-3">
+        <span id="modal-concept-badge" class="text-[11px] font-mono-code uppercase px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">🛡️ Concept Shield</span>
+        <button onclick="window.app.closeConceptModal()" class="text-white/60 hover:text-white text-lg leading-none">&times;</button>
       </div>
+      <h3 id="modal-concept-title" class="text-base font-bold text-white mb-2"></h3>
+      <div class="p-3 rounded-xl bg-black/30 border border-white/10 font-mono-code text-xs text-indigo-200 mb-2" id="modal-concept-formula"></div>
+      <div class="p-2.5 rounded-lg bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs font-semibold mb-3" id="modal-concept-highlight"></div>
+      <ul id="modal-concept-bullets" class="space-y-1.5 text-xs text-indigo-100 mb-3 list-disc pl-4"></ul>
+      <div class="text-xs italic text-amber-300 bg-black/20 p-2.5 rounded-lg border border-white/5" id="modal-concept-hook"></div>
+      <button onclick="window.app.closeConceptModal()" class="mt-4 w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition">Got It — Continue</button>
+    </div>
+  </div>
 
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div>
-          <label class="font-semibold text-slate-600 block mb-1">Item Type</label>
-          <select id="addType" onchange="toggleAddFormFields()" class="w-full border rounded-xl p-2 bg-slate-50 font-semibold">
-            <option value="concept">📖 Revise Concept</option>
-            <option value="question">🎯 Practice Question</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-semibold text-slate-600 block mb-1">Topic</label>
-          <select id="addTopic" class="w-full border rounded-xl p-2 bg-slate-50">
-            <option value="Algebra">Algebra</option>
-            <option value="Number Theory">Number Theory</option>
-            <option value="Geometry">Geometry</option>
-            <option value="Ratio & Mixtures">Ratio &amp; Mixtures</option>
-            <option value="Arithmetic">Arithmetic</option>
-          </select>
-        </div>
+  <!-- + ADD CUSTOM ITEM MODAL -->
+  <div id="add-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-2xl bg-white text-slate-900 p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold text-base">Add Custom Concept Card</h3>
+        <button onclick="window.app.closeAddModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
       </div>
-
-      <div class="text-xs">
-        <label class="font-semibold text-slate-600 block mb-1">Sub-topic Tag</label>
-        <input id="addSubtopic" type="text" placeholder="e.g., Remainder Theorem" class="w-full border rounded-xl p-2" />
-      </div>
-
-      <!-- Concept-specific fields -->
-      <div id="addConceptFields" class="space-y-2.5 text-xs">
-        <div>
-          <label class="font-semibold text-slate-600 block mb-1">Concept Title</label>
-          <input id="addConceptTitle" type="text" placeholder="e.g., Chinese Remainder Shortcut" class="w-full border rounded-xl p-2" />
-        </div>
-        <div>
-          <label class="font-semibold text-slate-600 block mb-1">Concise Formula</label>
-          <input id="addConceptFormula" type="text" placeholder="e.g., x ≡ r₁ (mod m₁) and x ≡ r₂ (mod m₂)" class="w-full border rounded-xl p-2 font-mono" />
-        </div>
-        <div>
-          <label class="font-semibold text-slate-600 block mb-1">Key Takeaway / Memory Hook</label>
-          <input id="addConceptHook" type="text" placeholder="1-line memory hook..." class="w-full border rounded-xl p-2" />
-        </div>
-      </div>
-
-      <!-- Question-specific fields -->
-      <div id="addQuestionFields" class="hidden space-y-2.5 text-xs">
-        <div>
-          <label class="font-semibold text-slate-600 block mb-1">Question Stem</label>
-          <textarea id="addQText" rows="2" placeholder="Enter question statement..." class="w-full border rounded-xl p-2"></textarea>
-        </div>
+      <form id="add-form" onsubmit="window.app.saveCustomConcept(event)" class="space-y-3 text-xs">
         <div class="grid grid-cols-2 gap-2">
-          <input id="addOpt0" type="text" placeholder="Option A" class="border rounded-lg p-1.5" />
-          <input id="addOpt1" type="text" placeholder="Option B" class="border rounded-lg p-1.5" />
-          <input id="addOpt2" type="text" placeholder="Option C" class="border rounded-lg p-1.5" />
-          <input id="addOpt3" type="text" placeholder="Option D" class="border rounded-lg p-1.5" />
+          <div>
+            <label class="block font-semibold mb-1">Topic</label>
+            <select id="add-topic" class="w-full p-2 rounded-lg border border-slate-300">
+              <option>Algebra</option>
+              <option>Number Theory</option>
+              <option>Geometry</option>
+              <option>Ratio & Mixtures</option>
+              <option>Arithmetic</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1">Subtopic</label>
+            <input id="add-subtopic" required placeholder="e.g., Quadratic Roots" class="w-full p-2 rounded-lg border border-slate-300" />
+          </div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <select id="addCorrect" class="border rounded-lg p-1.5 bg-slate-50">
-            <option value="0">Correct: Option A</option>
-            <option value="1">Correct: Option B</option>
-            <option value="2">Correct: Option C</option>
-            <option value="3">Correct: Option D</option>
-          </select>
-          <input id="addQExp" type="text" placeholder="Short solution..." class="border rounded-lg p-1.5" />
+        <div>
+          <label class="block font-semibold mb-1">Concept Title</label>
+          <input id="add-title" required placeholder="e.g., Vieta's Root Relations" class="w-full p-2 rounded-lg border border-slate-300" />
         </div>
-      </div>
+        <div>
+          <label class="block font-semibold mb-1">Core Formula</label>
+          <input id="add-formula" required placeholder="e.g., α + β = -b/a, αβ = c/a" class="w-full p-2 rounded-lg border border-slate-300 font-mono-code" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Gold Highlight (Key Condition)</label>
+          <input id="add-highlight" required placeholder="e.g., Sum of roots flips sign; product keeps sign" class="w-full p-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Recognition / Trap Bullet 1</label>
+          <input id="add-b1" required placeholder="Pattern recognition trigger..." class="w-full p-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Recognition / Trap Bullet 2</label>
+          <input id="add-b2" required placeholder="Common exam converse trap..." class="w-full p-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">1-Line Memory Hook</label>
+          <input id="add-hook" required placeholder="Short punchy mnemonic..." class="w-full p-2 rounded-lg border border-slate-300" />
+        </div>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold">Save Concept Card</button>
+      </form>
+    </div>
+  </div>
 
-      <div class="flex justify-end space-x-2 pt-2 border-t">
-        <button onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100">Cancel</button>
-        <button onclick="saveCustomItem()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600">Save Item</button>
+  <!-- SYNC (EXPORT / IMPORT JSON) MODAL -->
+  <div id="sync-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-2xl bg-white text-slate-900 p-5 shadow-2xl">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-bold text-base">State Backup & JSON Sync</h3>
+        <button onclick="window.app.closeSyncModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <p class="text-xs text-slate-500 mb-3">Copy your `quantbyprof_v2_state` JSON backup or paste an existing state string below to restore progress and arcade stats.</p>
+      <textarea id="sync-textarea" rows="7" class="w-full p-3 rounded-xl border border-slate-300 font-mono-code text-[11px] mb-3 focus:outline-none focus:border-indigo-600"></textarea>
+      <div class="flex space-x-2">
+        <button onclick="window.app.copySyncState()" class="flex-1 py-2.5 rounded-xl bg-slate-800 text-white font-bold text-xs">📋 Copy Backup</button>
+        <button onclick="window.app.restoreSyncState()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs">⚡ Restore State</button>
       </div>
     </div>
   </div>
 
-  <!-- =====================================================================
-       MODAL: SYNC / BACKUP PROGRESS
-       ===================================================================== -->
-  <div id="modalSync" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
-    <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-xl space-y-3">
-      <div class="flex items-center justify-between border-b pb-2.5">
-        <div>
-          <h3 class="text-sm font-bold text-slate-900">QuantByProf — Sync &amp; Stats</h3>
-          <p class="text-xs text-slate-500">Copy or restore your saved items &amp; quiz history</p>
-        </div>
-        <button onclick="closeSyncModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
-      </div>
-      <div id="modalStatsSummary" class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5"></div>
-      <textarea id="syncTextBox" rows="4" class="w-full border rounded-xl p-2 font-mono text-[11px] bg-slate-50"></textarea>
-      <div class="flex gap-2">
-        <button onclick="copySyncData()" class="flex-1 bg-slate-900 text-white text-xs font-bold py-2 rounded-xl">Copy Backup JSON</button>
-        <button onclick="restoreSyncData()" class="flex-1 bg-indigo-600 text-white text-xs font-bold py-2 rounded-xl">Restore JSON</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- APPLICATION SCRIPT (ZERO-COMPILE ES6) -->
   <script>
     // =========================================================================
-    // DATA & STATE INITIALIZATION
+    // 1. SEED CONCEPTS (16 High-Yield Cards Across 5 Topics)
     // =========================================================================
     const SEED_CONCEPTS = [
-  {
-    "id": "c_alg_1",
-    "topic": "Algebra",
-    "subtopic": "Cubic Identity",
-    "title": "Euler's Conditional Identity (a + b + c = 0)",
-    "formula": "a³ + b³ + c³ − 3abc = (a + b + c)(a² + b² + c² − ab − bc − ca)",
-    "highlight": "If a + b + c = 0  ⟹  a³ + b³ + c³ = 3abc",
-    "bullets": [
-      "Fraction form: (a²/bc) + (b²/ca) + (c²/ab) = 3 whenever a + b + c = 0.",
-      "Converse trap: a³ + b³ + c³ = 3abc means EITHER a + b + c = 0 OR a = b = c."
-    ],
-    "hook": "Zero sum kills the big bracket → cubes collapse to 3abc."
-  },
-  {
-    "id": "c_alg_2",
-    "topic": "Algebra",
-    "subtopic": "Reciprocal Powers",
-    "title": "Reciprocal Escalation Ladder (x + 1/x = k)",
-    "formula": "x² + 1/x² = k² − 2   |   x³ + 1/x³ = k³ − 3k",
-    "highlight": "x⁵ + 1/x⁵ = (x² + 1/x²)(x³ + 1/x³) − k",
-    "bullets": [
-      "If given x − 1/x = k instead: x² + 1/x² = k² + 2 and x³ − 1/x³ = k³ + 3k.",
-      "Bridge link: (x + 1/x)² − (x − 1/x)² = 4."
-    ],
-    "hook": "2nd power: k²−2 | 3rd: k³−3k | 5th: (2nd × 3rd) − 1st."
-  },
-  {
-    "id": "c_alg_3",
-    "topic": "Algebra",
-    "subtopic": "Symmetric Squares",
-    "title": "Half-Sum of Squared Differences",
-    "formula": "a² + b² + c² − ab − bc − ca = ½ [ (a−b)² + (b−c)² + (c−a)² ]",
-    "highlight": "If a, b, c are in AP with gap d  ⟹  Expression = 3d²",
-    "bullets": [
-      "Always ≥ 0 for real numbers; equals 0 if and only if a = b = c.",
-      "Instant solver for consecutive numbers (e.g., 99, 100, 101 → d = 1 → value = 3)."
-    ],
-    "hook": "For any three numbers in AP with gap d, answer is simply 3d²."
-  },
-  {
-    "id": "c_alg_4",
-    "topic": "Algebra",
-    "subtopic": "AM-GM & Quadratics",
-    "title": "AM ≥ GM & Vieta's Root Relations",
-    "formula": "For ax² + bx + c = 0:  α + β = −b/a  |  αβ = c/a  |  |α − β| = √Δ / |a|",
-    "highlight": "For positive x:  ax + b/x ≥ 2√(ab)  (Min at ax = b/x)",
-    "bullets": [
-      "Sum of reciprocals of roots: 1/α + 1/β = (α + β)/αβ = −b/c.",
-      "Quadratic with roots 1/α, 1/β is obtained by reversing coefficients: cx² + bx + a = 0."
-    ],
-    "hook": "Swap a and c to invert the roots; equate terms for AM-GM minimum."
-  },
-  {
-    "id": "c_num_1",
-    "topic": "Number Theory",
-    "subtopic": "Modular Arithmetic",
-    "title": "Euler's Totient & Fermat's Little Theorem",
-    "formula": "a^φ(N) ≡ 1 (mod N)  when gcd(a, N) = 1",
-    "highlight": "For prime p:  a^(p−1) ≡ 1 (mod p)  |  φ(N) = N ∏ (1 − 1/pᵢ)",
-    "bullets": [
-      "Reduce huge exponents modulo φ(N): a^k ≡ a^(k mod φ(N)) (mod N).",
-      "Example: φ(100) = 100(1 − 1/2)(1 − 1/5) = 40 → last 2 digits repeat every 40 powers."
-    ],
-    "hook": "Divide the power by φ(N) and keep only the remainder."
-  },
-  {
-    "id": "c_num_2",
-    "topic": "Number Theory",
-    "subtopic": "Prime Factorization",
-    "title": "Number, Sum & Product of Factors",
-    "formula": "If N = p₁ᵃ · p₂ᵇ · p₃ᶜ  ⟹  Total Factors d(N) = (a + 1)(b + 1)(c + 1)",
-    "highlight": "Product of all factors of N = N^( d(N) / 2 )",
-    "bullets": [
-      "N is a perfect square ⟺ d(N) is ODD (since all exponents a, b, c are even).",
-      "Sum of factors = (1 + p₁ + ... + p₁ᵃ)(1 + p₂ + ... + p₂ᵇ)."
-    ],
-    "hook": "Add 1 to each prime power and multiply; odd factor count = perfect square."
-  },
-  {
-    "id": "c_num_3",
-    "topic": "Number Theory",
-    "subtopic": "Factorials",
-    "title": "Legendre's Formula & Trailing Zeros",
-    "formula": "Highest power of prime p in n! = ⌊n/p⌋ + ⌊n/p²⌋ + ⌊n/p³⌋ + ...",
-    "highlight": "Trailing zeros in n! = Highest power of 5 in n!",
-    "bullets": [
-      "For composite divisor (like 12 = 2² × 3), find power of each prime and take the limiting minimum.",
-      "Wilson's Theorem: For any prime p, (p − 1)! ≡ −1 ≡ (p − 1) (mod p) and (p − 2)! ≡ 1 (mod p)."
-    ],
-    "hook": "Keep dividing n by p (ignoring remainders) and sum the quotients."
-  },
-  {
-    "id": "c_num_4",
-    "topic": "Number Theory",
-    "subtopic": "Special Remainders",
-    "title": "Binomial Remainder & Divisibility Rules",
-    "formula": "(k·N ± 1)ⁿ ÷ N  leaves remainder  (±1)ⁿ",
-    "highlight": "aⁿ + bⁿ is divisible by (a + b) whenever n is ODD",
-    "bullets": [
-      "aⁿ − bⁿ is ALWAYS divisible by (a − b) for all n, and also by (a + b) when n is EVEN.",
-      "Combined divisor 7 × 11 × 13 = 1001: repeating a 3-digit number ABCABC is always divisible by 7, 11, 13."
-    ],
-    "hook": "Odd powers sum (aⁿ+bⁿ) shares factor (a+b); 1001 = 7 × 11 × 13."
-  },
-  {
-    "id": "c_geo_1",
-    "topic": "Geometry",
-    "subtopic": "Triangles & Medians",
-    "title": "Apollonius Theorem & Right-Triangle Radii",
-    "formula": "AB² + AC² = 2(AD² + BD²)   [AD = median to BC]",
-    "highlight": "Right Δ (legs a, b; hyp c):  r = (a + b − c)/2  |  R = c/2",
-    "bullets": [
-      "Centroid divides each median in 2 : 1 ratio and splits Δ into 6 equal-area smaller triangles.",
-      "Sum of squares: 3(a² + b² + c²) = 4(m₁² + m₂² + m₃²)."
-    ],
-    "hook": "Right Δ inradius = (leg₁ + leg₂ − hyp)/2; circumradius = half hypotenuse."
-  },
-  {
-    "id": "c_geo_2",
-    "topic": "Geometry",
-    "subtopic": "Circles & Tangents",
-    "title": "Power of a Point & Common Tangents",
-    "formula": "Tangent-Secant: PT² = PA × PB   |   Chords: PA × PB = PC × PD",
-    "highlight": "Direct Common Tangent = √(d² − (r₁ − r₂)²)  [Touching: 2√(r₁r₂)]",
-    "bullets": [
-      "Always measure PA and PB from the external point P to the circle intersections (PB = PA + AB).",
-      "Transverse common tangent length = √(d² − (r₁ + r₂)²)."
-    ],
-    "hook": "Secant distances are always measured from the outer point P: Near × Far = Tangent²."
-  },
-  {
-    "id": "c_geo_3",
-    "topic": "Geometry",
-    "subtopic": "Similarity & Cevians",
-    "title": "Area Scaling vs. Angle Bisector Theorem",
-    "formula": "Similar Δs: Area₁/Area₂ = (Side₁/Side₂)²  |  Bisector AD: BD/DC = AB/AC",
-    "highlight": "Same-Height Δs: Area(ΔABD) / Area(ΔADC) = BD / DC (Linear!)",
-    "bullets": [
-      "Never square the base ratio when two triangles share the same vertex and altitude.",
-      "Angle bisector length: AD² = AB·AC − BD·DC."
-    ],
-    "hook": "Similar triangles → square the ratio (k²). Shared height → keep ratio linear (k)."
-  },
-  {
-    "id": "c_rat_1",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Proportions",
-    "title": "Componendo-Dividendo & Equal Ratios",
-    "formula": "a/b = c/d ⟹ (a+b)/(a−b) = (c+d)/(c−d)",
-    "highlight": "If a/b = c/d = e/f = k  ⟹  (pa + qc + re)/(pb + qd + rf) = k",
-    "bullets": [
-      "Applying C&D to (x + y)/(x − y) = p/q immediately isolates x/y = (p + q)/(p − q).",
-      "Cyclic ratio trap: a/(b+c) = b/(c+a) = c/(a+b) = k has TWO solutions: k = 1/2 (if sum ≠ 0) or k = −1 (if sum = 0)."
-    ],
-    "hook": "C&D strips plus/minus pairs in one step; check zero-sum in cyclic ratios."
-  },
-  {
-    "id": "c_rat_2",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Repeated Dilution",
-    "title": "Successive Replacement Law",
-    "formula": "Final Pure = V × (1 − x / V)ⁿ",
-    "highlight": "Fraction of Pure Remaining = (Final Pure / Total Volume) = (1 − x/V)ⁿ",
-    "bullets": [
-      "Trap: If given final Milk : Water = 16 : 9, use Milk / TOTAL = 16 / (16 + 9) = 16 / 25 before taking the square root.",
-      "Works even if different fractions f₁, f₂ are removed: multiply (1 − f₁)(1 − f₂)."
-    ],
-    "hook": "Always divide by TOTAL mixture volume before taking the n-th root."
-  },
-  {
-    "id": "c_rat_3",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Weighted Averages",
-    "title": "Alligation & Denominator Unit Rule",
-    "formula": "w₁ / w₂ = (A₂ − A_avg) / (A_avg − A₁)",
-    "highlight": "Alligating X-per-Y ALWAYS yields the ratio of Y (the denominator)",
-    "bullets": [
-      "Alligating Speed (km/hr) gives the ratio of TIME spent, NOT distance.",
-      "Alligating Profit % (Profit per unit CP) gives the ratio of COST PRICES (CP₁ : CP₂)."
-    ],
-    "hook": "Alligate Speed → get Time ratio. Alligate Profit % → get Cost Price ratio."
-  },
-  {
-    "id": "c_ari_1",
-    "topic": "Arithmetic",
-    "subtopic": "Percentages & Profit",
-    "title": "Successive Change & Product Constancy",
-    "formula": "Net % Change for a% and b% = a + b + (ab / 100)%",
-    "highlight": "If A × B = Constant:  A ↑ by 1/n  ⟹  B ↓ by 1/(n + 1)",
-    "bullets": [
-      "Equal markup & discount by r% always results in a net LOSS of (r² / 100)%.",
-      "False weight: Selling at CP using weight W instead of 1000g gives Gain % = (1000 − W) / W × 100."
-    ],
-    "hook": "Up by 1/n means down by 1/(n+1) to keep the product constant."
-  },
-  {
-    "id": "c_ari_2",
-    "topic": "Arithmetic",
-    "subtopic": "Time, Speed & Distance",
-    "title": "Harmonic Mean Speed & After-Meeting Rule",
-    "formula": "Equal Distances: V_avg = 2ab / (a + b)  |  After Meeting: S₁ / S₂ = √(t₂ / t₁)",
-    "highlight": "Meeting Time T_meet = √(t₁ × t₂)",
-    "bullets": [
-      "If two trains start simultaneously from A and B, cross each other, and take t₁ and t₂ hours to reach destinations, speed ratio is √(t₂/t₁).",
-      "Relative speed in circular track of length L: first meeting time = L / |S₁ ± S₂|."
-    ],
-    "hook": "After crossing each other: Speed ratio = inverse square root of remaining times."
-  }
-];
-    const SEED_QUESTIONS = [
-  {
-    "id": "q_alg_1",
-    "topic": "Algebra",
-    "subtopic": "Cubic Identity",
-    "difficulty": "Medium",
-    "concept_ref": "c_alg_1",
-    "question": "If (x − 4)³ + (x − 9)³ + (2x − 13)³ = 3(x − 4)(x − 9)(2x − 13), Wait — if instead (x − 4)³ + (x − 9)³ + (13 − 2x)³ = 0, what is the sum of all real values of x?",
-    "options": [
-      "A) 13",
-      "B) 19.5",
-      "C) 26",
-      "D) 9"
-    ],
-    "correct": 1,
-    "explanation": "Let a = x−4, b = x−9, c = 13−2x. Notice a + b + c = 0! Therefore a³ + b³ + c³ = 3abc = 0. This gives x = 4, x = 9, or x = 6.5. Sum of roots = 4 + 9 + 6.5 = 19.5."
-  },
-  {
-    "id": "q_alg_2",
-    "topic": "Algebra",
-    "subtopic": "Reciprocal Ladder",
-    "difficulty": "Hard",
-    "concept_ref": "c_alg_2",
-    "question": "If x + 1/x = 3, what is the exact value of x⁵ + 1/x⁵?",
-    "options": [
-      "A) 120",
-      "B) 123",
-      "C) 126",
-      "D) 129"
-    ],
-    "correct": 1,
-    "explanation": "x² + 1/x² = 3² − 2 = 7, and x³ + 1/x³ = 3³ − 3(3) = 18. Using x⁵ + 1/x⁵ = (x² + 1/x²)(x³ + 1/x³) − (x + 1/x) = 7 × 18 − 3 = 123."
-  },
-  {
-    "id": "q_alg_3",
-    "topic": "Algebra",
-    "subtopic": "Symmetric Squares",
-    "difficulty": "Easy",
-    "concept_ref": "c_alg_3",
-    "question": "Evaluate a² + b² + c² − ab − bc − ca when a = 2023, b = 2026, and c = 2029.",
-    "options": [
-      "A) 9",
-      "B) 18",
-      "C) 27",
-      "D) 36"
-    ],
-    "correct": 2,
-    "explanation": "Here a, b, c are in Arithmetic Progression with common difference d = 3. Using the AP shortcut 3d², the value is 3 × 3² = 27."
-  },
-  {
-    "id": "q_alg_4",
-    "topic": "Algebra",
-    "subtopic": "AM-GM Minimum",
-    "difficulty": "Medium",
-    "concept_ref": "c_alg_4",
-    "question": "For x > 2, what is the minimum possible value of the expression x + 9 / (x − 2)?",
-    "options": [
-      "A) 6",
-      "B) 7",
-      "C) 8",
-      "D) 9"
-    ],
-    "correct": 2,
-    "explanation": "Rewrite x as (x − 2) + 2. By AM-GM on positive terms: (x − 2) + 9/(x − 2) ≥ 2√9 = 6. Adding the constant 2 gives minimum = 6 + 2 = 8 (achieved at x − 2 = 3 ⟹ x = 5)."
-  },
-  {
-    "id": "q_num_1",
-    "topic": "Number Theory",
-    "subtopic": "Euler's Totient",
-    "difficulty": "Hard",
-    "concept_ref": "c_num_1",
-    "question": "What are the last two digits of 7²⁰²⁶ (i.e., 7²⁰²⁶ mod 100)?",
-    "options": [
-      "A) 01",
-      "B) 07",
-      "C) 43",
-      "D) 49"
-    ],
-    "correct": 3,
-    "explanation": "Since gcd(7, 100) = 1 and φ(100) = 40 (or noticing 7⁴ = 2401 ≡ 01 mod 100), divide the exponent 2026 by 4: 2026 = 4 × 506 + 2. Thus 7²⁰²⁶ ≡ 7² = 49 (mod 100)."
-  },
-  {
-    "id": "q_num_2",
-    "topic": "Number Theory",
-    "subtopic": "Factors of a Number",
-    "difficulty": "Medium",
-    "concept_ref": "c_num_2",
-    "question": "How many factors of N = 2⁵ × 3⁴ × 5³ are PERFECT SQUARES?",
-    "options": [
-      "A) 12",
-      "B) 18",
-      "C) 24",
-      "D) 30"
-    ],
-    "correct": 1,
-    "explanation": "A factor 2ᵃ · 3ᵇ · 5ᶜ is a perfect square if and only if a, b, c are even. Choices for a ∈ {0, 2, 4} (3 choices), b ∈ {0, 2, 4} (3 choices), c ∈ {0, 2} (2 choices). Total = 3 × 3 × 2 = 18."
-  },
-  {
-    "id": "q_num_3",
-    "topic": "Number Theory",
-    "subtopic": "Legendre's Formula",
-    "difficulty": "Medium",
-    "concept_ref": "c_num_3",
-    "question": "How many trailing zeros are at the end of 125! when written in base 10?",
-    "options": [
-      "A) 25",
-      "B) 28",
-      "C) 30",
-      "D) 31"
-    ],
-    "correct": 3,
-    "explanation": "Trailing zeros = highest power of 5 in 125! = ⌊125/5⌋ + ⌊125/25⌋ + ⌊125/125⌋ = 25 + 5 + 1 = 31."
-  },
-  {
-    "id": "q_num_4",
-    "topic": "Number Theory",
-    "subtopic": "Binomial Remainder",
-    "difficulty": "Medium",
-    "concept_ref": "c_num_4",
-    "question": "What is the remainder when 17²⁰⁰ + 19²⁰⁰ is divided by 18² (= 324)?",
-    "options": [
-      "A) 0",
-      "B) 2",
-      "C) 36",
-      "D) 162"
-    ],
-    "correct": 1,
-    "explanation": "Write 17 = (18 − 1) and 19 = (18 + 1). Mod 18², (18 − 1)²⁰⁰ ≡ −200(18) + 1 and (18 + 1)²⁰⁰ ≡ +200(18) + 1. Adding them cancels the 200(18) terms, leaving 1 + 1 = 2!"
-  },
-  {
-    "id": "q_geo_1",
-    "topic": "Geometry",
-    "subtopic": "Apollonius Theorem",
-    "difficulty": "Medium",
-    "concept_ref": "c_geo_1",
-    "question": "In ΔABC, AB = 7 cm, AC = 9 cm, and BC = 8 cm. Find the length of the median AD drawn from A to side BC.",
-    "options": [
-      "A) 6 cm",
-      "B) 7 cm",
-      "C) √46 cm",
-      "D) 5√2 cm"
-    ],
-    "correct": 1,
-    "explanation": "Here BD = BC/2 = 4 cm. By Apollonius Theorem: AB² + AC² = 2(AD² + BD²) ⟹ 49 + 81 = 2(AD² + 16) ⟹ 130 = 2(AD² + 16) ⟹ AD² + 16 = 65 ⟹ AD² = 49 ⟹ AD = 7 cm."
-  },
-  {
-    "id": "q_geo_2",
-    "topic": "Geometry",
-    "subtopic": "Right Triangle Radii",
-    "difficulty": "Easy",
-    "concept_ref": "c_geo_1",
-    "question": "In a right-angled triangle with legs 8 cm and 15 cm, what is the ratio of its inradius (r) to its circumradius (R)?",
-    "options": [
-      "A) 6 : 17",
-      "B) 3 : 17",
-      "C) 8 : 17",
-      "D) 5 : 17"
-    ],
-    "correct": 0,
-    "explanation": "Hypotenuse c = √(8² + 15²) = 17 cm. Inradius r = (8 + 15 − 17)/2 = 3 cm. Circumradius R = 17/2 = 8.5 cm. Ratio r : R = 3 : (17/2) = 6 : 17."
-  },
-  {
-    "id": "q_geo_3",
-    "topic": "Geometry",
-    "subtopic": "Power of a Point",
-    "difficulty": "Medium",
-    "concept_ref": "c_geo_2",
-    "question": "From an external point P, a tangent PT of length 12 cm is drawn to a circle, and a secant PAB intersects the circle at A and B. If PA = 8 cm, what is the length of the chord AB?",
-    "options": [
-      "A) 9 cm",
-      "B) 10 cm",
-      "C) 16 cm",
-      "D) 18 cm"
-    ],
-    "correct": 1,
-    "explanation": "By Tangent-Secant Theorem: PT² = PA × PB ⟹ 12² = 8 × PB ⟹ 144 = 8 × PB ⟹ PB = 18 cm. Therefore chord AB = PB − PA = 18 − 8 = 10 cm."
-  },
-  {
-    "id": "q_geo_4",
-    "topic": "Geometry",
-    "subtopic": "Angle Bisector & Area",
-    "difficulty": "Medium",
-    "concept_ref": "c_geo_3",
-    "question": "In ΔABC with total area 70 cm², AB = 12 cm and AC = 16 cm. If the internal angle bisector of ∠A meets BC at D, what is the area of ΔABD?",
-    "options": [
-      "A) 25 cm²",
-      "B) 30 cm²",
-      "C) 35 cm²",
-      "D) 40 cm²"
-    ],
-    "correct": 1,
-    "explanation": "By Angle Bisector Theorem, BD : DC = AB : AC = 12 : 16 = 3 : 4. Since ΔABD and ΔADC share the same height, Area(ΔABD) = (3 / 7) × 70 = 30 cm²."
-  },
-  {
-    "id": "q_rat_1",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Componendo & Dividendo",
-    "difficulty": "Medium",
-    "concept_ref": "c_rat_1",
-    "question": "If (x³ + 3xy²) / (3x²y + y³) = 63 / 62, find the real ratio x : y.",
-    "options": [
-      "A) 3 : 2",
-      "B) 5 : 4",
-      "C) 5 : 3",
-      "D) 4 : 3"
-    ],
-    "correct": 0,
-    "explanation": "Apply Componendo & Dividendo: [(x³ + 3xy²) + (3x²y + y³)] / [(x³ + 3xy²) − (3x²y + y³)] = (63 + 62)/(63 − 62) ⟹ (x + y)³ / (x − y)³ = 125 / 1. Taking cube root: (x + y)/(x − y) = 5/1. Apply C&D again: x/y = (5 + 1)/(5 − 1) = 6/4 = 3 : 2."
-  },
-  {
-    "id": "q_rat_2",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Equal Ratios Trap",
-    "difficulty": "Hard",
-    "concept_ref": "c_rat_1",
-    "question": "If x / (y + z) = y / (z + x) = z / (x + y) = k and x + y + z = 0 for non-zero x, y, z, what is the value of k?",
-    "options": [
-      "A) 1/2",
-      "B) −1",
-      "C) −1/2",
-      "D) 1"
-    ],
-    "correct": 1,
-    "explanation": "Since x + y + z = 0, we have y + z = −x. Substituting into the first ratio gives k = x / (−x) = −1."
-  },
-  {
-    "id": "q_rat_3",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Repeated Dilution",
-    "difficulty": "Medium",
-    "concept_ref": "c_rat_2",
-    "question": "From a container full of pure wine, 10 liters are drawn out and replaced with water. This process is repeated once more. If the final ratio of wine to water is 9 : 16, find the volume of the container.",
-    "options": [
-      "A) 20 liters",
-      "B) 25 liters",
-      "C) 30 liters",
-      "D) 40 liters"
-    ],
-    "correct": 1,
-    "explanation": "Total parts = 9 + 16 = 25. Fraction of wine left = 9 / 25 = (1 − 10/V)². Taking square root: 3 / 5 = 1 − 10/V ⟹ 10/V = 2/5 ⟹ V = 25 liters."
-  },
-  {
-    "id": "q_rat_4",
-    "topic": "Ratio & Mixtures",
-    "subtopic": "Alligation Denominator Rule",
-    "difficulty": "Hard",
-    "concept_ref": "c_rat_3",
-    "question": "A merchant sells two items for a combined cost. He gains 15% on the first item and loses 10% on the second. Overall, he makes a net profit of 5%. If the total cost price of both items is ₹5,000, what is the cost price of the first item?",
-    "options": [
-      "A) ₹2,000",
-      "B) ₹2,500",
-      "C) ₹3,000",
-      "D) ₹3,500"
-    ],
-    "correct": 2,
-    "explanation": "Alligating Profit % (+15% and −10% with mean +5%) gives the ratio of COST PRICES: CP₁ : CP₂ = (5 − (−10)) : (15 − 5) = 15 : 10 = 3 : 2. Thus CP₁ = (3/5) × 5000 = ₹3,000."
-  },
-  {
-    "id": "q_ari_1",
-    "topic": "Arithmetic",
-    "subtopic": "Product Constancy",
-    "difficulty": "Easy",
-    "concept_ref": "c_ari_1",
-    "question": "If the price of petrol increases by 25% (i.e., +1/4), by what percentage must a motorist reduce consumption so that total expenditure remains unchanged?",
-    "options": [
-      "A) 16.67%",
-      "B) 20%",
-      "C) 25%",
-      "D) 15%"
-    ],
-    "correct": 1,
-    "explanation": "Since Price × Consumption = Constant, an increase of 1/n = 1/4 in Price requires a reduction of 1/(n + 1) = 1/5 = 20% in Consumption."
-  },
-  {
-    "id": "q_ari_2",
-    "topic": "Arithmetic",
-    "subtopic": "After-Meeting Rule",
-    "difficulty": "Medium",
-    "concept_ref": "c_ari_2",
-    "question": "Two trains A and B start simultaneously from stations X and Y towards each other. After passing each other on the way, A takes 4 hours 48 minutes to reach Y and B takes 3 hours 20 minutes to reach X. If train A's speed is 45 km/h, find train B's speed.",
-    "options": [
-      "A) 50 km/h",
-      "B) 54 km/h",
-      "C) 60 km/h",
-      "D) 64 km/h"
-    ],
-    "correct": 1,
-    "explanation": "t₁ = 4 hr 48 min = 24/5 hr; t₂ = 3 hr 20 min = 10/3 hr. Ratio t₁ / t₂ = (24/5) / (10/3) = 72 / 50 = 36 / 25. By the After-Meeting formula: S_A / S_B = √(t₂ / t₁) = 5 / 6. Since S_A = 45 km/h, S_B = 45 × (6/5) = 54 km/h."
-  },
-  {
-    "id": "q_ari_3",
-    "topic": "Arithmetic",
-    "subtopic": "False Weight Dishonesty",
-    "difficulty": "Medium",
-    "concept_ref": "c_ari_1",
-    "question": "A shopkeeper claims to sell goods at a 10% discount on Cost Price, but uses a faulty weight of 750 grams instead of 1000 grams. What is his actual net profit percentage?",
-    "options": [
-      "A) 15%",
-      "B) 20%",
-      "C) 25%",
-      "D) 33.33%"
-    ],
-    "correct": 1,
-    "explanation": "Multiplier method: Price factor = 9/10 (10% discount). Weight factor = 1000 / 750 = 4/3. Net multiplier = (9/10) × (4/3) = 12/10 = 1.20, which means a 20% net profit."
-  },
-  {
-    "id": "q_ari_4",
-    "topic": "Arithmetic",
-    "subtopic": "Harmonic Speed",
-    "difficulty": "Easy",
-    "concept_ref": "c_ari_2",
-    "question": "A cyclist covers the first third of a journey at 20 km/h, the second third at 30 km/h, and the final third at 60 km/h. What is the average speed for the whole journey?",
-    "options": [
-      "A) 30 km/h",
-      "B) 33.33 km/h",
-      "C) 36 km/h",
-      "D) 40 km/h"
-    ],
-    "correct": 0,
-    "explanation": "For 3 equal distances, Average Speed is the Harmonic Mean: 3 / (1/20 + 1/30 + 1/60) = 3 / (6/60) = 3 / (1/10) = 30 km/h."
-  }
-];
-
-    const TOPICS = [
-      { id: "All", label: "All Topics", icon: "✨" },
-      { id: "Algebra", label: "Algebra", icon: "𝑥³" },
-      { id: "Number Theory", label: "Number Theory", icon: "🔢" },
-      { id: "Geometry", label: "Geometry", icon: "📐" },
-      { id: "Ratio & Mixtures", label: "Ratio & Mixtures", icon: "⚖️" },
-      { id: "Arithmetic", label: "Arithmetic", icon: "⚡" }
+      {
+        id: "c_alg_1",
+        topic: "Algebra",
+        subtopic: "Cubic Identity",
+        title: "Euler's Conditional Identity (a + b + c = 0)",
+        formula: "a³ + b³ + c³ − 3abc = (a + b + c)(a² + b² + c² − ab − bc − ca)",
+        highlight: "If a + b + c = 0  ⟹  a³ + b³ + c³ = 3abc",
+        bullets: [
+          "Fraction form: (a²/bc) + (b²/ca) + (c²/ab) = 3 whenever a + b + c = 0.",
+          "Converse trap: a³ + b³ + c³ = 3abc means EITHER a + b + c = 0 OR a = b = c."
+        ],
+        hook: "Zero sum kills the big bracket → cubes collapse to 3abc."
+      },
+      {
+        id: "c_alg_2",
+        topic: "Algebra",
+        subtopic: "Symmetric Sum",
+        title: "Sum of Squared Differences Transformation",
+        formula: "a² + b² + c² − ab − bc − ca = ½[(a − b)² + (b − c)² + (c − a)²]",
+        highlight: "Expression ≥ 0 for all real a, b, c; equals 0 iff a = b = c",
+        bullets: [
+          "If a, b, c are consecutive integers (d = 1), [(a−b)² + (b−c)² + (c−a)²] = 1 + 1 + 4 = 6, so value is always 3.",
+          "Trap: Never expand a² + b² + c² when numbers are large (e.g., 999, 1000, 1001); use pairwise differences."
+        ],
+        hook: "Large close numbers? Halve the sum of three squared gaps."
+      },
+      {
+        id: "c_alg_3",
+        topic: "Algebra",
+        subtopic: "Reciprocal Powers",
+        title: "x + 1/x Power Escalation Ladder",
+        formula: "If x + 1/x = k  ⟹  x² + 1/x² = k² − 2  and  x³ + 1/x³ = k³ − 3k",
+        highlight: "Sign flip rule: If x − 1/x = k  ⟹  x² + 1/x² = k² + 2",
+        bullets: [
+          "Special values: If x + 1/x = 2 ⇒ x = 1. If x + 1/x = −2 ⇒ x = −1.",
+          "Trap: If x + 1/x = √3, then x³ + 1/x³ = 0, which implies x⁶ = −1 (not +1)."
+        ],
+        hook: "Square subtracts 2; Cube takes k³ minus 3k."
+      },
+      {
+        id: "c_alg_4",
+        topic: "Algebra",
+        subtopic: "Quadratics & AM-GM",
+        title: "Minimum & Maximum of Quadratic / Reciprocal Sum",
+        formula: "For x > 0: ax + b/x ≥ 2√(ab)   |   Vertex of ax² + bx + c is at x = −b/(2a)",
+        highlight: "Equality in AM-GM holds strictly when the two terms are equal: ax = b/x",
+        bullets: [
+          "Extreme value of ax² + bx + c is (4ac − b²) / 4a.",
+          "Trap: AM-GM requires strictly positive terms. If x < 0, ax + b/x ≤ −2√(ab)."
+        ],
+        hook: "Positive reciprocal sum? Equate the pieces for the floor."
+      },
+      {
+        id: "c_nt_1",
+        topic: "Number Theory",
+        subtopic: "Modular Arithmetic",
+        title: "Euler's Totient & Fermat's Little Theorem",
+        formula: "a^(p−1) ≡ 1 (mod p) for prime p   |   a^φ(n) ≡ 1 (mod n) when gcd(a,n) = 1",
+        highlight: "Reduce big exponents mod (p − 1) or mod φ(n) before computing remainders",
+        bullets: [
+          "For n = p₁^a · p₂^b, Euler's totient is φ(n) = n(1 − 1/p₁)(1 − 1/p₂).",
+          "Trap: Always verify gcd(base, divisor) = 1 before applying φ(n) reduction."
+        ],
+        hook: "Coprime base? Chop the power by Totient φ(n)."
+      },
+      {
+        id: "c_nt_2",
+        topic: "Number Theory",
+        subtopic: "Factorials",
+        title: "Legendre's Formula (Highest Power of Prime in n!)",
+        formula: "E_p(n!) = ⌊n/p⌋ + ⌊n/p²⌋ + ⌊n/p³⌋ + …",
+        highlight: "Trailing zeroes of n! = E₅(n!) because 5s are scarcer than 2s",
+        bullets: [
+          "Alternative form: E_p(n!) = (n − S_p(n)) / (p − 1), where S_p(n) is sum of digits in base p.",
+          "Trap: For composite divisors like 12 = 2² × 3, check min(⌊E₂(n!)/2⌋, E₃(n!))."
+        ],
+        hook: "Successive integer divisions by p until quotient hits zero."
+      },
+      {
+        id: "c_nt_3",
+        topic: "Number Theory",
+        subtopic: "Divisors",
+        title: "Total Factors, Sum & Odd-Factor Squares",
+        formula: "If N = p₁^a · p₂^b · p₃^c  ⟹  d(N) = (a + 1)(b + 1)(c + 1)",
+        highlight: "N has an ODD number of factors iff N is a Perfect Square",
+        bullets: [
+          "Product of all factors of N is N^(d(N)/2).",
+          "Trap: Number of ways to write N as product of two coprime factors is 2^(k−1), where k is distinct primes."
+        ],
+        hook: "Add 1 to prime exponents and multiply; odd count means square."
+      },
+      {
+        id: "c_geo_1",
+        topic: "Geometry",
+        subtopic: "Triangle Centers",
+        title: "Centroid, Incenter & Circumcenter Ratios",
+        formula: "Centroid divides median 2 : 1   |   Area(△) = r · s = (abc) / (4R)",
+        highlight: "Right Triangle: Circumradius R = Hypotenuse / 2, Inradius r = (a + b − c) / 2",
+        bullets: [
+          "Three medians partition ANY triangle into 6 smaller triangles of equal area.",
+          "Trap: Angle bisector divides opposite side in ratio of adjacent sides (AB : AC), NOT 1 : 1."
+        ],
+        hook: "Vertex-to-Centroid is 2:1; Right hypotenuse midpoint is Circumcenter."
+      },
+      {
+        id: "c_geo_2",
+        topic: "Geometry",
+        subtopic: "Circles & Secants",
+        title: "Alternate Segment & Secant-Tangent Power Theorem",
+        formula: "PT² = PA × PB   |   ∠ between tangent & chord = ∠ subtended in alternate segment",
+        highlight: "Intersecting chords inside circle: PA × PB = PC × PD",
+        bullets: [
+          "Common external tangent length between two circles of radii R, r at distance d is √(d² − (R − r)²).",
+          "Trap: Use PA × PB (whole secant length from external point P), NOT PA × AB."
+        ],
+        hook: "Tangent squared equals Outside piece times Whole secant."
+      },
+      {
+        id: "c_geo_3",
+        topic: "Geometry",
+        subtopic: "Similarity & Area",
+        title: "Similar Triangle Scaling & Cevian Area Ratios",
+        formula: "Area(△₁) / Area(△₂) = (Side₁ / Side₂)² = (Height₁ / Height₂)²",
+        highlight: "Triangles sharing the same height have areas strictly in the ratio of their bases",
+        bullets: [
+          "Midpoint line DE ∥ BC cuts off top triangle with 1/4th area; remaining trapezium is 3/4th area.",
+          "Trap: Perimeter ratio scales linearly (k), whereas Area ratio scales quadratically (k²)."
+        ],
+        hook: "Same height? Ratio of bases. Similar shape? Square the side ratio."
+      },
+      {
+        id: "c_rm_1",
+        topic: "Ratio & Mixtures",
+        subtopic: "Replacement",
+        title: "Iterative Draw & Replacement Formula",
+        formula: "Final Pure / Initial Total = (1 − x / V)^n",
+        highlight: "Always track the UNCHANGED component (or pure remaining liquid) as the ratio",
+        bullets: [
+          "x = volume drawn per step, V = total vessel volume, n = number of operations.",
+          "Trap: If problem gives final ratio Milk : Water = 16 : 65, then Final Milk / Total = 16 / (16 + 65) = 16/81."
+        ],
+        hook: "Denominator is Total Mixture (Milk + Water), never just Water."
+      },
+      {
+        id: "c_rm_2",
+        topic: "Ratio & Mixtures",
+        subtopic: "Alligation",
+        title: "Weighted Average Criss-Cross Alligation Rule",
+        formula: "w₁ / w₂ = (A₂ − A_avg) / (A_avg − A₁)",
+        highlight: "Always alligate with respect to the DENOMINATOR unit (e.g., Cost Price for % Profit)",
+        bullets: [
+          "Mixing two speeds S₁ and S₂ gives weights in ratio of TIME spent, not distance.",
+          "Trap: Mixing solutions of 20% and 50% in ratio 2:1 gives 30%, closer to the heavier weight."
+        ],
+        hook: "Criss-cross the gaps; weights match the bottom unit."
+      },
+      {
+        id: "c_rm_3",
+        topic: "Ratio & Mixtures",
+        subtopic: "Proportions",
+        title: "Componendo-Dividendo & Equal Ratio Theorem",
+        formula: "If a/b = c/d  ⟹  (a + b)/(a − b) = (c + d)/(c − d)",
+        highlight: "If a/b = c/d = e/f = k, then (a + c + e)/(b + d + f) = k (unless denominator sum = 0)",
+        bullets: [
+          "Applying C&D twice immediately restores the original fraction a/b.",
+          "Trap: In symmetric cyclic ratios a/(b+c) = b/(c+a) = c/(a+b) = k, k is 1/2 (if a+b+c ≠ 0) OR k = −1 (if a+b+c = 0)."
+        ],
+        hook: "Sum over Difference untangles symmetrically trapped variables."
+      },
+      {
+        id: "c_ar_1",
+        topic: "Arithmetic",
+        subtopic: "Percentages & Profit",
+        title: "Successive Percentage Change & Faulty Balance",
+        formula: "Net % = a + b + (ab / 100)   |   Markup × Discount × WeightFactor = Profit Ratio",
+        highlight: "Selling at CP using 800g instead of 1000g gives (200/800) = 25% Profit (NOT 20%)",
+        bullets: [
+          "Price up by 1/n requires consumption drop of 1/(n + 1) to keep expenditure constant.",
+          "Trap: Two items sold at same SP, one at +x% profit and one at −x% loss, ALWAYS yields net loss of (x/10)² %."
+        ],
+        hook: "Dishonest scale denominator is always actual weight dispensed."
+      },
+      {
+        id: "c_ar_2",
+        topic: "Arithmetic",
+        subtopic: "Time, Speed & Distance",
+        title: "Harmonic Mean Speed & Relative Meeting Time",
+        formula: "S_avg (equal distance) = 2ab / (a + b)   |   After crossing: S₁ / S₂ = √(t₂ / t₁)",
+        highlight: "Constant distance: Speed ratio a : b  ⟹  Time ratio b : a",
+        bullets: [
+          "After passing each other, if A takes t₁ and B takes t₂ to reach destinations, meeting time T = √(t₁ · t₂).",
+          "Trap: Average speed is NEVER (a + b)/2 unless equal TIME is traveled at each speed."
+        ],
+        hook: "Post-meeting times flip and take a square root for speed ratio."
+      },
+      {
+        id: "c_ar_3",
+        topic: "Arithmetic",
+        subtopic: "Time & Work / SI-CI",
+        title: "Efficiency LCM Method & 2-Year CI-SI Gap",
+        formula: "2-Yr (CI − SI) = P(R / 100)²   |   Work = LCM(Days), Efficiency = Work / Time",
+        highlight: "3-Yr (CI − SI) = P(R/100)² × (3 + R/100)",
+        bullets: [
+          "If A takes 'a' days more than (A+B) together, and B takes 'b' days more, then Combined Time = √(ab).",
+          "Trap: Negative work (leak pipe) subtracts efficiency every hour; account for final fill stroke before leak in alternating pipes."
+        ],
+        hook: "Extra days over combined time? Multiply and root for √(ab)."
+      }
     ];
 
+    // =========================================================================
+    // 2. SEED QUESTIONS (20 Interactive MCQs Linked via concept_ref)
+    // =========================================================================
+    const SEED_QUESTIONS = [
+      {
+        id: "q_alg_1",
+        topic: "Algebra",
+        subtopic: "Cubic Identity",
+        difficulty: "Medium",
+        question: "If a = 25, b = −15, and c = −10, what is the value of (a³ + b³ + c³ − 3abc) / (a² + b² + c²)?",
+        options: ["0", "1", "3", "3750"],
+        correctIndex: 0,
+        shortcut: "Check sum first: a + b + c = 25 − 15 − 10 = 0. Since a + b + c = 0, the numerator a³ + b³ + c³ − 3abc is identically 0.",
+        trap: "Computing 25³ or expanding the denominator wastes 90 seconds.",
+        concept_ref: "c_alg_1"
+      },
+      {
+        id: "q_alg_2",
+        topic: "Algebra",
+        subtopic: "Cubic Converse Trap",
+        difficulty: "Hard",
+        question: "How many real triplets (x, y, z) of distinct non-zero numbers satisfy (x − y)³ + (y − z)³ + (z − x)³ = 0?",
+        options: ["0", "1", "3", "Infinitely many"],
+        correctIndex: 0,
+        shortcut: "Let a = x−y, b = y−z, c = z−x. Clearly a + b + c = 0, so a³ + b³ + c³ = 3abc = 3(x−y)(y−z)(z−x). For this to equal 0, at least two of x, y, z must be equal—contradicting 'distinct'.",
+        trap: "Assuming a + b + c = 0 makes a³ + b³ + c³ = 0 instead of 3abc.",
+        concept_ref: "c_alg_1"
+      },
+      {
+        id: "q_alg_3",
+        topic: "Algebra",
+        subtopic: "Symmetric Sum",
+        difficulty: "Easy",
+        question: "If a = 2025, b = 2026, and c = 2027, evaluate a² + b² + c² − ab − bc − ca.",
+        options: ["1", "2", "3", "6"],
+        correctIndex: 2,
+        shortcut: "Use ½[(a−b)² + (b−c)² + (c−a)²] = ½[(-1)² + (-1)² + (-2)²] = ½[1 + 1 + 4] = 3.",
+        trap: "Forgetting the ½ factor in the squared-difference identity and picking 6.",
+        concept_ref: "c_alg_2"
+      },
+      {
+        id: "q_alg_4",
+        topic: "Algebra",
+        subtopic: "Reciprocal Powers",
+        difficulty: "Medium",
+        question: "If x + 1/x = 3, what is the value of x⁴ + 1/x⁴?",
+        options: ["47", "49", "79", "81"],
+        correctIndex: 0,
+        shortcut: "Step 1: x² + 1/x² = 3² − 2 = 7. Step 2: Square again: x⁴ + 1/x⁴ = 7² − 2 = 47.",
+        trap: "Doing 3⁴ − 4 = 77 or forgetting to subtract 2 on the second squaring.",
+        concept_ref: "c_alg_3"
+      },
+      {
+        id: "q_alg_5",
+        topic: "Algebra",
+        subtopic: "AM-GM Minimum",
+        difficulty: "Medium",
+        question: "For x > 0, what is the minimum possible value of 9x + 4/x?",
+        options: ["6", "12", "13", "36"],
+        correctIndex: 1,
+        shortcut: "By AM-GM, 9x + 4/x ≥ 2√(9x · 4/x) = 2√36 = 12 (attained at 9x = 4/x ⇒ x = 2/3).",
+        trap: "Plugging x = 1 to get 9 + 4 = 13.",
+        concept_ref: "c_alg_4"
+      },
+      {
+        id: "q_nt_1",
+        topic: "Number Theory",
+        subtopic: "Modular Arithmetic",
+        difficulty: "Medium",
+        question: "What is the remainder when 3¹⁰² is divided by 101?",
+        options: ["1", "3", "9", "92"],
+        correctIndex: 2,
+        shortcut: "101 is prime. By Fermat's Little Theorem, 3¹⁰⁰ ≡ 1 (mod 101). Thus 3¹⁰² = 3¹⁰⁰ × 3² ≡ 1 × 9 = 9 (mod 101).",
+        trap: "Using 101 instead of p − 1 = 100 as the cycle length.",
+        concept_ref: "c_nt_1"
+      },
+      {
+        id: "q_nt_2",
+        topic: "Number Theory",
+        subtopic: "Factorials",
+        difficulty: "Easy",
+        question: "How many trailing zeroes are at the end of 125! when written in base 10?",
+        options: ["25", "30", "31", "32"],
+        correctIndex: 2,
+        shortcut: "E₅(125!) = ⌊125/5⌋ + ⌊125/25⌋ + ⌊125/125⌋ = 25 + 5 + 1 = 31.",
+        trap: "Stopping at 25 + 5 = 30 and forgetting 5³ = 125.",
+        concept_ref: "c_nt_2"
+      },
+      {
+        id: "q_nt_3",
+        topic: "Number Theory",
+        subtopic: "Divisors",
+        difficulty: "Medium",
+        question: "A hall has 100 doors numbered 1 to 100, all initially closed. Person k toggles every multiple of k (for k = 1 to 100). How many doors remain OPEN at the end?",
+        options: ["10", "25", "50", "90"],
+        correctIndex: 0,
+        shortcut: "Door N is toggled once for each factor it has. It stays open iff d(N) is odd, which occurs iff N is a perfect square. Squares ≤ 100 are 1², 2², ..., 10² → 10 doors.",
+        trap: "Guessing 50 by symmetry.",
+        concept_ref: "c_nt_3"
+      },
+      {
+        id: "q_nt_4",
+        topic: "Number Theory",
+        subtopic: "Divisors",
+        difficulty: "Medium",
+        question: "How many positive divisors does N = 720 have?",
+        options: ["20", "24", "30", "36"],
+        correctIndex: 2,
+        shortcut: "720 = 16 × 9 × 5 = 2⁴ × 3² × 5¹. Total factors = (4 + 1)(2 + 1)(1 + 1) = 5 × 3 × 2 = 30.",
+        trap: "Multiplying exponents directly (4 × 2 × 1 = 8) without adding 1.",
+        concept_ref: "c_nt_3"
+      },
+      {
+        id: "q_geo_1",
+        topic: "Geometry",
+        subtopic: "Triangle Centers",
+        difficulty: "Easy",
+        question: "In right-angled triangle ABC with legs 6 cm and 8 cm, what is the distance between its circumcenter and incenter?",
+        options: ["√5 cm", "2 cm", "3 cm", "2.5 cm"],
+        correctIndex: 0,
+        shortcut: "Hypotenuse = 10, so R = 5 and r = (6+8−10)/2 = 2. By Euler's formula d² = R(R − 2r) = 5(5 − 4) = 5 ⇒ d = √5 cm.",
+        trap: "Subtracting R − r = 5 − 2 = 3 cm.",
+        concept_ref: "c_geo_1"
+      },
+      {
+        id: "q_geo_2",
+        topic: "Geometry",
+        subtopic: "Medians",
+        difficulty: "Easy",
+        question: "In △ABC, medians AD, BE, and CF intersect at centroid G. If the area of △BDG is 8 cm², what is the area of △ABC?",
+        options: ["24 cm²", "32 cm²", "48 cm²", "64 cm²"],
+        correctIndex: 2,
+        shortcut: "The three medians divide △ABC into 6 smaller triangles of equal area. Area(△ABC) = 6 × 8 = 48 cm².",
+        trap: "Multiplying by 3 instead of 6.",
+        concept_ref: "c_geo_1"
+      },
+      {
+        id: "q_geo_3",
+        topic: "Geometry",
+        subtopic: "Circles & Secants",
+        difficulty: "Medium",
+        question: "From external point P, a tangent PT of length 12 cm and a secant PAB are drawn to a circle. If PA = 8 cm, what is the length of chord AB?",
+        options: ["10 cm", "12 cm", "16 cm", "18 cm"],
+        correctIndex: 0,
+        shortcut: "By Tangent-Secant theorem: PT² = PA × PB ⇒ 144 = 8 × PB ⇒ PB = 18 cm. Chord AB = PB − PA = 18 − 8 = 10 cm.",
+        trap: "Reporting PB = 18 cm directly instead of subtracting PA = 8 cm to get chord AB.",
+        concept_ref: "c_geo_2"
+      },
+      {
+        id: "q_geo_4",
+        topic: "Geometry",
+        subtopic: "Similarity & Area",
+        difficulty: "Medium",
+        question: "In △ABC, DE is parallel to base BC with D on AB and E on AC such that AD : DB = 2 : 3. What is the ratio of Area(△ADE) to Area(Trapezium DBCE)?",
+        options: ["4 : 9", "4 : 21", "4 : 25", "2 : 5"],
+        correctIndex: 1,
+        shortcut: "AD : AB = 2 : (2 + 3) = 2 : 5. So Area(△ADE) : Area(△ABC) = 2² : 5² = 4 : 25. Subtracting gives Trapezium = 25 − 4 = 21 parts ⇒ 4 : 21.",
+        trap: "Using AD : DB = 2 : 3 directly to get 4 : 9, or forgetting to subtract 4 from 25 for the trapezium.",
+        concept_ref: "c_geo_3"
+      },
+      {
+        id: "q_rm_1",
+        topic: "Ratio & Mixtures",
+        subtopic: "Replacement",
+        difficulty: "Medium",
+        question: "From a cask full of pure wine, 8 liters are drawn and replaced with water. This operation is performed 3 more times (4 times total). The ratio of wine to water left is 16 : 65. Find the original capacity of the cask.",
+        options: ["24 L", "32 L", "40 L", "48 L"],
+        correctIndex: 0,
+        shortcut: "Wine / Total = 16 / (16 + 65) = 16 / 81 = (2/3)⁴. Thus (1 − 8/V)⁴ = (2/3)⁴ ⇒ 1 − 8/V = 2/3 ⇒ 8/V = 1/3 ⇒ V = 24 L.",
+        trap: "Using 16/65 instead of 16/(16 + 65) = 16/81 in the denominator.",
+        concept_ref: "c_rm_1"
+      },
+      {
+        id: "q_rm_2",
+        topic: "Ratio & Mixtures",
+        subtopic: "Alligation",
+        difficulty: "Easy",
+        question: "In what ratio must a grocer mix tea at ₹60/kg with tea at ₹85/kg so that by selling the mixture at ₹84/kg he gains 20%?",
+        options: ["3 : 2", "2 : 3", "4 : 1", "1 : 2"],
+        correctIndex: 0,
+        shortcut: "First find Mean CP: SP = 84 at 20% profit ⇒ CP_avg = 84 / 1.2 = ₹70/kg. Alligate 60 and 85 around 70: (85 − 70) : (70 − 60) = 15 : 10 = 3 : 2.",
+        trap: "Alligating directly with SP = 84 instead of converting to CP = 70.",
+        concept_ref: "c_rm_2"
+      },
+      {
+        id: "q_rm_3",
+        topic: "Ratio & Mixtures",
+        subtopic: "Proportions",
+        difficulty: "Medium",
+        question: "If (3x + 5y) / (3x − 5y) = 7 / 3, what is the ratio x : y?",
+        options: ["25 : 6", "5 : 2", "15 : 7", "6 : 25"],
+        correctIndex: 0,
+        shortcut: "Apply Componendo-Dividendo: (3x) / (5y) = (7 + 3) / (7 − 3) = 10 / 4 = 5 / 2. Thus x / y = (5/2) × (5/3) = 25 / 6.",
+        trap: "Stopping at 3x / 5y = 5 / 2 without cross-multiplying the coefficients 3 and 5.",
+        concept_ref: "c_rm_3"
+      },
+      {
+        id: "q_ar_1",
+        topic: "Arithmetic",
+        subtopic: "Faulty Balance",
+        difficulty: "Medium",
+        question: "A dishonest dealer professes to sell goods at cost price but uses a false weight of 800 grams for a 1 kg weight. What is his actual gain percentage?",
+        options: ["20%", "22.5%", "25%", "80%"],
+        correctIndex: 2,
+        shortcut: "He charges for 1000g while parting with only 800g. Profit % = (200 / 800) × 100 = 25%.",
+        trap: "Dividing by 1000g instead of actual cost (800g) and picking 20%.",
+        concept_ref: "c_ar_1"
+      },
+      {
+        id: "q_ar_2",
+        topic: "Arithmetic",
+        subtopic: "Time, Speed & Distance",
+        difficulty: "Medium",
+        question: "Trains A and B start simultaneously from stations X and Y toward each other. After passing each other, A takes 9 hours to reach Y and B takes 4 hours to reach X. If A's speed is 40 km/hr, what is B's speed?",
+        options: ["50 km/hr", "60 km/hr", "80 km/hr", "90 km/hr"],
+        correctIndex: 1,
+        shortcut: "S_A / S_B = √(t_B / t_A) = √(4 / 9) = 2 / 3. Given S_A = 40, we get S_B = 40 × (3/2) = 60 km/hr.",
+        trap: "Using linear ratio 9:4 or forgetting the square root.",
+        concept_ref: "c_ar_2"
+      },
+      {
+        id: "q_ar_3",
+        topic: "Arithmetic",
+        subtopic: "Time & Work",
+        difficulty: "Medium",
+        question: "A alone takes 16 days more than (A + B) together to complete a job, while B alone takes 9 days more than (A + B) together. In how many days can (A + B) finish the job together?",
+        options: ["10 days", "12 days", "12.5 days", "14 days"],
+        correctIndex: 1,
+        shortcut: "Combined time T = √(a × b) = √(16 × 9) = 4 × 3 = 12 days.",
+        trap: "Taking the arithmetic average (16 + 9)/2 = 12.5 days.",
+        concept_ref: "c_ar_3"
+      },
+      {
+        id: "q_ar_4",
+        topic: "Arithmetic",
+        subtopic: "CI & SI",
+        difficulty: "Easy",
+        question: "The difference between Compound Interest and Simple Interest on a certain sum at 10% per annum for 2 years is ₹65. What is the principal sum?",
+        options: ["₹6,500", "₹5,000", "₹6,000", "₹13,000"],
+        correctIndex: 0,
+        shortcut: "2-Yr (CI − SI) = P(R/100)² ⇒ 65 = P(10/100)² = P / 100 ⇒ P = ₹6,500.",
+        trap: "Using R/100 instead of (R/100)².",
+        concept_ref: "c_ar_3"
+      }
+    ];
+
+    // =========================================================================
+    // 3. STATE MANAGEMENT & LOCALSTORAGE (quantbyprof_v2_state)
+    // =========================================================================
     const STORAGE_KEY = "quantbyprof_v2_state";
+    const TOPICS = ["All", "Algebra", "Number Theory", "Geometry", "Ratio & Mixtures", "Arithmetic"];
 
-    let state = {
-      section: "revise",        // "revise" | "questions"
-      topic: "All",             // "All" | "Algebra" | "Number Theory" | "Geometry" | "Ratio & Mixtures" | "Arithmetic"
-      subFilter: "all",         // "all" | "saved" | "revise" | "mastered" | "unattempted" | "wrong"
-      savedConcepts: { "c_alg_1": true, "c_num_1": true, "c_geo_1": true },
-      savedQuestions: { "q_alg_2": true, "q_num_1": true },
-      conceptMastery: {},       // { [id]: "mastered" | "revise" }
-      questionAnswers: {},      // { [id]: chosenIdx }
-      solutionOpen: {},         // { [id]: bool }
+    const defaultState = () => ({
+      savedConcepts: [],
+      reviseQueue: [],
+      masteredConcepts: [],
+      savedQuestions: [],
+      questionStatus: {}, // { q_id: 'correct' | 'retry' }
       customConcepts: [],
-      customQuestions: []
-    };
+      arcade: {
+        xp: 0,
+        blitzHigh: 0,
+        survivalBest: 0,
+        trapSessions: 0
+      }
+    });
 
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
+    class QuantApp {
+      constructor() {
+        this.state = this.loadState();
+        this.section = "revise"; // 'revise' | 'questions' | 'arcade'
+        this.topic = "All";
+        this.reviseSub = "all"; // 'all' | 'saved' | 'queue' | 'mastered'
+        this.questionSub = "all"; // 'all' | 'unattempted' | 'retry' | 'saved' | 'correct'
+        this.arcadeGame = "blitz"; // 'blitz' | 'survival' | 'traphunter'
+
+        // Question UI runtime state
+        this.selectedAnswers = {};
+        this.openShortcuts = {};
+
+        // Arcade runtime timers & states
+        this.activeTimer = null;
+        this.blitzState = { active: false, timeLeft: 60, score: 0, streak: 0, current: null, feedback: null };
+        this.survivalState = { active: false, hearts: 3, timeLeft: 60, score: 0, streak: 0, qIndex: 0, deck: [], answered: null };
+        this.trapState = { active: false, index: 0, deck: [], revealed: false, timeLeft: 10, nailedCount: 0 };
+
+        this.renderAll();
+      }
+
+      loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return defaultState();
           const parsed = JSON.parse(raw);
-          state = Object.assign({}, state, parsed);
+          return {
+            ...defaultState(),
+            ...parsed,
+            arcade: { ...defaultState().arcade, ...(parsed.arcade || {}) }
+          };
+        } catch (e) {
+          return defaultState();
         }
-      } catch (e) {}
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          section: state.section,
-          topic: state.topic,
-          savedConcepts: state.savedConcepts,
-          savedQuestions: state.savedQuestions,
-          conceptMastery: state.conceptMastery,
-          questionAnswers: state.questionAnswers,
-          customConcepts: state.customConcepts,
-          customQuestions: state.customQuestions
-        }));
-      } catch (e) {}
-    }
-
-    function getAllConcepts() {
-      return [...state.customConcepts, ...SEED_CONCEPTS];
-    }
-
-    function getAllQuestions() {
-      return [...state.customQuestions, ...SEED_QUESTIONS];
-    }
-
-    // =========================================================================
-    // THEME & SECTION SWITCHING (Visual Clarity Between Revise & Questions)
-    // =========================================================================
-    function applySectionTheme() {
-      const isRevise = state.section === "revise";
-      document.body.className = isRevise ? "theme-revise" : "theme-questions";
-
-      const metaTheme = document.getElementById("metaThemeColor");
-      if (metaTheme) metaTheme.setAttribute("content", isRevise ? "#1e1b4b" : "#042f2e");
-
-      // Header & Badges
-      const brandBadge = document.getElementById("brandBadge");
-      const modePill = document.getElementById("modePillHeader");
-      const modeSub = document.getElementById("modeSubHeader");
-      const topBtnRevise = document.getElementById("topBtnRevise");
-      const topBtnQuestions = document.getElementById("topBtnQuestions");
-      const filterCard = document.getElementById("filterBarCard");
-
-      if (isRevise) {
-        brandBadge.className = "w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-700 to-violet-500 flex items-center justify-center text-white font-black text-sm shadow-sm transition-all";
-        modePill.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800";
-        modePill.textContent = "Revise Mode";
-        modeSub.textContent = "Concise Concept Cards & High-Yield Formulas";
-        topBtnRevise.className = "px-3.5 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center space-x-1.5 bg-indigo-600 text-white shadow-xs";
-        topBtnQuestions.className = "px-3.5 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center space-x-1.5 text-slate-600 hover:text-slate-900";
-        filterCard.className = "bg-white sm:rounded-2xl border-y sm:border border-indigo-100 p-3.5 shadow-2xs space-y-2.5";
-      } else {
-        brandBadge.className = "w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-700 to-emerald-500 flex items-center justify-center text-white font-black text-sm shadow-sm transition-all";
-        modePill.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-100 text-teal-900";
-        modePill.textContent = "Questions Arena";
-        modeSub.textContent = "Interactive Exam Question Bank & Step-by-Step Solutions";
-        topBtnQuestions.className = "px-3.5 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center space-x-1.5 bg-teal-600 text-white shadow-xs";
-        topBtnRevise.className = "px-3.5 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all flex items-center space-x-1.5 text-slate-600 hover:text-slate-900";
-        filterCard.className = "bg-white sm:rounded-2xl border-y sm:border border-teal-200 p-3.5 shadow-2xs space-y-2.5";
       }
 
-      // Left Sidebar Banner
-      const leftBanner = document.getElementById("leftThemeBanner");
-      const leftTag = document.getElementById("leftBannerTag");
-      const leftTitle = document.getElementById("leftBannerTitle");
-      const leftDesc = document.getElementById("leftBannerDesc");
-      if (leftBanner) {
-        leftBanner.className = (isRevise ? "revise-banner" : "questions-banner") + " rounded-2xl p-4 text-white shadow-sm space-y-1.5";
-        leftTag.textContent = isRevise ? "SECTION 01 • STUDY DECK" : "SECTION 02 • PRACTICE ARENA";
-        leftTitle.textContent = isRevise ? "Revise Concepts" : "Question Bank";
-        leftDesc.textContent = isRevise
-          ? "Bite-sized formulas, key rules, and exam traps stripped of clutter for rapid revision."
-          : "Test conceptual application across topics with instant option validation and solutions.";
+      saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
       }
 
-      // Mobile Bottom Nav Highlights
-      const mobRev = document.getElementById("mobNavRevise");
-      const mobQ = document.getElementById("mobNavQuestions");
-      const mobSav = document.getElementById("mobNavSaved");
-      if (mobRev && mobQ && mobSav) {
-        mobRev.className = "flex flex-col items-center space-y-0.5 text-[11px] " + (isRevise && state.subFilter !== "saved" ? "text-indigo-600 font-extrabold" : "text-slate-500 font-medium");
-        mobQ.className = "flex flex-col items-center space-y-0.5 text-[11px] " + (!isRevise && state.subFilter !== "saved" ? "text-teal-600 font-extrabold" : "text-slate-500 font-medium");
-        mobSav.className = "flex flex-col items-center space-y-0.5 text-[11px] " + (state.subFilter === "saved" ? "text-amber-600 font-extrabold" : "text-slate-500 font-medium");
-      }
-    }
-
-    function switchSection(sec) {
-      state.section = sec;
-      state.subFilter = "all";
-      saveState();
-      renderAll();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function selectTopic(topicId) {
-      state.topic = topicId;
-      saveState();
-      renderAll();
-    }
-
-    function setSubFilter(sf) {
-      state.subFilter = sf;
-      renderAll();
-    }
-
-    function jumpToTopicQuestions(topicName) {
-      state.section = "questions";
-      state.topic = topicName;
-      state.subFilter = "all";
-      saveState();
-      renderAll();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    // =========================================================================
-    // RENDERING FILTERS, SIDEBARS & CARDS
-    // =========================================================================
-    function renderAll() {
-      applySectionTheme();
-      renderFilterBars();
-      renderSidebars();
-      if (state.section === "revise") {
-        renderReviseFeed();
-      } else {
-        renderQuestionsFeed();
-      }
-    }
-
-    function renderFilterBars() {
-      const isRevise = state.section === "revise";
-      const items = isRevise ? getAllConcepts() : getAllQuestions();
-      const activeColor = isRevise ? "bg-indigo-600 text-white shadow-xs" : "bg-teal-600 text-white shadow-xs";
-      const inactiveColor = "bg-slate-100 text-slate-600 hover:bg-slate-200";
-
-      // 1. Topic Pills Bar
-      const topicBar = document.getElementById("topicPillsBar");
-      topicBar.innerHTML = TOPICS.map(t => {
-        const count = t.id === "All" ? items.length : items.filter(i => i.topic === t.id).length;
-        const isActive = state.topic === t.id;
-        return `
-          <button
-            onclick="selectTopic('${t.id}')"
-            class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center space-x-1.5 ${isActive ? activeColor : inactiveColor}"
-          >
-            <span>${t.icon}</span>
-            <span>${t.label}</span>
-            <span class="text-[10px] opacity-80">(${count})</span>
-          </button>
-        `;
-      }).join("");
-
-      // 2. Sub-Filter Pills
-      const subBar = document.getElementById("subFilterBar");
-      const subOptions = isRevise
-        ? [
-            { id: "all", label: "All Concepts" },
-            { id: "saved", label: "🔖 Saved" },
-            { id: "revise", label: "⚡ Revise Queue" },
-            { id: "mastered", label: "✅ Mastered" }
-          ]
-        : [
-            { id: "all", label: "All Questions" },
-            { id: "unattempted", label: "❓ Unattempted" },
-            { id: "wrong", label: "❌ Needs Retry" },
-            { id: "saved", label: "🔖 Saved" },
-            { id: "solved", label: "✅ Correct" }
-          ];
-
-      subBar.innerHTML = subOptions.map(s => {
-        const active = state.subFilter === s.id;
-        const activeSubClass = isRevise ? "bg-indigo-950 text-white" : "bg-teal-950 text-white";
-        return `
-          <button
-            onclick="setSubFilter('${s.id}')"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition ${active ? activeSubClass : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
-          >
-            ${s.label}
-          </button>
-        `;
-      }).join("");
-    }
-
-    function renderSidebars() {
-      const isRevise = state.section === "revise";
-      const items = isRevise ? getAllConcepts() : getAllQuestions();
-      const dNav = document.getElementById("desktopTopicNav");
-      if (dNav) {
-        dNav.innerHTML = TOPICS.map(t => {
-          const cnt = t.id === "All" ? items.length : items.filter(x => x.topic === t.id).length;
-          const active = state.topic === t.id;
-          const activeCls = isRevise ? "bg-indigo-50 text-indigo-700 font-bold" : "bg-teal-50 text-teal-800 font-bold";
-          return `
-            <button onclick="selectTopic('${t.id}')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition ${active ? activeCls : 'text-slate-600 hover:bg-slate-50 font-medium'}">
-              <span class="flex items-center space-x-2"><span>${t.icon}</span><span>${t.label}</span></span>
-              <span class="text-[11px] opacity-75">${cnt}</span>
-            </button>
-          `;
-        }).join("");
+      getAllConcepts() {
+        return [...SEED_CONCEPTS, ...(this.state.customConcepts || [])];
       }
 
-      // Stats Summary
-      const allC = getAllConcepts();
-      const allQ = getAllQuestions();
-      const masteredC = allC.filter(c => state.conceptMastery[c.id] === "mastered").length;
-      const answeredQ = Object.keys(state.questionAnswers).length;
-      const correctQ = allQ.filter(q => state.questionAnswers[q.id] === q.correct).length;
-
-      const statsHtml = `
-        <div class="grid grid-cols-2 gap-2 text-center">
-          <div class="bg-indigo-50/70 border border-indigo-100 p-2.5 rounded-xl">
-            <div class="text-base font-extrabold text-indigo-700">${masteredC}/${allC.length}</div>
-            <div class="text-[10px] text-indigo-950 font-semibold">Concepts Mastered</div>
-          </div>
-          <div class="bg-teal-50/70 border border-teal-100 p-2.5 rounded-xl">
-            <div class="text-base font-extrabold text-teal-700">${correctQ}/${allQ.length}</div>
-            <div class="text-[10px] text-teal-950 font-semibold">Questions Solved</div>
-          </div>
-        </div>
-        <div class="flex justify-between pt-1 text-slate-600">
-          <span>Questions Attempted:</span>
-          <span class="font-bold text-slate-900">${answeredQ} of ${allQ.length}</span>
-        </div>
-        <div class="flex justify-between text-slate-600">
-          <span>Accuracy:</span>
-          <span class="font-bold text-emerald-600">${answeredQ ? Math.round((correctQ / answeredQ) * 100) + '%' : '—'}</span>
-        </div>
-      `;
-      const rStats = document.getElementById("rightStatsBox");
-      if (rStats) rStats.innerHTML = statsHtml;
-      const mStats = document.getElementById("modalStatsSummary");
-      if (mStats) mStats.innerHTML = statsHtml;
-
-      // Saved Summary by Topic
-      const rSaved = document.getElementById("rightSavedSummary");
-      if (rSaved) {
-        rSaved.innerHTML = TOPICS.filter(t => t.id !== "All").map(t => {
-          const cSaved = allC.filter(c => c.topic === t.id && state.savedConcepts[c.id]).length;
-          const qSaved = allQ.filter(q => q.topic === t.id && state.savedQuestions[q.id]).length;
-          return `
-            <button onclick="selectTopic('${t.id}'); setSubFilter('saved');" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-700 transition">
-              <span>${t.icon} ${t.label}</span>
-              <span class="text-[11px] font-semibold text-slate-500">${cSaved}C • ${qSaved}Q</span>
-            </button>
-          `;
-        }).join("");
-      }
-    }
-
-    // =========================================================================
-    // SECTION 1: REVISE FEED (CONCISE, SCANNABLE CONCEPT CARDS)
-    // =========================================================================
-    function renderReviseFeed() {
-      const container = document.getElementById("cardsFeedContainer");
-      let list = getAllConcepts();
-
-      if (state.topic !== "All") {
-        list = list.filter(c => c.topic === state.topic);
-      }
-      if (state.subFilter === "saved") {
-        list = list.filter(c => !!state.savedConcepts[c.id]);
-      } else if (state.subFilter === "revise") {
-        list = list.filter(c => state.conceptMastery[c.id] === "revise");
-      } else if (state.subFilter === "mastered") {
-        list = list.filter(c => state.conceptMastery[c.id] === "mastered");
+      getFilteredConcepts() {
+        let list = this.getAllConcepts();
+        if (this.topic !== "All") list = list.filter(c => c.topic === this.topic);
+        if (this.reviseSub === "saved") list = list.filter(c => this.state.savedConcepts.includes(c.id));
+        if (this.reviseSub === "queue") list = list.filter(c => this.state.reviseQueue.includes(c.id));
+        if (this.reviseSub === "mastered") list = list.filter(c => this.state.masteredConcepts.includes(c.id));
+        return list;
       }
 
-      document.getElementById("activeCountLabel").textContent = `${list.length} concept${list.length === 1 ? '' : 's'}`;
-
-      if (list.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl border border-indigo-100 p-8 text-center space-y-2.5">
-            <div class="text-2xl">📖</div>
-            <div class="text-sm font-bold text-slate-800">No Concepts Match This Filter</div>
-            <button onclick="selectTopic('All'); setSubFilter('all');" class="text-xs font-bold bg-indigo-600 text-white px-4 py-2 rounded-xl">Show All Concepts</button>
-          </div>
-        `;
-        return;
+      getFilteredQuestions() {
+        let list = [...SEED_QUESTIONS];
+        if (this.topic !== "All") list = list.filter(q => q.topic === this.topic);
+        if (this.questionSub === "unattempted") list = list.filter(q => !this.state.questionStatus[q.id]);
+        if (this.questionSub === "retry") list = list.filter(q => this.state.questionStatus[q.id] === "retry");
+        if (this.questionSub === "saved") list = list.filter(q => this.state.savedQuestions.includes(q.id));
+        if (this.questionSub === "correct") list = list.filter(q => this.state.questionStatus[q.id] === "correct");
+        return list;
       }
 
-      container.innerHTML = list.map((c, idx) => {
-        const isSaved = !!state.savedConcepts[c.id];
-        const mState = state.conceptMastery[c.id] || "none";
-        const bulletsHtml = (c.bullets || []).map(b => `
-          <li class="flex items-start space-x-2 text-xs text-slate-700 leading-relaxed">
-            <span class="text-indigo-500 font-bold">•</span>
-            <span>${b}</span>
-          </li>
-        `).join("");
-
-        return `
-          <article class="bg-white rounded-2xl border border-indigo-100/90 shadow-xs overflow-hidden">
-            <!-- Concise Header -->
-            <div class="px-4 py-2.5 bg-indigo-50/40 border-b border-indigo-100/60 flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white">${c.topic}</span>
-                <span class="text-xs font-semibold text-indigo-950/70">${c.subtopic}</span>
-              </div>
-              <button onclick="toggleSaveConcept('${c.id}')" class="px-2 py-1 rounded-lg text-xs font-bold transition ${isSaved ? 'bg-amber-100 text-amber-900' : 'text-slate-400 hover:bg-slate-100'}">
-                ${isSaved ? "🔖 Saved" : "🏷️ Save"}
-              </button>
-            </div>
-
-            <!-- Concise Body -->
-            <div class="p-4 space-y-3">
-              <h2 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">${idx + 1}. ${c.title}</h2>
-
-              <!-- Formula Box -->
-              <div class="revise-formula-box space-y-2 text-center">
-                <div class="text-xs sm:text-sm font-semibold tracking-wide">${c.formula}</div>
-                ${c.highlight ? `<div class="text-xs font-bold text-amber-300 bg-black/25 py-1.5 px-3 rounded-lg border border-amber-300/25">${c.highlight}</div>` : ""}
-              </div>
-
-              <!-- 2 Concise Bullets -->
-              <ul class="space-y-1.5 pt-0.5">
-                ${bulletsHtml}
-              </ul>
-
-              <!-- 1-Line Memory Hook -->
-              <div class="bg-amber-50/90 border border-amber-200/80 rounded-xl px-3 py-2 text-xs text-amber-950 flex items-center space-x-2">
-                <span>💡</span>
-                <span><strong>Hook:</strong> ${c.hook}</span>
-              </div>
-            </div>
-
-            <!-- Action Footer -->
-            <div class="px-4 py-2.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-xs">
-              <div class="flex items-center space-x-1.5">
-                <button
-                  onclick="setConceptMastery('${c.id}', 'mastered')"
-                  class="px-2.5 py-1 rounded-lg font-bold transition ${mState === 'mastered' ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}"
-                >
-                  ✅ Mastered
-                </button>
-                <button
-                  onclick="setConceptMastery('${c.id}', 'revise')"
-                  class="px-2.5 py-1 rounded-lg font-bold transition ${mState === 'revise' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}"
-                >
-                  ⚡ Revise
-                </button>
-              </div>
-              <button onclick="jumpToTopicQuestions('${c.topic}')" class="text-indigo-600 hover:text-indigo-800 font-extrabold">
-                Practice ${c.topic} →
-              </button>
-            </div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    // =========================================================================
-    // SECTION 2: QUESTIONS FEED (EXPANDED INTERACTIVE QUESTION BANK)
-    // =========================================================================
-    function renderQuestionsFeed() {
-      const container = document.getElementById("cardsFeedContainer");
-      let list = getAllQuestions();
-
-      if (state.topic !== "All") {
-        list = list.filter(q => q.topic === state.topic);
-      }
-      if (state.subFilter === "unattempted") {
-        list = list.filter(q => state.questionAnswers[q.id] === undefined);
-      } else if (state.subFilter === "wrong") {
-        list = list.filter(q => state.questionAnswers[q.id] !== undefined && state.questionAnswers[q.id] !== q.correct);
-      } else if (state.subFilter === "saved") {
-        list = list.filter(q => !!state.savedQuestions[q.id]);
-      } else if (state.subFilter === "solved") {
-        list = list.filter(q => state.questionAnswers[q.id] === q.correct);
+      clearTimers() {
+        if (this.activeTimer) {
+          clearInterval(this.activeTimer);
+          this.activeTimer = null;
+        }
       }
 
-      document.getElementById("activeCountLabel").textContent = `${list.length} question${list.length === 1 ? '' : 's'}`;
+      // =======================================================================
+      // NAVIGATION & THEME SWITCHING
+      // =======================================================================
+      setSection(sec) {
+        this.clearTimers();
+        this.blitzState.active = false;
+        this.survivalState.active = false;
+        this.trapState.active = false;
+        this.section = sec;
 
-      if (list.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl border border-teal-200 p-8 text-center space-y-2.5">
-            <div class="text-2xl">🎯</div>
-            <div class="text-sm font-bold text-slate-800">No Questions Match This Filter</div>
-            <button onclick="selectTopic('All'); setSubFilter('all');" class="text-xs font-bold bg-teal-600 text-white px-4 py-2 rounded-xl">Show All Questions</button>
-          </div>
-        `;
-        return;
+        const body = document.body;
+        const header = document.getElementById("app-header");
+        body.classList.remove("theme-revise", "theme-questions", "theme-arcade");
+
+        if (sec === "revise") {
+          body.classList.add("theme-revise");
+          header.className = "sticky top-0 z-40 shadow-md transition-colors duration-300 bg-[#1e1b4b] text-white";
+        } else if (sec === "questions") {
+          body.classList.add("theme-questions");
+          header.className = "sticky top-0 z-40 shadow-md transition-colors duration-300 questions-header-gradient text-white";
+        } else {
+          body.classList.add("theme-arcade");
+          header.className = "sticky top-0 z-40 shadow-md transition-colors duration-300 arcade-gradient text-white";
+        }
+
+        this.renderAll();
       }
 
-      container.innerHTML = list.map((q, idx) => {
-        const userAns = state.questionAnswers[q.id];
-        const isAnswered = userAns !== undefined;
-        const isCorrect = userAns === q.correct;
-        const isSolOpen = !!state.solutionOpen[q.id];
-        const isSaved = !!state.savedQuestions[q.id];
+      setTopic(t) {
+        this.topic = t;
+        this.renderAll();
+      }
 
-        const diffColor = q.difficulty === "Easy"
-          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-          : q.difficulty === "Medium"
-          ? "bg-amber-50 text-amber-700 border-amber-200"
-          : "bg-rose-50 text-rose-700 border-rose-200";
+      setReviseSub(sub) {
+        this.reviseSub = sub;
+        this.renderAll();
+      }
 
-        const optsHtml = q.options.map((opt, oIdx) => {
-          let cls = "bg-slate-50 border-slate-200 text-slate-800 hover:bg-teal-50/40 hover:border-teal-300";
-          let icon = "";
-          if (isAnswered) {
-            if (oIdx === q.correct) {
-              cls = "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold shadow-2xs";
-              icon = `<span class="text-emerald-600 font-extrabold text-xs">✓ Correct</span>`;
-            } else if (oIdx === userAns) {
-              cls = "bg-rose-50 border-rose-400 text-rose-900 font-semibold";
-              icon = `<span class="text-rose-600 font-bold text-xs">✕ Wrong</span>`;
-            } else {
-              cls = "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+      setQuestionSub(sub) {
+        this.questionSub = sub;
+        this.renderAll();
+      }
+
+      setArcadeGame(game) {
+        this.clearTimers();
+        this.blitzState.active = false;
+        this.survivalState.active = false;
+        this.trapState.active = false;
+        this.arcadeGame = game;
+        this.renderAll();
+      }
+
+      // =======================================================================
+      // STATE MUTATIONS (BOOKMARKS, QUEUE, MASTERY, MCQ ANSWERS)
+      // =======================================================================
+      toggleArrayItem(arr, id) {
+        const idx = arr.indexOf(id);
+        if (idx === -1) arr.push(id);
+        else arr.splice(idx, 1);
+        this.saveState();
+        this.renderAll();
+      }
+
+      answerQuestion(qId, optIdx, correctIdx) {
+        this.selectedAnswers[qId] = optIdx;
+        if (optIdx === correctIdx) {
+          this.state.questionStatus[qId] = "correct";
+          this.state.arcade.xp += 5;
+        } else {
+          this.state.questionStatus[qId] = "retry";
+          const q = SEED_QUESTIONS.find(item => item.id === qId);
+          if (q && q.concept_ref && !this.state.reviseQueue.includes(q.concept_ref)) {
+            this.state.reviseQueue.push(q.concept_ref);
+          }
+        }
+        this.saveState();
+        this.renderMain();
+        this.renderSubfilters();
+      }
+
+      retryQuestion(qId) {
+        delete this.selectedAnswers[qId];
+        this.renderMain();
+      }
+
+      toggleShortcut(qId) {
+        this.openShortcuts[qId] = !this.openShortcuts[qId];
+        this.renderMain();
+      }
+
+      openConceptModal(conceptId, badgeLabel = "🛡️ Concept Shield") {
+        const c = this.getAllConcepts().find(item => item.id === conceptId);
+        if (!c) return;
+        document.getElementById("modal-concept-badge").textContent = `${badgeLabel} • ${c.topic}`;
+        document.getElementById("modal-concept-title").textContent = c.title;
+        document.getElementById("modal-concept-formula").textContent = c.formula;
+        document.getElementById("modal-concept-highlight").textContent = c.highlight;
+        document.getElementById("modal-concept-bullets").innerHTML = c.bullets.map(b => `<li>${b}</li>`).join("");
+        document.getElementById("modal-concept-hook").textContent = `💡 Hook: ${c.hook}`;
+        document.getElementById("concept-modal").classList.remove("hidden");
+      }
+
+      closeConceptModal() {
+        document.getElementById("concept-modal").classList.add("hidden");
+      }
+
+      // =======================================================================
+      // MINIGAME 1: FORMULA BLITZ (60s Procedural Matcher)
+      // =======================================================================
+      startBlitz() {
+        this.clearTimers();
+        this.blitzState = {
+          active: true,
+          timeLeft: 60,
+          score: 0,
+          streak: 0,
+          current: this.generateBlitzRound(),
+          feedback: null
+        };
+        this.activeTimer = setInterval(() => {
+          this.blitzState.timeLeft -= 1;
+          if (this.blitzState.timeLeft <= 0) {
+            this.clearTimers();
+            this.blitzState.active = false;
+            if (this.blitzState.score > this.state.arcade.blitzHigh) {
+              this.state.arcade.blitzHigh = this.blitzState.score;
+              this.saveState();
             }
           }
-          return `
-            <button
-              onclick="answerQuestion('${q.id}', ${oIdx})"
-              ${isAnswered ? "disabled" : ""}
-              class="w-full text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition flex items-center justify-between ${cls}"
-            >
-              <span>${opt}</span>
-              ${icon}
-            </button>
-          `;
+          this.renderMain();
+        }, 1000);
+        this.renderMain();
+      }
+
+      generateBlitzRound() {
+        const pool = this.topic === "All"
+          ? this.getAllConcepts()
+          : this.getAllConcepts().filter(c => c.topic === this.topic);
+        const fullPool = this.getAllConcepts();
+        const target = pool[Math.floor(Math.random() * pool.length)] || fullPool[0];
+        const distractors = fullPool
+          .filter(c => c.id !== target.id)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+        const useHighlight = Math.random() > 0.5;
+        const options = [target, ...distractors]
+          .sort(() => Math.random() - 0.5)
+          .map(c => ({
+            id: c.id,
+            text: useHighlight ? c.highlight : c.formula
+          }));
+        return {
+          target,
+          promptType: Math.random() > 0.4 ? "hook" : "title",
+          options
+        };
+      }
+
+      pickBlitzOption(pickedId) {
+        if (!this.blitzState.active) return;
+        const { target } = this.blitzState.current;
+        if (pickedId === target.id) {
+          this.blitzState.streak += 1;
+          const mult = this.blitzState.streak >= 6 ? 4 : this.blitzState.streak >= 3 ? 2 : 1;
+          const pts = 10 * mult;
+          this.blitzState.score += pts;
+          this.state.arcade.xp += 3;
+          this.blitzState.feedback = `✅ +${pts} pts (${mult}x Combo!)`;
+        } else {
+          this.blitzState.streak = 0;
+          this.blitzState.feedback = `❌ Missed! Added "${target.subtopic}" to ⚡ Revise Queue`;
+          if (!this.state.reviseQueue.includes(target.id)) {
+            this.state.reviseQueue.push(target.id);
+          }
+        }
+        if (this.blitzState.score > this.state.arcade.blitzHigh) {
+          this.state.arcade.blitzHigh = this.blitzState.score;
+        }
+        this.saveState();
+        this.blitzState.current = this.generateBlitzRound();
+        this.renderMain();
+      }
+
+      // =======================================================================
+      // MINIGAME 2: SURVIVAL ARENA (3 Hearts + Concept Shield)
+      // =======================================================================
+      startSurvival() {
+        this.clearTimers();
+        const basePool = this.topic === "All"
+          ? [...SEED_QUESTIONS]
+          : SEED_QUESTIONS.filter(q => q.topic === this.topic);
+
+        // Prioritize Unattempted & Needs Retry
+        const prioritized = basePool.sort((a, b) => {
+          const sa = this.state.questionStatus[a.id];
+          const sb = this.state.questionStatus[b.id];
+          const weight = s => (s === "retry" ? 0 : !s ? 1 : 2);
+          return weight(sa) - weight(sb) || Math.random() - 0.5;
+        });
+
+        this.survivalState = {
+          active: true,
+          hearts: 3,
+          timeLeft: 60,
+          score: 0,
+          streak: 0,
+          qIndex: 0,
+          deck: prioritized,
+          answered: null
+        };
+        this.startSurvivalShotClock();
+        this.renderMain();
+      }
+
+      startSurvivalShotClock() {
+        this.clearTimers();
+        this.survivalState.timeLeft = 60;
+        this.activeTimer = setInterval(() => {
+          if (this.survivalState.answered !== null) return;
+          this.survivalState.timeLeft -= 1;
+          if (this.survivalState.timeLeft <= 0) {
+            this.handleSurvivalAnswer(-1); // Timeout counts as miss
+          } else {
+            this.renderMain();
+          }
+        }, 1000);
+      }
+
+      handleSurvivalAnswer(optIdx) {
+        if (this.survivalState.answered !== null) return;
+        this.survivalState.answered = optIdx;
+        const currentQ = this.survivalState.deck[this.survivalState.qIndex];
+
+        if (optIdx === currentQ.correctIndex) {
+          this.survivalState.streak += 1;
+          this.survivalState.score += 1;
+          this.state.arcade.xp += 10;
+          this.state.questionStatus[currentQ.id] = "correct";
+          // Restore 1 heart on every 3-streak (up to 3 max)
+          if (this.survivalState.streak % 3 === 0 && this.survivalState.hearts < 3) {
+            this.survivalState.hearts += 1;
+          }
+          if (this.survivalState.score > this.state.arcade.survivalBest) {
+            this.state.arcade.survivalBest = this.survivalState.score;
+          }
+        } else {
+          this.survivalState.hearts -= 1;
+          this.survivalState.streak = 0;
+          this.state.questionStatus[currentQ.id] = "retry";
+          if (currentQ.concept_ref) {
+            if (!this.state.reviseQueue.includes(currentQ.concept_ref)) {
+              this.state.reviseQueue.push(currentQ.concept_ref);
+            }
+            // Trigger Concept Shield Recovery Popup
+            this.openConceptModal(currentQ.concept_ref, "🛡️ Shield Recovery");
+          }
+        }
+        this.saveState();
+        this.renderMain();
+      }
+
+      nextSurvivalQuestion() {
+        if (this.survivalState.hearts <= 0 || this.survivalState.qIndex >= this.survivalState.deck.length - 1) {
+          this.clearTimers();
+          this.survivalState.active = false;
+          this.renderMain();
+          return;
+        }
+        this.survivalState.qIndex += 1;
+        this.survivalState.answered = null;
+        this.startSurvivalShotClock();
+        this.renderMain();
+      }
+
+      // =======================================================================
+      // MINIGAME 3: TRAP-HUNTER (Timed Active-Recall Flip Deck)
+      // =======================================================================
+      startTrapHunter() {
+        this.clearTimers();
+        const pool = this.topic === "All"
+          ? this.getAllConcepts()
+          : this.getAllConcepts().filter(c => c.topic === this.topic);
+
+        // Weight towards Revise Queue & Saved cards
+        const weighted = [...pool].sort((a, b) => {
+          const wa = (this.state.reviseQueue.includes(a.id) ? -2 : 0) + (this.state.savedConcepts.includes(a.id) ? -1 : 0);
+          const wb = (this.state.reviseQueue.includes(b.id) ? -2 : 0) + (this.state.savedConcepts.includes(b.id) ? -1 : 0);
+          return wa - wb || Math.random() - 0.5;
+        }).slice(0, 10);
+
+        this.trapState = {
+          active: true,
+          index: 0,
+          deck: weighted,
+          revealed: false,
+          timeLeft: 10,
+          nailedCount: 0
+        };
+        this.startTrapTimer();
+        this.renderMain();
+      }
+
+      startTrapTimer() {
+        this.clearTimers();
+        this.trapState.timeLeft = 10;
+        this.activeTimer = setInterval(() => {
+          if (this.trapState.revealed) return;
+          this.trapState.timeLeft -= 1;
+          if (this.trapState.timeLeft <= 0) {
+            this.trapState.revealed = true;
+            this.clearTimers();
+          }
+          this.renderMain();
+        }, 1000);
+      }
+
+      revealTrapCard() {
+        this.trapState.revealed = true;
+        this.clearTimers();
+        this.renderMain();
+      }
+
+      gradeTrapCard(nailed) {
+        const card = this.trapState.deck[this.trapState.index];
+        if (nailed) {
+          this.trapState.nailedCount += 1;
+          this.state.arcade.xp += 10;
+          if (!this.state.masteredConcepts.includes(card.id)) {
+            this.state.masteredConcepts.push(card.id);
+          }
+          const qIdx = this.state.reviseQueue.indexOf(card.id);
+          if (qIdx !== -1) this.state.reviseQueue.splice(qIdx, 1);
+        } else {
+          if (!this.state.reviseQueue.includes(card.id)) {
+            this.state.reviseQueue.push(card.id);
+          }
+        }
+        this.saveState();
+
+        if (this.trapState.index >= this.trapState.deck.length - 1) {
+          this.clearTimers();
+          this.trapState.active = false;
+          this.state.arcade.trapSessions += 1;
+          this.saveState();
+          this.renderMain();
+        } else {
+          this.trapState.index += 1;
+          this.trapState.revealed = false;
+          this.startTrapTimer();
+          this.renderMain();
+        }
+      }
+
+      // =======================================================================
+      // MODALS (+ ADD & SYNC)
+      // =======================================================================
+      openAddModal() {
+        document.getElementById("add-modal").classList.remove("hidden");
+      }
+      closeAddModal() {
+        document.getElementById("add-modal").classList.add("hidden");
+      }
+      saveCustomConcept(e) {
+        e.preventDefault();
+        const newCard = {
+          id: "c_custom_" + Date.now(),
+          topic: document.getElementById("add-topic").value,
+          subtopic: document.getElementById("add-subtopic").value.trim(),
+          title: document.getElementById("add-title").value.trim(),
+          formula: document.getElementById("add-formula").value.trim(),
+          highlight: document.getElementById("add-highlight").value.trim(),
+          bullets: [
+            document.getElementById("add-b1").value.trim(),
+            document.getElementById("add-b2").value.trim()
+          ],
+          hook: document.getElementById("add-hook").value.trim()
+        };
+        this.state.customConcepts.push(newCard);
+        this.saveState();
+        document.getElementById("add-form").reset();
+        this.closeAddModal();
+        this.renderAll();
+      }
+
+      openSyncModal() {
+        document.getElementById("sync-textarea").value = JSON.stringify(this.state, null, 2);
+        document.getElementById("sync-modal").classList.remove("hidden");
+      }
+      closeSyncModal() {
+        document.getElementById("sync-modal").classList.add("hidden");
+      }
+      copySyncState() {
+        const el = document.getElementById("sync-textarea");
+        el.select();
+        navigator.clipboard.writeText(el.value);
+        alert("State JSON copied to clipboard!");
+      }
+      restoreSyncState() {
+        try {
+          const parsed = JSON.parse(document.getElementById("sync-textarea").value);
+          this.state = { ...defaultState(), ...parsed };
+          this.saveState();
+          this.closeSyncModal();
+          this.renderAll();
+        } catch (err) {
+          alert("Invalid JSON string. Please check format.");
+        }
+      }
+
+      // =======================================================================
+      // RENDERING PIPELINE
+      // =======================================================================
+      renderAll() {
+        this.renderHeaderTabs();
+        this.renderTopicBar();
+        this.renderSubfilters();
+        this.renderMain();
+      }
+
+      renderHeaderTabs() {
+        const activeStyle = "bg-white text-slate-950 shadow-sm";
+        const idleStyle = "text-white/75 hover:text-white hover:bg-white/10";
+        ["revise", "questions", "arcade"].forEach(s => {
+          const btn = document.getElementById(`tab-${s}`);
+          btn.className = `py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1 ${this.section === s ? activeStyle : idleStyle}`;
+        });
+      }
+
+      renderTopicBar() {
+        const container = document.getElementById("topic-bar");
+        container.innerHTML = TOPICS.map(t => {
+          const active = this.topic === t;
+          return `<button onclick="window.app.setTopic('${t}')" class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+            active ? "bg-amber-400 text-slate-950 shadow" : "bg-white/10 text-white/80 hover:bg-white/20"
+          }">${t}</button>`;
         }).join("");
+      }
 
-        return `
-          <article class="bg-white rounded-2xl border border-teal-100 questions-card-accent shadow-xs overflow-hidden">
-            <!-- Question Card Header -->
-            <div class="px-4 py-2.5 bg-teal-50/40 border-b border-teal-100/80 flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-teal-700 text-white">Q${idx + 1} • ${q.topic}</span>
-                <span class="text-xs font-semibold text-teal-950/75">${q.subtopic}</span>
+      renderSubfilters() {
+        const bar = document.getElementById("subfilter-bar");
+        if (this.section === "revise") {
+          const items = [
+            { id: "all", label: `All Concepts (${this.getAllConcepts().length})` },
+            { id: "saved", label: `🔖 Saved (${this.state.savedConcepts.length})` },
+            { id: "queue", label: `⚡ Revise Queue (${this.state.reviseQueue.length})` },
+            { id: "mastered", label: `✅ Mastered (${this.state.masteredConcepts.length})` }
+          ];
+          bar.innerHTML = items.map(i => `
+            <button onclick="window.app.setReviseSub('${i.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition ${
+              this.reviseSub === i.id
+                ? "bg-[#1e1b4b] text-white border-[#1e1b4b] shadow-sm"
+                : "bg-white text-slate-700 border-indigo-100 hover:border-indigo-300"
+            }">${i.label}</button>
+          `).join("");
+        } else if (this.section === "questions") {
+          const unattempted = SEED_QUESTIONS.filter(q => !this.state.questionStatus[q.id]).length;
+          const retry = SEED_QUESTIONS.filter(q => this.state.questionStatus[q.id] === "retry").length;
+          const correct = SEED_QUESTIONS.filter(q => this.state.questionStatus[q.id] === "correct").length;
+          const items = [
+            { id: "all", label: `All Questions (${SEED_QUESTIONS.length})` },
+            { id: "unattempted", label: `❓ Unattempted (${unattempted})` },
+            { id: "retry", label: `❌ Needs Retry (${retry})` },
+            { id: "saved", label: `🔖 Saved (${this.state.savedQuestions.length})` },
+            { id: "correct", label: `✅ Correct (${correct})` }
+          ];
+          bar.innerHTML = items.map(i => `
+            <button onclick="window.app.setQuestionSub('${i.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition ${
+              this.questionSub === i.id
+                ? "bg-[#042f2e] text-white border-[#042f2e] shadow-sm"
+                : "bg-white text-teal-950 border-teal-200 hover:border-teal-400"
+            }">${i.label}</button>
+          `).join("");
+        } else {
+          const games = [
+            { id: "blitz", label: "⚡ 1. Formula Blitz (60s)" },
+            { id: "survival", label: "🛡️ 2. Survival Arena (3❤️)" },
+            { id: "traphunter", label: "🃏 3. Trap-Hunter (Recall)" }
+          ];
+          bar.innerHTML = games.map(g => `
+            <button onclick="window.app.setArcadeGame('${g.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
+              this.arcadeGame === g.id
+                ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/20"
+                : "bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500"
+            }">${g.label}</button>
+          `).join("");
+        }
+      }
+
+      renderMain() {
+        const main = document.getElementById("main-content");
+        if (this.section === "revise") {
+          main.innerHTML = this.renderReviseSection();
+        } else if (this.section === "questions") {
+          main.innerHTML = this.renderQuestionsSection();
+        } else {
+          main.innerHTML = this.renderArcadeSection();
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // REVISE VIEW
+      // -----------------------------------------------------------------------
+      renderReviseSection() {
+        const list = this.getFilteredConcepts();
+        if (list.length === 0) {
+          return `<div class="p-8 text-center bg-white rounded-2xl border border-indigo-100 text-slate-500 text-sm">No concept cards match this filter yet.</div>`;
+        }
+        return `<div class="space-y-4">${list.map(c => {
+          const isSaved = this.state.savedConcepts.includes(c.id);
+          const inQueue = this.state.reviseQueue.includes(c.id);
+          const isMastered = this.state.masteredConcepts.includes(c.id);
+          return `
+            <article class="revise-card-gradient text-white rounded-2xl p-5 shadow-lg border border-indigo-400/20">
+              <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center space-x-2">
+                  <span class="text-[10px] font-mono-code uppercase px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">${c.topic}</span>
+                  <span class="text-xs text-indigo-200/80 font-medium">${c.subtopic}</span>
+                </div>
+                <div class="flex space-x-1.5">
+                  <button onclick="window.app.toggleArrayItem(window.app.state.savedConcepts, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${isSaved ? 'bg-amber-400 text-slate-950 border-amber-300 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">🔖</button>
+                  <button onclick="window.app.toggleArrayItem(window.app.state.reviseQueue, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${inQueue ? 'bg-rose-500 text-white border-rose-400 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">⚡</button>
+                  <button onclick="window.app.toggleArrayItem(window.app.state.masteredConcepts, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${isMastered ? 'bg-emerald-400 text-slate-950 border-emerald-300 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">✅</button>
+                </div>
               </div>
-              <div class="flex items-center space-x-1.5">
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${diffColor}">${q.difficulty}</span>
-                <button onclick="toggleSaveQuestion('${q.id}')" class="px-2 py-0.5 rounded-lg text-xs font-bold transition ${isSaved ? 'bg-amber-100 text-amber-900' : 'text-slate-400 hover:bg-slate-100'}">
-                  ${isSaved ? "🔖" : "🏷️"}
-                </button>
+              <h2 class="text-base font-bold text-white mb-3">${c.title}</h2>
+              <div class="p-3 rounded-xl bg-black/30 border border-indigo-300/20 font-mono-code text-xs text-indigo-100 mb-2.5 overflow-x-auto">${c.formula}</div>
+              <div class="p-2.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs font-semibold mb-3">★ ${c.highlight}</div>
+              <ul class="space-y-1.5 text-xs text-indigo-100/90 mb-3 pl-4 list-disc">
+                ${c.bullets.map(b => `<li>${b}</li>`).join("")}
+              </ul>
+              <div class="pt-2.5 border-t border-white/10 text-xs text-amber-300 font-medium flex items-center justify-between">
+                <span>🧠 <em>${c.hook}</em></span>
               </div>
+            </article>
+          `;
+        }).join("")}</div>`;
+      }
+
+      // -----------------------------------------------------------------------
+      // QUESTIONS VIEW
+      // -----------------------------------------------------------------------
+      renderQuestionsSection() {
+        const list = this.getFilteredQuestions();
+        if (list.length === 0) {
+          return `<div class="p-8 text-center bg-white rounded-2xl border border-teal-200 text-teal-900/60 text-sm">No questions in this sub-filter.</div>`;
+        }
+        return `<div class="space-y-4">${list.map((q, idx) => {
+          const picked = this.selectedAnswers[q.id];
+          const status = this.state.questionStatus[q.id];
+          const isSaved = this.state.savedQuestions.includes(q.id);
+          const showShortcut = this.openShortcuts[q.id];
+          const diffColor = q.difficulty === "Easy"
+            ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+            : q.difficulty === "Medium"
+            ? "bg-amber-100 text-amber-800 border-amber-300"
+            : "bg-rose-100 text-rose-800 border-rose-300";
+
+          return `
+            <article class="bg-white rounded-2xl p-5 shadow-md border border-teal-200 text-slate-900">
+              <div class="flex justify-between items-center mb-2.5">
+                <div class="flex items-center space-x-2">
+                  <span class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded bg-teal-900 text-teal-100 font-semibold">${q.topic}</span>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${diffColor}">${q.difficulty}</span>${status === "correct" ? `<span class="text-xs font-bold text-emerald-600">✅ Solved</span>` : status === "retry" ? `<span class="text-xs font-bold text-rose-600">❌ Needs Retry</span>` : ""}
+                </div>
+                <button onclick="window.app.toggleArrayItem(window.app.state.savedQuestions, '${q.id}')" class="px-2.5 py-1 rounded-lg text-xs border ${isSaved ? 'bg-amber-400 border-amber-500 font-bold text-slate-950' : 'bg-slate-100 border-slate-200 text-slate-600'}">🔖</button>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-4 leading-relaxed">Q${idx + 1}.${q.question}</p>
+              <div class="space-y-2 mb-3">
+                ${q.options.map((opt, oIdx) => {
+                  let btnStyle = "bg-slate-50 border-slate-200 text-slate-800 hover:border-teal-500";
+                  if (picked !== undefined) {
+                    if (oIdx === q.correctIndex) btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold";
+                    else if (picked === oIdx) btnStyle = "bg-rose-50 border-rose-500 text-rose-900 font-semibold";
+                    else btnStyle = "bg-slate-50 border-slate-200 opacity-50";
+                  }
+                  return `
+                    <button
+                      ${picked !== undefined ? "disabled" : ""}
+                      onclick="window.app.answerQuestion('${q.id}', ${oIdx}, ${q.correctIndex})"
+                      class="w-full text-left p-3 rounded-xl border text-xs transition flex items-center justify-between ${btnStyle}"
+                    >
+                      <span><strong class="font-mono-code mr-2">${String.fromCharCode(65 + oIdx)}.</strong> ${opt}</span>
+                      ${picked !== undefined && oIdx === q.correctIndex ? `<span class="text-emerald-600 font-bold">✓</span>` : ""}
+                      ${picked !== undefined && picked === oIdx && oIdx !== q.correctIndex ? `<span class="text-rose-600 font-bold">✕</span>` : ""}
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 text-xs">
+                <div class="flex space-x-2">
+                  <button onclick="window.app.toggleShortcut('${q.id}')" class="px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-900 font-semibold border border-teal-200">
+                    ${showShortcut ? "Hide Shortcut ▲" : "⚡ View Shortcut ▼"}
+                  </button>
+                  ${q.concept_ref ? `<button onclick="window.app.openConceptModal('${q.concept_ref}', '📖 Linked Concept')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-semibold border border-indigo-200">🔗 Concept Card</button>` : ""}
+                </div>
+                ${picked !== undefined ? `<button onclick="window.app.retryQuestion('${q.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold">🔄 Retry</button>` : ""}
+              </div>
+
+              ${showShortcut || picked !== undefined ? `
+                <div class="mt-3 p-3.5 rounded-xl bg-teal-950 text-teal-50 text-xs space-y-1.5">
+                  <div><span class="text-amber-300 font-bold">⚡ 15-Sec Shortcut:</span> ${q.shortcut}</div>
+                  <div><span class="text-rose-300 font-bold">⚠️ Exam Trap:</span> ${q.trap}</div>
+                </div>
+              ` : ""}
+            </article>
+          `;
+        }).join("")}</div>`;
+      }
+
+      // -----------------------------------------------------------------------
+      // ARCADE VIEW (COMBINED 3-IN-1 MINIGAME HUB)
+      // -----------------------------------------------------------------------
+      renderArcadeSection() {
+        const statsBar = `
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Total XP</div>
+              <div class="text-base font-black text-amber-400">⚡ ${this.state.arcade.xp}</div>
             </div>
-
-            <!-- Question Body & Options -->
-            <div class="p-4 space-y-3.5">
-              <p class="text-sm font-semibold text-slate-900 leading-relaxed">${q.question}</p>
-              <div class="space-y-2">
-                ${optsHtml}
-              </div>
+            <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Blitz Record</div>
+              <div class="text-base font-black text-emerald-400">🏆 ${this.state.arcade.blitzHigh}</div>
             </div>
+            <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Survival Best</div>
+              <div class="text-base font-black text-rose-400">🔥 ${this.state.arcade.survivalBest} Qs</div>
+            </div>
+          </div>
+        `;
 
-            <!-- Solution Bar -->
-            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-              <div class="flex items-center space-x-2">
-                <span class="font-semibold ${isAnswered ? (isCorrect ? 'text-emerald-700' : 'text-rose-600') : 'text-slate-400'}">
-                  ${isAnswered ? (isCorrect ? "✨ Spot on!" : "⚠️ Review shortcut below") : "Select an option to check"}
-                </span>
-                ${isAnswered ? `<button onclick="retrySingleQuestion('${q.id}')" class="text-slate-500 underline hover:text-slate-800">Retry</button>` : ""}
-              </div>
-              <button onclick="toggleQuestionSolution('${q.id}')" class="font-extrabold text-teal-700 hover:text-teal-900">
-                ${isSolOpen ? "Hide Solution ▲" : "Solution & Shortcut ▼"}
+        if (this.arcadeGame === "blitz") return statsBar + this.renderBlitzGame();
+        if (this.arcadeGame === "survival") return statsBar + this.renderSurvivalGame();
+        return statsBar + this.renderTrapHunterGame();
+      }
+
+      // 1. Formula Blitz UI
+      renderBlitzGame() {
+        if (!this.blitzState.active) {
+          return `
+            <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
+              <div class="text-3xl mb-2">⚡</div>
+              <h2 class="text-lg font-black text-white mb-1">Formula Blitz (60-Second Sprint)</h2>
+              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
+                Built for bumpy bus or metro rides. Match the 1-line memory hook or concept title to its exact formula or highlight before the clock runs out. Missed concepts auto-sync to your <strong>⚡ Revise Queue</strong>.
+              </p>
+              ${this.blitzState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold">Last Run Score: ${this.blitzState.score} pts</div>` : ""}
+              <button onclick="window.app.startBlitz()" class="w-full max-w-xs py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
+                Launch 60s Blitz →
               </button>
             </div>
+          `;
+        }
 
-            ${isSolOpen ? `
-              <div class="px-4 py-3.5 bg-teal-50/60 border-t border-teal-100 text-xs text-slate-800 leading-relaxed">
-                <strong class="text-teal-950 block mb-1">Step-by-Step Shortcut:</strong>
-                ${q.explanation}
+        const { timeLeft, score, streak, current, feedback } = this.blitzState;
+        const mult = streak >= 6 ? 4 : streak >= 3 ? 2 : 1;
+        const promptText = current.promptType === "hook" ? `🧠 "${current.target.hook}"` : current.target.title;
+
+        return `
+          <div class="arcade-card border border-amber-400/40 rounded-2xl p-5 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+              <span class="font-mono-code text-xs font-bold px-2.5 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">⏱️ ${timeLeft}s</span>
+              <span class="font-mono-code text-xs font-bold px-2.5 py-1 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">🔥 Streak: ${streak} (${mult}x)</span>
+              <span class="font-mono-code text-xs font-bold text-emerald-400">Score: ${score}</span>
+            </div>
+
+            <div class="mb-4">
+              <div class="text-[10px] font-mono-code uppercase text-amber-400 mb-1">${current.target.topic} • ${current.target.subtopic}</div>
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-700 text-sm font-bold text-white leading-snug">
+                ${promptText}
               </div>
-            ` : ""}
-          </article>
+            </div>
+
+            <div class="space-y-2.5 mb-3">
+              ${current.options.map(opt => `
+                <button
+                  onclick="window.app.pickBlitzOption('${opt.id}')"
+                  class="w-full text-left p-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-xs font-mono-code text-slate-100 transition active:scale-[0.99]"
+                >
+                  ${opt.text}
+                </button>
+              `).join("")}
+            </div>
+
+            ${feedback ? `<div class="text-center text-xs font-bold text-amber-300 pt-2">${feedback}</div>` : ""}
+          </div>
         `;
-      }).join("");
-    }
-
-    // =========================================================================
-    // INTERACTION HANDLERS
-    // =========================================================================
-    function toggleSaveConcept(id) {
-      state.savedConcepts[id] = !state.savedConcepts[id];
-      saveState();
-      renderAll();
-    }
-
-    function setConceptMastery(id, status) {
-      if (state.conceptMastery[id] === status) {
-        delete state.conceptMastery[id];
-      } else {
-        state.conceptMastery[id] = status;
-      }
-      saveState();
-      renderAll();
-    }
-
-    function toggleSaveQuestion(id) {
-      state.savedQuestions[id] = !state.savedQuestions[id];
-      saveState();
-      renderAll();
-    }
-
-    function answerQuestion(id, optIdx) {
-      state.questionAnswers[id] = optIdx;
-      state.solutionOpen[id] = true;
-      saveState();
-      renderAll();
-    }
-
-    function retrySingleQuestion(id) {
-      delete state.questionAnswers[id];
-      state.solutionOpen[id] = false;
-      saveState();
-      renderAll();
-    }
-
-    function toggleQuestionSolution(id) {
-      state.solutionOpen[id] = !state.solutionOpen[id];
-      renderQuestionsFeed();
-    }
-
-    function resetQuestionAttempts() {
-      state.questionAnswers = {};
-      state.solutionOpen = {};
-      saveState();
-      renderAll();
-    }
-
-    // =========================================================================
-    // MODALS: ADD CUSTOM ITEM & SYNC
-    // =========================================================================
-    function openAddModal() {
-      document.getElementById("addType").value = state.section === "revise" ? "concept" : "question";
-      toggleAddFormFields();
-      document.getElementById("modalAdd").classList.remove("hidden");
-    }
-
-    function closeAddModal() {
-      document.getElementById("modalAdd").classList.add("hidden");
-    }
-
-    function toggleAddFormFields() {
-      const type = document.getElementById("addType").value;
-      document.getElementById("addConceptFields").className = type === "concept" ? "space-y-2.5 text-xs" : "hidden";
-      document.getElementById("addQuestionFields").className = type === "question" ? "space-y-2.5 text-xs" : "hidden";
-    }
-
-    function saveCustomItem() {
-      const type = document.getElementById("addType").value;
-      const topic = document.getElementById("addTopic").value;
-      const subtopic = document.getElementById("addSubtopic").value.trim() || "Custom";
-
-      if (type === "concept") {
-        const title = document.getElementById("addConceptTitle").value.trim();
-        const formula = document.getElementById("addConceptFormula").value.trim();
-        const hook = document.getElementById("addConceptHook").value.trim() || "Key exam shortcut.";
-        if (!title || !formula) {
-          alert("Please enter both a Concept Title and Formula.");
-          return;
-        }
-        const newC = {
-          id: "cc_" + Date.now(),
-          topic,
-          subtopic,
-          title,
-          formula,
-          highlight: "",
-          bullets: [hook],
-          hook
-        };
-        state.customConcepts.unshift(newC);
-        state.savedConcepts[newC.id] = true;
-        state.section = "revise";
-      } else {
-        const qText = document.getElementById("addQText").value.trim();
-        const o0 = document.getElementById("addOpt0").value.trim() || "Option A";
-        const o1 = document.getElementById("addOpt1").value.trim() || "Option B";
-        const o2 = document.getElementById("addOpt2").value.trim() || "Option C";
-        const o3 = document.getElementById("addOpt3").value.trim() || "Option D";
-        const corr = parseInt(document.getElementById("addCorrect").value, 10) || 0;
-        const exp = document.getElementById("addQExp").value.trim() || "Direct concept application.";
-        if (!qText) {
-          alert("Please enter a Question Stem.");
-          return;
-        }
-        const newQ = {
-          id: "cq_" + Date.now(),
-          topic,
-          subtopic,
-          difficulty: "Medium",
-          question: qText,
-          options: ["A) " + o0, "B) " + o1, "C) " + o2, "D) " + o3],
-          correct: corr,
-          explanation: exp
-        };
-        state.customQuestions.unshift(newQ);
-        state.savedQuestions[newQ.id] = true;
-        state.section = "questions";
       }
 
-      saveState();
-      closeAddModal();
-      renderAll();
-    }
-
-    function openSyncModal() {
-      renderSidebars();
-      document.getElementById("syncTextBox").value = JSON.stringify({
-        savedConcepts: state.savedConcepts,
-        savedQuestions: state.savedQuestions,
-        conceptMastery: state.conceptMastery,
-        questionAnswers: state.questionAnswers,
-        customConcepts: state.customConcepts,
-        customQuestions: state.customQuestions
-      }, null, 2);
-      document.getElementById("modalSync").classList.remove("hidden");
-    }
-
-    function closeSyncModal() {
-      document.getElementById("modalSync").classList.add("hidden");
-    }
-
-    function copySyncData() {
-      const box = document.getElementById("syncTextBox");
-      box.select();
-      document.execCommand("copy");
-      alert("Backup JSON copied!");
-    }
-
-    function restoreSyncData() {
-      try {
-        const parsed = JSON.parse(document.getElementById("syncTextBox").value);
-        if (parsed && typeof parsed === "object") {
-          state.savedConcepts = parsed.savedConcepts || {};
-          state.savedQuestions = parsed.savedQuestions || {};
-          state.conceptMastery = parsed.conceptMastery || {};
-          state.questionAnswers = parsed.questionAnswers || {};
-          state.customConcepts = parsed.customConcepts || [];
-          state.customQuestions = parsed.customQuestions || [];
-          saveState();
-          renderAll();
-          closeSyncModal();
+      // 2. Survival Arena UI
+      renderSurvivalGame() {
+        if (!this.survivalState.active) {
+          return `
+            <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
+              <div class="text-3xl mb-2">🛡️</div>
+              <h2 class="text-lg font-black text-white mb-1">Survival Arena (3-Lives Gauntlet)</h2>
+              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
+                Enter with <strong>3 Hearts (❤️❤️❤️)</strong> and a 60s shot clock per question. Prioritizes your <strong>❓ Unattempted</strong> and <strong>❌ Needs Retry</strong> questions. Losing a heart triggers the <strong>Concept Shield</strong> popup; 3 correct in a row restores 1 heart!
+              </p>
+              ${this.survivalState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-xs font-bold">Last Run Survived: ${this.survivalState.score} Questions</div>` : ""}
+              <button onclick="window.app.startSurvival()" class="w-full max-w-xs py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
+                Enter Survival Arena →
+              </button>
+            </div>
+          `;
         }
-      } catch (e) {
-        alert("Invalid JSON.");
+
+        const { hearts, timeLeft, score, streak, qIndex, deck, answered } = this.survivalState;
+        const q = deck[qIndex];
+        const heartsDisplay = "❤️".repeat(Math.max(0, hearts)) + "🖤".repeat(Math.max(0, 3 - hearts));
+
+        return `
+          <div class="arcade-card border border-emerald-400/40 rounded-2xl p-5 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+              <span class="text-sm tracking-widest">${heartsDisplay}</span>
+              <span class="font-mono-code text-xs font-bold px-2.5 py-1 rounded bg-slate-800 text-amber-300 border border-slate-700">⏱️ ${timeLeft}s</span>
+              <span class="font-mono-code text-xs font-bold text-emerald-400">🔥 Streak: ${streak} | Cleared: ${score}</span>
+            </div>
+
+            <div class="text-[10px] font-mono-code uppercase text-emerald-400 mb-1">${q.topic} • ${q.difficulty}</div>
+            <p class="text-sm font-semibold text-white mb-4 leading-relaxed">${q.question}</p>
+
+            <div class="space-y-2 mb-4">
+              ${q.options.map((opt, idx) => {
+                let cls = "bg-slate-800 border-slate-700 text-slate-200 hover:border-emerald-400";
+                if (answered !== null) {
+                  if (idx === q.correctIndex) cls = "bg-emerald-950 border-emerald-400 text-emerald-200 font-bold";
+                  else if (idx === answered) cls = "bg-rose-950 border-rose-500 text-rose-200 font-semibold";
+                  else cls = "bg-slate-900 border-slate-800 opacity-40";
+                }
+                return `
+                  <button
+                    ${answered !== null ? "disabled" : ""}
+                    onclick="window.app.handleSurvivalAnswer(${idx})"
+                    class="w-full text-left p-3 rounded-xl border text-xs transition ${cls}"
+                  >
+                    <strong class="font-mono-code mr-2">${String.fromCharCode(65 + idx)}.</strong>${opt}
+                  </button>
+                `;
+              }).join("")}
+            </div>
+
+            ${answered !== null ? `
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 mb-3">
+                <strong class="text-amber-300">⚡ Shortcut:</strong> ${q.shortcut}
+              </div>
+              <button onclick="window.app.nextSurvivalQuestion()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-xs uppercase">
+                ${hearts <= 0 ? "View Run Summary" : "Next Arena Question →"}
+              </button>
+            ` : ""}
+          </div>
+        `;
+      }
+
+      // 3. Trap-Hunter UI
+      renderTrapHunterGame() {
+        if (!this.trapState.active) {
+          return `
+            <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
+              <div class="text-3xl mb-2">🃏</div>
+              <h2 class="text-lg font-black text-white mb-1">Trap-Hunter (10-Card Active Recall)</h2>
+              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
+                Designed for 2–5 minute coffee lines or elevator waits. Deals 10 cards weighted toward your <strong>⚡ Revise Queue</strong> and <strong>🔖 Saved</strong> cards with a 10s recall bar. Mentally recall the blurred formula before tapping to reveal!
+              </p>
+              ${this.trapState.deck.length > 0 ? `<div class="mb-4 p-3 rounded-xl bg-indigo-400/10 border border-indigo-400/30 text-indigo-300 text-xs font-bold">Last Hand Nailed: ${this.trapState.nailedCount} /${this.trapState.deck.length} Cards</div>` : ""}
+              <button onclick="window.app.startTrapHunter()" class="w-full max-w-xs py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/20 transition">
+                Deal 10-Card Recall Hand →
+              </button>
+            </div>
+          `;
+        }
+
+        const { index, deck, revealed, timeLeft, nailedCount } = this.trapState;
+        const card = deck[index];
+        const pct = (timeLeft / 10) * 100;
+
+        return `
+          <div class="arcade-card border border-indigo-400/40 rounded-2xl p-5 shadow-2xl">
+            <div class="flex justify-between items-center mb-2 text-xs font-mono-code">
+              <span class="text-indigo-300">Card ${index + 1} of ${deck.length}</span>
+              <span class="text-amber-300">⚡ Nailed: ${nailedCount}</span>
+            </div>
+
+            <!-- 10-Second Recall Drain Bar -->
+            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-4">
+              <div class="h-full bg-amber-400 transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+
+            <div class="text-[10px] font-mono-code uppercase text-indigo-400 mb-1">${card.topic} • ${card.subtopic}</div>
+            <h3 class="text-base font-bold text-white mb-3">${card.title}</h3>
+
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 mb-3">
+              <strong class="text-rose-400 block mb-1">🎯 Exam Trap Cue:</strong>
+              ${card.bullets[1] || card.bullets[0]}
+            </div>
+
+            <!-- Blurred Formula & Highlight Zone -->
+            <div
+              onclick="window.app.revealTrapCard()"
+              class="cursor-pointer p-4 rounded-xl bg-indigo-950/60 border border-indigo-500/30 transition-all ${revealed ? '' : 'blur-md select-none'}"
+            >
+              <div class="font-mono-code text-xs text-indigo-100 mb-2">${card.formula}</div>
+              <div class="text-xs font-semibold text-amber-300 mb-1">★ ${card.highlight}</div>
+              <div class="text-[11px] italic text-indigo-200">🧠 ${card.hook}</div>
+            </div>
+
+            ${!revealed ? `
+              <button onclick="window.app.revealTrapCard()" class="mt-4 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs border border-slate-700">
+                👁️ Tap to Unblur Formula (${timeLeft}s)
+              </button>
+            ` : `
+              <div class="grid grid-cols-2 gap-2.5 mt-4">
+                <button onclick="window.app.gradeTrapCard(false)" class="py-3 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-200 font-bold text-xs">
+                  🔄 Fumbled (To Queue)
+                </button>
+                <button onclick="window.app.gradeTrapCard(true)" class="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs">
+                  ⚡ Nailed It (+10 XP)
+                </button>
+              </div>
+            `}
+          </div>
+        `;
       }
     }
 
-    // Fix q_alg_1 question text cleanly
-    SEED_QUESTIONS[0].question = "If (x − 4)³ + (x − 9)³ + (13 − 2x)³ = 0, what is the sum of all real values of x that satisfy the equation?";
-
-    loadState();
-    renderAll();
+    window.addEventListener("DOMContentLoaded", () => {
+      window.app = new QuantApp();
+    });
   </script>
 </body>
 </html>
