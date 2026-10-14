@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>QuantGram — Concept Revision Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-app: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #4f46e5;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding-bottom: 76px;
+    }
+    @media (min-width: 1024px) {
+      body { padding-bottom: 24px; }
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Story Ring Gradients */
+    .story-ring-active {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      padding: 2.5px;
+    }
+    .story-ring-inactive {
+      background: #cbd5e1;
+      padding: 2px;
+    }
+
+    /* Concept Poster Math Styling */
+    .poster-algebra {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #4338ca 100%);
+    }
+    .poster-geometry {
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 55%, #047857 100%);
+    }
+    .poster-ratio {
+      background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%);
+    }
+    .poster-custom {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
+    }
+    .math-main {
+      font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
+      font-size: 1.08rem;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      color: #ffffff;
+      text-align: center;
+      font-weight: 600;
+    }
+    .math-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+      font-family: "Cambria Math", Georgia, serif;
+      font-size: 0.88rem;
+      color: #e0e7ff;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 10px 12px;
+      border-radius: 10px;
+    }
+    @media (max-width: 480px) {
+      .math-grid { grid-template-columns: 1fr; }
+    }
+    .math-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.18);
+      margin: 12px auto;
+      width: 80%;
+    }
+    .math-highlight {
+      font-family: "Cambria Math", Georgia, serif;
+      font-size: 0.96rem;
+      color: #fef08a;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.22);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(254, 240, 138, 0.28);
+    }
+    .slide-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+    }
+    .slide-dot.active {
+      width: 18px;
+      background-color: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION BAR (Mobile & Desktop) -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-sm shadow-sm">
+          Q
+        </div>
+        <div>
+          <span class="font-extrabold text-slate-900 tracking-tight text-base">QuantGram</span>
+          <span class="hidden sm:inline-block ml-2 text-[11px] font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full">Concept Revision Feed</span>
+        </div>
+      </div>
+
+      <!-- View Mode & Quick Actions -->
+      <div class="flex items-center space-x-2">
+        <button id="btnToggleCardLayout" onclick="toggleCardLayoutMode()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition" title="Switch between Stacked view and Swipe Carousel">
+          Mode: <span id="lblCardLayout" class="text-indigo-600 font-bold">Stacked</span>
+        </button>
+        <button onclick="openAddCardModal()" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm">
+          + Concept
+        </button>
+        <button onclick="openSyncModal()" class="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-semibold px-2.5" title="Backup / Sync between Phone & Laptop">
+          Sync
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN 3-COLUMN LAYOUT (Instagram Web on Laptop, Single Feed on Mobile) -->
+  <div class="max-w-6xl mx-auto px-0 sm:px-4 pt-2 lg:pt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- LEFT SIDEBAR (Laptop Navigation & Selective Topic Groups) -->
+    <aside class="hidden lg:block lg:col-span-3 sticky top-20 space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-1">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-2">Navigation</div>
+        <button onclick="switchMainView('feed')" id="navDesktopFeed" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 transition">
+          <span class="flex items-center space-x-2.5"><span>🏠</span><span>Concept Feed</span></span>
+          <span id="badgeTotalFeed" class="text-[11px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">12</span>
+        </button>
+        <button onclick="switchMainView('saved')" id="navDesktopSaved" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition">
+          <span class="flex items-center space-x-2.5"><span>🔖</span><span>Topical Saved Lists</span></span>
+          <span id="badgeTotalSaved" class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">0</span>
+        </button>
+      </div>
+
+      <!-- Topic Groups Filter on Desktop -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-2">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">Topic Feeds</div>
+        <div id="desktopTopicList" class="space-y-1"></div>
+      </div>
+    </aside>
+
+    <!-- CENTER COLUMN: STORIES BAR + INSTAGRAM CARD FEED OR SAVED LISTS -->
+    <main class="lg:col-span-6 w-full max-w-lg mx-auto space-y-4">
+
+      <!-- STORIES BAR: Selective Topic Groups -->
+      <section class="bg-white sm:rounded-2xl border-y sm:border border-slate-200 p-3.5 shadow-sm">
+        <div class="flex items-center space-x-4 overflow-x-auto no-scrollbar" id="storiesBar">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Secondary Revision Filters -->
+        <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pt-3 mt-3 border-t border-slate-100" id="statusFilterBar">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- ACTIVE COLLECTION BANNER (when viewing a specific Saved List) -->
+      <div id="activeCollectionBanner" class="hidden bg-indigo-900 text-white sm:rounded-2xl p-4 shadow-sm flex items-center justify-between">
+        <div>
+          <div class="text-[10px] uppercase tracking-wider text-indigo-200 font-bold">Viewing Saved List</div>
+          <div id="activeCollectionTitle" class="text-sm font-bold mt-0.5">Saved Concepts</div>
+        </div>
+        <button onclick="clearSavedListFilter()" class="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-lg font-semibold transition">
+          Back to All
+        </button>
+      </div>
+
+      <!-- SAVED LISTS DIRECTORY VIEW (When on 'Saved' Tab) -->
+      <section id="savedListsDirectory" class="hidden px-3 sm:px-0 space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-bold text-slate-900">Topical Saved Lists</h2>
+              <p class="text-xs text-slate-500">Auto-grouped by topic &amp; custom revision lists</p>
+            </div>
+            <button onclick="promptNewCustomList()" class="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl transition">
+              + New List
+            </button>
+          </div>
+          <div id="savedFoldersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"></div>
+        </div>
+      </section>
+
+      <!-- FEED CARDS CONTAINER -->
+      <section id="feedContainer" class="space-y-5 px-0 sm:px-0"></section>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR (Laptop Revision Progress & Quick Collections) -->
+    <aside class="hidden lg:block lg:col-span-3 sticky top-20 space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-800">Revision Mastery</span>
+          <button onclick="resetAllQuizAttempts()" class="text-[11px] text-rose-600 hover:underline font-semibold">Reset Quizzes</button>
+        </div>
+        <div id="statsSummaryBox" class="space-y-2.5 text-xs"></div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-2.5">
+        <div class="text-xs font-bold text-slate-800">Quick Topical Lists</div>
+        <div id="rightSavedQuickLinks" class="space-y-1.5 text-xs"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 h-15 px-6 py-2 flex items-center justify-around shadow-lg">
+    <button onclick="switchMainView('feed')" id="navMobileFeed" class="flex flex-col items-center space-y-0.5 text-indigo-600 font-bold text-[11px]">
+      <span class="text-base">🏠</span>
+      <span>Feed</span>
+    </button>
+    <button onclick="setStatusFilter('needs_revision'); switchMainView('feed');" id="navMobileRevise" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
+      <span class="text-base">⚡</span>
+      <span>Revise Queue</span>
+    </button>
+    <button onclick="switchMainView('saved')" id="navMobileSaved" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
+      <span class="text-base">🔖</span>
+      <span>Saved Lists</span>
+    </button>
+    <button onclick="openSyncModal()" class="flex flex-col items-center space-y-0.5 text-slate-500 font-medium text-[11px]">
+      <span class="text-base">🔄</span>
+      <span>Sync/Stats</span>
+    </button>
+  </nav>
+
+  <!-- MODAL 1: SAVE TO CUSTOM LIST POPOVER -->
+  <div id="modalSaveList" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Save to Collection</h3>
+          <p class="text-xs text-slate-500" id="modalSaveCardTitle">Select lists for this concept</p>
+        </div>
+        <button onclick="closeSaveModal()" class="text-slate-400 hover:text-slate-700 font-bold text-sm px-2">✕</button>
+      </div>
+      <div id="modalSaveListOptions" class="space-y-2 max-h-60 overflow-y-auto"></div>
+      <div class="flex space-x-2 pt-2 border-t">
+        <input id="inputNewListName" type="text" placeholder="Create new custom list..." class="flex-1 text-xs border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <button onclick="createCustomListFromModal()" class="bg-slate-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-slate-800">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD NEW CONCEPT CARD -->
+  <div id="modalAddCard" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
+    <div class="bg-white w-full max-w-lg rounded-2xl p-5 shadow-xl space-y-3 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b pb-2.5">
+        <h3 class="text-sm font-bold text-slate-900">Add Custom Quant Concept Card</h3>
+        <button onclick="closeAddCardModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+        <div>
+          <label class="font-semibold text-slate-600 block mb-1">Topic Group</label>
+          <select id="newCardTopic" class="w-full border rounded-xl p-2 bg-slate-50">
+            <option value="Algebraic Identities">Algebraic Identities</option>
+            <option value="Geometry">Geometry</option>
+            <option value="Ratio & Proportion">Ratio &amp; Proportion</option>
+            <option value="Number System">Number System</option>
+            <option value="Arithmetic">Arithmetic</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-semibold text-slate-600 block mb-1">Sub-topic Tag</label>
+          <input id="newCardSubtopic" type="text" placeholder="e.g., Remainder Theorem" class="w-full border rounded-xl p-2" />
+        </div>
+      </div>
+      <div class="text-xs">
+        <label class="font-semibold text-slate-600 block mb-1">Concept Title</label>
+        <input id="newCardTitle" type="text" placeholder="e.g., Euler's Totient Remainder Shortcut" class="w-full border rounded-xl p-2" />
+      </div>
+      <div class="text-xs">
+        <label class="font-semibold text-slate-600 block mb-1">Formula / Core Identity</label>
+        <textarea id="newCardFormula" rows="2" placeholder="e.g., a^φ(N) ≡ 1 (mod N) when gcd(a, N) = 1" class="w-full border rounded-xl p-2 font-mono"></textarea>
+      </div>
+      <div class="text-xs">
+        <label class="font-semibold text-slate-600 block mb-1">Exam Triggers &amp; Memory Hook (one per line)</label>
+        <textarea id="newCardTriggers" rows="2" placeholder="When to apply this concept in an exam..." class="w-full border rounded-xl p-2"></textarea>
+      </div>
+      <div class="text-xs border-t pt-2.5">
+        <label class="font-semibold text-indigo-700 block mb-1">Micro-Quiz Question (for Revision)</label>
+        <input id="newCardQuizQ" type="text" placeholder="Quick 15-second concept check question..." class="w-full border rounded-xl p-2 mb-2" />
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <input id="newCardOpt0" type="text" placeholder="Option A" class="border rounded-lg p-1.5" />
+          <input id="newCardOpt1" type="text" placeholder="Option B" class="border rounded-lg p-1.5" />
+          <input id="newCardOpt2" type="text" placeholder="Option C" class="border rounded-lg p-1.5" />
+          <input id="newCardOpt3" type="text" placeholder="Option D" class="border rounded-lg p-1.5" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-semibold text-slate-600 block mb-1">Correct Option</label>
+            <select id="newCardCorrect" class="w-full border rounded-lg p-1.5 bg-slate-50">
+              <option value="0">Option A</option>
+              <option value="1">Option B</option>
+              <option value="2">Option C</option>
+              <option value="3">Option D</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-semibold text-slate-600 block mb-1">Short Explanation</label>
+            <input id="newCardExp" type="text" placeholder="Why this option is right..." class="w-full border rounded-lg p-1.5" />
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-2 pt-2 border-t">
+        <button onclick="closeAddCardModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100">Cancel</button>
+        <button onclick="saveNewCustomCard()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700">Save Concept Card</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: SYNC / BACKUP BETWEEN PHONE & LAPTOP -->
+  <div id="modalSync" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-xl space-y-3">
+      <div class="flex items-center justify-between border-b pb-2.5">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Phone ↔ Laptop Sync &amp; Progress</h3>
+          <p class="text-xs text-slate-500">Export or restore your bookmarks, mastery &amp; custom cards</p>
+        </div>
+        <button onclick="closeSyncModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+      </div>
+      <div id="mobileStatsInModal" class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1.5"></div>
+      <textarea id="syncJsonBox" rows="5" class="w-full border rounded-xl p-2.5 font-mono text-[11px] bg-slate-50" placeholder="Paste exported JSON here to restore..."></textarea>
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <button onclick="copySyncJson()" class="flex-1 bg-slate-900 text-white text-xs font-bold py-2 px-3 rounded-xl hover:bg-slate-800">Copy Backup JSON</button>
+        <button onclick="importSyncJson()" class="flex-1 bg-indigo-600 text-white text-xs font-bold py-2 px-3 rounded-xl hover:bg-indigo-700">Import / Restore</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // INITIAL SEED DATA & STATE MANAGEMENT
+    // =========================================================================
+    const SEED_CARDS = [
+  {
+    "id": "alg_01",
+    "topic": "Algebraic Identities",
+    "subtopic": "Euler's Conditional Cubic Identity",
+    "badge": "High-Yield Identity",
+    "title": "Sum of Cubes When a + b + c = 0",
+    "formula_html": "\n            <div class=\"math-main\">a³ + b³ + c³ − 3abc = (a + b + c)(a² + b² + c² − ab − bc − ca)</div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">If <strong>a + b + c = 0</strong> &nbsp;⟹&nbsp; <strong>a³ + b³ + c³ = 3abc</strong></div>\n        ",
+    "triggers": [
+      "Spot three terms inside cubes whose sum equals zero: e.g., (x − y)³ + (y − z)³ + (z − x)³ = 3(x − y)(y − z)(z − x).",
+      "Dividing both sides by abc gives the classic fraction form: a²/bc + b²/ca + c²/ab = 3.",
+      "Trap Alert: If a³ + b³ + c³ = 3abc for real numbers, EITHER a + b + c = 0 OR a = b = c."
+    ],
+    "memory_hook": "Zero sum kills the big bracket → cubes collapse into 3abc.",
+    "quiz": {
+      "question": "If a + b + c = 0 and abc ≠ 0, what is the exact value of (a² / bc) + (b² / ca) + (c² / ab)?",
+      "options": [
+        "A) 0",
+        "B) 1",
+        "C) 3",
+        "D) abc"
+      ],
+      "correct": 2,
+      "explanation": "Take the common denominator abc: the expression becomes (a³ + b³ + c³) / abc. Since a + b + c = 0, substitute a³ + b³ + c³ = 3abc to get 3abc / abc = 3."
+    }
+  },
+  {
+    "id": "alg_02",
+    "topic": "Algebraic Identities",
+    "subtopic": "Reciprocal Power Escalation",
+    "badge": "Speed Shortcut",
+    "title": "Reciprocal Ladder: x + 1/x = k",
+    "formula_html": "\n            <div class=\"math-main\">If <strong>x + 1/x = k</strong>, then:</div>\n            <div class=\"math-grid\">\n                <div>• <strong>x² + 1/x²</strong> = k² − 2</div>\n                <div>• <strong>x³ + 1/x³</strong> = k³ − 3k</div>\n                <div>• <strong>x⁴ + 1/x⁴</strong> = (k² − 2)² − 2</div>\n                <div>• <strong>x⁵ + 1/x⁵</strong> = (x² + 1/x²)(x³ + 1/x³) − k</div>\n            </div>\n        ",
+    "triggers": [
+      "Sign-Flip Rule: If given x − 1/x = k instead, then x² + 1/x² = k² + 2 and x³ − 1/x³ = k³ + 3k.",
+      "Bridge Formula: (x + 1/x)² − (x − 1/x)² = 4, which lets you switch between sum and difference instantly.",
+      "Special Value: If x + 1/x = 2 (for x > 0), then x = 1 and xⁿ + 1/xⁿ = 2 for every integer n."
+    ],
+    "memory_hook": "Square: k² − 2 | Cube: k³ − 3k | 5th Power: (2nd × 3rd) − 1st.",
+    "quiz": {
+      "question": "If x + 1/x = 3, which formula directly computes x⁵ + 1/x⁵ without finding x?",
+      "options": [
+        "A) (x² + 1/x²)(x³ + 1/x³) = 7 × 18 = 126",
+        "B) (x² + 1/x²)(x³ + 1/x³) − (x + 1/x) = 7 × 18 − 3 = 123",
+        "C) 3⁵ − 5(3) = 228",
+        "D) (x² + 1/x²)² + 3 = 52"
+      ],
+      "correct": 1,
+      "explanation": "Multiplying (x² + 1/x²)(x³ + 1/x³) expands to (x⁵ + 1/x⁵) + (x + 1/x). Subtracting k = 3 from 7 × 18 = 126 gives 123."
+    }
+  },
+  {
+    "id": "alg_03",
+    "topic": "Algebraic Identities",
+    "subtopic": "Sum of Squares Transformation",
+    "badge": "Zero-Sum Trick",
+    "title": "Symmetric Variance Identity: a² + b² + c² − ab − bc − ca",
+    "formula_html": "\n            <div class=\"math-main\">a² + b² + c² − ab − bc − ca = ½ [ (a − b)² + (b − c)² + (c − a)² ]</div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">For real a, b, c: expression <strong>≥ 0</strong> (equals 0 ⟺ <strong>a = b = c</strong>)</div>\n        ",
+    "triggers": [
+      "Arithmetic Progression (AP) Shortcut: If a, b, c are in AP with common difference d, then (a−b)² + (b−c)² + (c−a)² = d² + d² + (2d)² = 6d², so the expression equals 3d²!",
+      "Equality Detector: Whenever a problem states a² + b² + c² = ab + bc + ca for real numbers, immediately set a = b = c.",
+      "Pairs with (a + b + c)² = a² + b² + c² + 2(ab + bc + ca)."
+    ],
+    "memory_hook": "In an AP with gap d, a² + b² + c² − ab − bc − ca is simply 3d².",
+    "quiz": {
+      "question": "If a = 2024, b = 2026, and c = 2028, what is the value of a² + b² + c² − ab − bc − ca?",
+      "options": [
+        "A) 6",
+        "B) 8",
+        "C) 12",
+        "D) 24"
+      ],
+      "correct": 2,
+      "explanation": "Notice a, b, c are in AP with common difference d = 2. Using ½[(a−b)² + (b−c)² + (c−a)²] = 3d² = 3(2²) = 12."
+    }
+  },
+  {
+    "id": "alg_04",
+    "topic": "Algebraic Identities",
+    "subtopic": "Quadratic & Biquadratic Factoring",
+    "badge": "Factorization Gem",
+    "title": "Sophie Germain & Symmetric 4th-Power Factoring",
+    "formula_html": "\n            <div class=\"math-main\">a⁴ + a²b² + b⁴ = (a² + ab + b²)(a² − ab + b²)</div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">a⁴ + 4b⁴ = (a² + 2b² + 2ab)(a² + 2b² − 2ab)</div>\n        ",
+    "triggers": [
+      "Complete the middle term: Add and subtract a²b² so a⁴ + a²b² + b⁴ becomes (a² + b²)² − (ab)².",
+      "Divisibility questions: Numbers of the form n⁴ + 4 are ALWAYS composite for integer n > 1 because of Sophie Germain's identity.",
+      "Telescoping fractions: 1 / (x² − x + 1) − 1 / (x² + x + 1) combines cleanly into 2x / (x⁴ + x² + 1)."
+    ],
+    "memory_hook": "Add & subtract the middle square to turn 4th powers into a² − b².",
+    "quiz": {
+      "question": "If x² + xy + y² = 14 and x⁴ + x²y² + y⁴ = 84, what is the value of x² − xy + y²?",
+      "options": [
+        "A) 4",
+        "B) 6",
+        "C) 7",
+        "D) 12"
+      ],
+      "correct": 1,
+      "explanation": "Since x⁴ + x²y² + y⁴ = (x² + xy + y²)(x² − xy + y²), we have 84 = 14 × (x² − xy + y²), which gives 84 / 14 = 6."
+    }
+  },
+  {
+    "id": "geo_01",
+    "topic": "Geometry",
+    "subtopic": "Triangle Medians & Centroid",
+    "badge": "Must-Know Theorem",
+    "title": "Apollonius Theorem & Centroid Properties",
+    "formula_html": "\n            <div class=\"math-main\">AB² + AC² = 2 ( AD² + BD² ) &nbsp; <span style=\"font-size:0.8em;opacity:0.85;\">[AD is median to BC]</span></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">Centroid G divides each median in <strong>2 : 1</strong> ratio &amp; splits Δ into <strong>6 equal-area</strong> triangles</div>\n        ",
+    "triggers": [
+      "Use Apollonius whenever 3 side lengths of a triangle are known and the length of a median is asked.",
+      "Sum of Squares Relation: 3(AB² + BC² + CA²) = 4(m₁² + m₂² + m₃²), where m₁, m₂, m₃ are the three medians.",
+      "Right-Triangle Special Case: The median to the hypotenuse equals HALF the hypotenuse (AD = ½ BC = Circumradius R)."
+    ],
+    "memory_hook": "Sum of two sides squared = Twice (Median² + Half-Base²).",
+    "quiz": {
+      "question": "In ΔABC, the three medians have lengths m₁, m₂, m₃ and sides are a, b, c. What is the constant ratio (m₁² + m₂² + m₃²) / (a² + b² + c²)?",
+      "options": [
+        "A) 2 / 3",
+        "B) 3 / 4",
+        "C) 4 / 3",
+        "D) 1 / 2"
+      ],
+      "correct": 1,
+      "explanation": "Summing Apollonius theorem across all three vertices gives 4(m₁² + m₂² + m₃²) = 3(a² + b² + c²), so the ratio of sum of squares of medians to sum of squares of sides is always 3/4."
+    }
+  },
+  {
+    "id": "geo_02",
+    "topic": "Geometry",
+    "subtopic": "Incircle & Circumcircle Radii",
+    "badge": "Formula Staple",
+    "title": "Inradius (r) & Circumradius (R) Master Formulas",
+    "formula_html": "\n            <div class=\"math-main\">General Δ: &nbsp; <strong>r = Area / s</strong> &nbsp;|&nbsp; <strong>R = abc / (4 × Area)</strong></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">Right Δ (legs a, b; hyp c): &nbsp; <strong>r = (a + b − c) / 2</strong> &nbsp;|&nbsp; <strong>R = c / 2</strong></div>\n        ",
+    "triggers": [
+      "In any right-angled triangle, adding r + 2R gives (a + b − c)/2 + c = (a + b + c)/2 = semi-perimeter s!",
+      "Equilateral Triangle (side a): R = a / √3 and r = a / (2√3), so R : r = 2 : 1 (Area ratio = 4 : 1).",
+      "Angle at Incenter I: ∠BIC = 90° + ½∠A (whereas at Circumcenter O, ∠BOC = 2∠A)."
+    ],
+    "memory_hook": "Right Triangle: r = (leg₁ + leg₂ − hyp)/2 and R = hyp/2.",
+    "quiz": {
+      "question": "In a right-angled triangle with legs 5 cm and 12 cm, what is the sum of its inradius (r) and circumradius (R)?",
+      "options": [
+        "A) 7.5 cm",
+        "B) 8.5 cm",
+        "C) 9.0 cm",
+        "D) 10.5 cm"
+      ],
+      "correct": 1,
+      "explanation": "Hypotenuse c = √(5² + 12²) = 13 cm. Inradius r = (5 + 12 − 13)/2 = 2 cm. Circumradius R = 13/2 = 6.5 cm. Sum r + R = 2 + 6.5 = 8.5 cm."
+    }
+  },
+  {
+    "id": "geo_03",
+    "topic": "Geometry",
+    "subtopic": "Circles, Chords & Tangents",
+    "badge": "Circle Geometry",
+    "title": "Power of a Point & Alternate Segment Theorem",
+    "formula_html": "\n            <div class=\"math-main\">Tangent-Secant: &nbsp; <strong>PT² = PA × PB</strong></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">Intersecting Chords: <strong>PA × PB = PC × PD</strong> &nbsp;|&nbsp; Common Tangent: <strong>L = √(d² − (r₁ − r₂)²)</strong></div>\n        ",
+    "triggers": [
+      "PA and PB are ALWAYS measured from the external intersection point P to the two circle intersections (never use the internal chord segment AB alone: PB = PA + AB).",
+      "Alternate Segment Theorem: The angle between tangent PT and chord TA equals the angle subtended by chord TA in the alternate arc (∠PTA = ∠TBA).",
+      "Direct Common Tangent when two circles touch externally (d = r₁ + r₂) simplifies to L = 2√(r₁r₂)."
+    ],
+    "memory_hook": "Always measure BOTH secant distances from the outer point P: PT² = P-Near × P-Far.",
+    "quiz": {
+      "question": "Two circles of radii 9 cm and 4 cm touch each other externally. What is the length of their direct common tangent?",
+      "options": [
+        "A) 10 cm",
+        "B) 12 cm",
+        "C) 13 cm",
+        "D) 6 cm"
+      ],
+      "correct": 1,
+      "explanation": "For externally touching circles, the direct common tangent length is 2√(r₁r₂) = 2√(9 × 4) = 2 × 6 = 12 cm."
+    }
+  },
+  {
+    "id": "geo_04",
+    "topic": "Geometry",
+    "subtopic": "Similarity & Angle Bisectors",
+    "badge": "High-Frequency Trap",
+    "title": "Area Scaling & Internal Angle Bisector Theorem",
+    "formula_html": "\n            <div class=\"math-main\">If ΔABC ~ ΔDEF with scale k: &nbsp; <strong>Area(Δ₁) / Area(Δ₂) = (Side₁ / Side₂)² = k²</strong></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">Angle Bisector AD of ∠A: &nbsp; <strong>BD / DC = AB / AC</strong></div>\n        ",
+    "triggers": [
+      "Same-Height vs. Similar Triangles: If two triangles share the SAME vertex/height (like ΔABD and ΔADC formed by a cevian), their areas are in the linear ratio of their bases (BD : DC), NOT squared!",
+      "Trapezium Diagonals: In a trapezium with parallel bases a and b, the four triangles formed by diagonals have areas in ratio a² : ab : ab : b², and total area is proportional to (a + b)².",
+      "Angle Bisector Length Formula: AD² = AB × AC − BD × DC."
+    ],
+    "memory_hook": "Similar triangles → square the side ratio (k²). Same-height triangles → keep the base ratio linear (k).",
+    "quiz": {
+      "question": "In ΔABC, AB = 10 cm, AC = 15 cm, and AD is the internal angle bisector of ∠A meeting BC at D. What is the ratio of Area(ΔABD) to Area(ΔADC)?",
+      "options": [
+        "A) 4 : 9",
+        "B) 2 : 3",
+        "C) 3 : 2",
+        "D) √2 : √3"
+      ],
+      "correct": 1,
+      "explanation": "By the Angle Bisector Theorem, BD / DC = AB / AC = 10 / 15 = 2 / 3. Since ΔABD and ΔADC share the exact same altitude from A to line BC, their areas are in the linear ratio of their bases BD : DC = 2 : 3 (not squared!)."
+    }
+  },
+  {
+    "id": "rat_01",
+    "topic": "Ratio & Proportion",
+    "subtopic": "Algebraic Ratio Manipulation",
+    "badge": "Time-Saver Rule",
+    "title": "Componendo & Dividendo (C & D)",
+    "formula_html": "\n            <div class=\"math-main\">If &nbsp; <strong>a / b = c / d</strong> &nbsp; ⟹ &nbsp; <strong>(a + b) / (a − b) = (c + d) / (c − d)</strong></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">Reverse C&amp;D: If <strong>(x + y) / (x − y) = p / q</strong> &nbsp;⟹&nbsp; <strong>x / y = (p + q) / (p − q)</strong></div>\n        ",
+    "triggers": [
+      "Spot symmetric plus/minus pairs in numerator and denominator: e.g., (√a + √b)/(√a − √b) or (x³ + 3xy²)/(3x²y + y³).",
+      "Cubic C&D Trick: Applying C&D to (x³ + 3xy²) / (3x²y + y³) = p / q turns the left side into (x + y)³ / (x − y)³ = (p + q) / (p − q)!",
+      "Applying C&D TWICE always returns the original ratio: C&D of (a+b)/(a−b) is 2a/2b = a/b."
+    ],
+    "memory_hook": "Applying C&D to (x + y)/(x − y) strips the plus/minus and leaves x/y directly.",
+    "quiz": {
+      "question": "If (3x + 2y) / (3x − 2y) = 9 / 5, what is the ratio x : y?",
+      "options": [
+        "A) 7 : 3",
+        "B) 14 : 6",
+        "C) 3 : 7",
+        "D) 9 : 5"
+      ],
+      "correct": 0,
+      "explanation": "Apply C&D once: (3x) / (2y) = (9 + 5) / (9 − 5) = 14 / 4 = 7 / 2. Multiply both sides by 2/3: x / y = (7 / 2) × (2 / 3) = 7 / 3."
+    }
+  },
+  {
+    "id": "rat_02",
+    "topic": "Ratio & Proportion",
+    "subtopic": "Chained & Equal Ratios",
+    "badge": "Core Property",
+    "title": "Law of Equal Ratios (Linear Combination Rule)",
+    "formula_html": "\n            <div class=\"math-main\">If &nbsp; <strong>a / b = c / d = e / f = k</strong>, then for any non-zero weights p, q, r:</div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\"><strong>(p·a + q·c + r·e) / (p·b + q·d + r·f) = k</strong> &nbsp; (provided denominator ≠ 0)</div>\n        ",
+    "triggers": [
+      "Zero-Denominator Trap: In cyclic equations like a/(b+c) = b/(c+a) = c/(a+b) = k, either a+b+c ≠ 0 (giving k = (a+b+c)/2(a+b+c) = 1/2) OR a+b+c = 0 (giving b+c = −a, so k = a/(−a) = −1)!",
+      "Never assume only the positive value of k when variables can be negative.",
+      "Degree Check: Squaring individual terms gives (a² + c² + e²) / (b² + d² + f²) = k² (not k)."
+    ],
+    "memory_hook": "Cyclic equal ratios always have TWO cases: Sum ≠ 0 (add all numerators/denominators) or Sum = 0.",
+    "quiz": {
+      "question": "If a / (b + c) = b / (c + a) = c / (a + b) = k for non-zero real numbers a, b, c, what are ALL possible values of k?",
+      "options": [
+        "A) Only 1/2",
+        "B) 1/2 or −1",
+        "C) 1 or −1/2",
+        "D) Only 1"
+      ],
+      "correct": 1,
+      "explanation": "Case 1: If a + b + c ≠ 0, adding numerators and denominators gives k = (a + b + c) / 2(a + b + c) = 1/2. Case 2: If a + b + c = 0, then b + c = −a, so k = a / (−a) = −1."
+    }
+  },
+  {
+    "id": "rat_03",
+    "topic": "Ratio & Proportion",
+    "subtopic": "Mixtures & Repeated Replacement",
+    "badge": "High-Yield Formula",
+    "title": "Repeated Dilution / Replacement Law",
+    "formula_html": "\n            <div class=\"math-main\">Final Pure Quantity = <strong>V × (1 − x / V)ⁿ</strong></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\"><strong>Fraction Remaining</strong> = (Final Pure) / (Total Volume) = <strong>(1 − x / V)ⁿ</strong></div>\n        ",
+    "triggers": [
+      "V = Total volume of vessel, x = volume drawn out and replaced each step, n = number of operations.",
+      "Ratio Trap: Questions often give the final ratio of Milk : Water (say 16 : 65). Always divide Milk by TOTAL mixture (16 / (16 + 65) = 16 / 81) before taking the n-th root!",
+      "Different Replacements: If volumes x₁, x₂, x₃ are replaced in successive steps, multiply factors: (1 − x₁/V)(1 − x₂/V)(1 − x₃/V)."
+    ],
+    "memory_hook": "Use (Part / WHOLE), never (Part / Other Part), before taking the n-th root!",
+    "quiz": {
+      "question": "From a cask full of pure milk, 8 liters are drawn out and replaced with water. This operation is performed once more (2 times total). The final ratio of milk to water is 16 : 9. What is the capacity (V) of the cask?",
+      "options": [
+        "A) 24 liters",
+        "B) 32 liters",
+        "C) 40 liters",
+        "D) 50 liters"
+      ],
+      "correct": 2,
+      "explanation": "Total parts = 16 + 9 = 25. Fraction of milk remaining = 16 / 25 = (1 − 8/V)². Taking square root: 4 / 5 = 1 − 8/V ⟹ 8/V = 1/5 ⟹ V = 40 liters."
+    }
+  },
+  {
+    "id": "rat_04",
+    "topic": "Ratio & Proportion",
+    "subtopic": "Alligation & Weighted Averages",
+    "badge": "Lever Rule",
+    "title": "See-Saw / Alligation Cross-Ratio Rule",
+    "formula_html": "\n            <div class=\"math-main\">Quantity₁ / Quantity₂ = <strong>(A₂ − A_avg) / (A_avg − A₁)</strong></div>\n            <div class=\"math-divider\"></div>\n            <div class=\"math-highlight\">Distance from mean is <strong>inversely proportional</strong> to weight: w₁·d₁ = w₂·d₂</div>\n        ",
+    "triggers": [
+      "Denominator Rule: Alwaysalligate with respect to the DENOMINATOR unit! Alligating Speed (km/hr) gives the ratio of TIME (hr), NOT distance.",
+      "Alligating Profit % (Profit/CP) gives the ratio of COST PRICES (CP₁ : CP₂), not selling prices.",
+      "Alligating Concentration (% solute per liter) gives the ratio of VOLUMES."
+    ],
+    "memory_hook": "Alligate on X-per-Y → the resulting ratio is always in units of Y (the denominator).",
+    "quiz": {
+      "question": "A car travels the first part of a journey at 40 km/h and the second part at 70 km/h. If the average speed for the entire journey is 50 km/h, what is the ratio of the DISTANCES covered in the two parts?",
+      "options": [
+        "A) 2 : 1",
+        "B) 8 : 7",
+        "C) 4 : 7",
+        "D) 1 : 2"
+      ],
+      "correct": 1,
+      "explanation": "Alligating speeds (40 and 70 with mean 50) gives the ratio of TIMES: t₁ : t₂ = (70 − 50) : (50 − 40) = 20 : 10 = 2 : 1. Since Distance = Speed × Time, the ratio of distances is d₁ : d₂ = (40 × 2) : (70 × 1) = 80 : 70 = 8 : 7!"
+    }
+  }
+];
+
+    const STORAGE_KEY = "quantgram_state_v1";
+
+    let state = {
+      mainView: "feed",              // "feed" | "saved"
+      selectedTopic: "All",          // "All" | "Algebraic Identities" | "Geometry" | "Ratio & Proportion" | ...
+      statusFilter: "all",           // "all" | "needs_revision" | "unattempted" | "mastered"
+      activeSavedList: null,         // null or name of saved list
+      cardLayoutMode: "stacked",     // "stacked" | "carousel"
+      cardSlideIndex: {},            // { [cardId]: 0 or 1 } for carousel mode
+      quizAnswers: {},               // { [cardId]: optionIdx }
+      solutionOpen: {},              // { [cardId]: boolean }
+      mastery: {},                   // { [cardId]: "mastered" | "needs_revision" }
+      savedByTopic: {},              // { [cardId]: boolean } (auto-mapped to card.topic)
+      customLists: {
+        "Must Revise Before Mock": ["alg_01", "geo_04", "rat_03"],
+        "Formula Sheet": ["alg_02", "geo_02", "rat_01"]
+      },
+      customCards: [],
+      activeModalCardId: null
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          state = Object.assign({}, state, parsed);
+        } else {
+          // Default bookmark 3 high-yield cards so Saved Lists has immediate examples
+          state.savedByTopic = { "alg_01": true, "geo_02": true, "rat_01": true };
+        }
+      } catch (e) {
+        console.warn("localStorage unavailable, using in-memory state.");
+      }
+    }
+
+    function saveState() {
+      try {
+        const persistable = {
+          cardLayoutMode: state.cardLayoutMode,
+          quizAnswers: state.quizAnswers,
+          mastery: state.mastery,
+          savedByTopic: state.savedByTopic,
+          customLists: state.customLists,
+          customCards: state.customCards
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(persistable));
+      } catch (e) {}
+    }
+
+    function getAllCards() {
+      return [...state.customCards, ...SEED_CARDS];
+    }
+
+    function isCardSavedAnywhere(cardId) {
+      if (state.savedByTopic[cardId]) return true;
+      for (const listName of Object.keys(state.customLists)) {
+        if ((state.customLists[listName] || []).includes(cardId)) return true;
+      }
+      return false;
+    }
+
+    function getTotalSavedCount() {
+      const all = getAllCards();
+      return all.filter(c => isCardSavedAnywhere(c.id)).length;
+    }
+
+    // =========================================================================
+    // RENDERING: STORIES BAR, FILTERS, FEED & SAVED LISTS
+    // =========================================================================
+    const TOPIC_META = {
+      "All": { icon: "✨", short: "All Feed" },
+      "Algebraic Identities": { icon: "𝑥³", short: "Algebra" },
+      "Geometry": { icon: "📐", short: "Geometry" },
+      "Ratio & Proportion": { icon: "⚖️", short: "Ratios" },
+      "Number System": { icon: "🔢", short: "Numbers" },
+      "Arithmetic": { icon: "📊", short: "Arithmetic" }
+    };
+
+    function getAvailableTopics() {
+      const cards = getAllCards();
+      const topics = ["All"];
+      cards.forEach(c => {
+        if (!topics.includes(c.topic)) topics.push(c.topic);
+      });
+      return topics;
+    }
+
+    function renderAll() {
+      const lbl = document.getElementById("lblCardLayout");
+      if (lbl) lbl.textContent = state.cardLayoutMode === "stacked" ? "Stacked" : "Swipe Card";
+
+      renderStoriesAndFilters();
+      renderDesktopSidebars();
+      renderSavedListsDirectory();
+      renderFeed();
+      updateNavHighlights();
+    }
+
+    function updateNavHighlights() {
+      const isFeed = state.mainView === "feed";
+      const dFeed = document.getElementById("navDesktopFeed");
+      const dSaved = document.getElementById("navDesktopSaved");
+      if (dFeed && dSaved) {
+        dFeed.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition " +
+          (isFeed ? "bg-indigo-50 text-indigo-700" : "text-slate-600 hover:bg-slate-50");
+        dSaved.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition " +
+          (!isFeed ? "bg-indigo-50 text-indigo-700" : "text-slate-600 hover:bg-slate-50");
+      }
+
+      const mFeed = document.getElementById("navMobileFeed");
+      const mRev = document.getElementById("navMobileRevise");
+      const mSaved = document.getElementById("navMobileSaved");
+      if (mFeed && mRev && mSaved) {
+        mFeed.className = "flex flex-col items-center space-y-0.5 text-[11px] " +
+          (isFeed && state.statusFilter !== "needs_revision" ? "text-indigo-600 font-bold" : "text-slate-500 font-medium");
+        mRev.className = "flex flex-col items-center space-y-0.5 text-[11px] " +
+          (isFeed && state.statusFilter === "needs_revision" ? "text-indigo-600 font-bold" : "text-slate-500 font-medium");
+        mSaved.className = "flex flex-col items-center space-y-0.5 text-[11px] " +
+          (!isFeed ? "text-indigo-600 font-bold" : "text-slate-500 font-medium");
+      }
+
+      const badgeFeed = document.getElementById("badgeTotalFeed");
+      const badgeSaved = document.getElementById("badgeTotalSaved");
+      if (badgeFeed) badgeFeed.textContent = getAllCards().length;
+      if (badgeSaved) badgeSaved.textContent = getTotalSavedCount();
+    }
+
+    function renderStoriesAndFilters() {
+      const storiesBar = document.getElementById("storiesBar");
+      const topics = getAvailableTopics();
+
+      storiesBar.innerHTML = topics.map(t => {
+        const meta = TOPIC_META[t] || { icon: "📘", short: t };
+        const isActive = state.selectedTopic === t && !state.activeSavedList;
+        const count = t === "All" ? getAllCards().length : getAllCards().filter(c => c.topic === t).length;
+        return `
+          <button onclick="selectTopic('${t}')" class="flex flex-col items-center space-y-1 flex-shrink-0 group focus:outline-none">
+            <div class="rounded-full ${isActive ? 'story-ring-active' : 'story-ring-inactive'} transition transform group-active:scale-95">
+              <div class="w-14 h-14 rounded-full bg-white flex flex-col items-center justify-center border-2 border-white">
+                <span class="text-base leading-none">${meta.icon}</span>
+                <span class="text-[9px] font-bold text-slate-400 mt-0.5">${count}</span>
+              </div>
+            </div>
+            <span class="text-[11px] ${isActive ? 'font-bold text-slate-900' : 'font-medium text-slate-600'} whitespace-nowrap">${meta.short}</span>
+          </button>
+        `;
+      }).join("");
+
+      const statusBar = document.getElementById("statusFilterBar");
+      const statuses = [
+        { id: "all", label: "All Cards" },
+        { id: "needs_revision", label: "⚡ Needs Revision" },
+        { id: "unattempted", label: "❓ Unattempted Quiz" },
+        { id: "mastered", label: "✅ Mastered" }
+      ];
+      statusBar.innerHTML = statuses.map(s => {
+        const active = state.statusFilter === s.id;
+        return `
+          <button onclick="setStatusFilter('${s.id}')" class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${active ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+            ${s.label}
+          </button>
+        `;
+      }).join("");
+    }
+
+    function renderDesktopSidebars() {
+      const all = getAllCards();
+      const topics = getAvailableTopics();
+      const dList = document.getElementById("desktopTopicList");
+      if (dList) {
+        dList.innerHTML = topics.map(t => {
+          const count = t === "All" ? all.length : all.filter(c => c.topic === t).length;
+          const active = state.selectedTopic === t && !state.activeSavedList && state.mainView === "feed";
+          return `
+            <button onclick="selectTopic('${t}')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition ${active ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+              <span>${t}</span>
+              <span class="text-[11px] opacity-80">${count}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      // Stats box
+      const answeredCount = Object.keys(state.quizAnswers).length;
+      const correctCount = all.filter(c => state.quizAnswers[c.id] === c.quiz.correct).length;
+      const masteredCount = all.filter(c => state.mastery[c.id] === "mastered").length;
+      const reviseCount = all.filter(c => state.mastery[c.id] === "needs_revision" || (state.quizAnswers[c.id] !== undefined && state.quizAnswers[c.id] !== c.quiz.correct)).length;
+
+      const statsHtml = `
+        <div class="grid grid-cols-2 gap-2 text-center">
+          <div class="bg-indigo-50/70 border border-indigo-100 p-2.5 rounded-xl">
+            <div class="text-base font-extrabold text-indigo-700">${answeredCount}/${all.length}</div>
+            <div class="text-[11px] text-indigo-900 font-medium">Quizzes Done</div>
+          </div>
+          <div class="bg-emerald-50/70 border border-emerald-100 p-2.5 rounded-xl">
+            <div class="text-base font-extrabold text-emerald-700">${masteredCount}</div>
+            <div class="text-[11px] text-emerald-900 font-medium">Mastered</div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-1 text-slate-600">
+          <span>Quiz Accuracy:</span>
+          <span class="font-bold text-slate-900">${answeredCount ? Math.round((correctCount / answeredCount) * 100) + '%' : '—'}</span>
+        </div>
+        <div class="flex items-center justify-between text-slate-600">
+          <span>Flagged for Revision:</span>
+          <span class="font-bold text-amber-600">${reviseCount} cards</span>
+        </div>
+      `;
+      const statsBox = document.getElementById("statsSummaryBox");
+      if (statsBox) statsBox.innerHTML = statsHtml;
+      const mobileStats = document.getElementById("mobileStatsInModal");
+      if (mobileStats) mobileStats.innerHTML = statsHtml;
+
+      // Quick Saved Links
+      const quickSaved = document.getElementById("rightSavedQuickLinks");
+      if (quickSaved) {
+        const topicGroups = getAvailableTopics().filter(t => t !== "All");
+        let html = "";
+        topicGroups.forEach(t => {
+          const cnt = all.filter(c => c.topic === t && state.savedByTopic[c.id]).length;
+          html += `
+            <button onclick="openSavedCollection('topic:${t}')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition">
+              <span class="truncate">📁 ${t}</span>
+              <span class="text-[11px] font-bold bg-slate-100 px-2 py-0.5 rounded-md">${cnt}</span>
+            </button>
+          `;
+        });
+        Object.keys(state.customLists).forEach(listName => {
+          const cnt = (state.customLists[listName] || []).length;
+          html += `
+            <button onclick="openSavedCollection('custom:${listName}')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-100 text-indigo-700 font-medium transition">
+              <span class="truncate">⭐ ${listName}</span>
+              <span class="text-[11px] font-bold bg-indigo-50 px-2 py-0.5 rounded-md">${cnt}</span>
+            </button>
+          `;
+        });
+        quickSaved.innerHTML = html;
+      }
+    }
+
+    function renderSavedListsDirectory() {
+      const dirSection = document.getElementById("savedListsDirectory");
+      if (state.mainView !== "saved") {
+        dirSection.classList.add("hidden");
+        return;
+      }
+      dirSection.classList.remove("hidden");
+
+      const all = getAllCards();
+      const grid = document.getElementById("savedFoldersGrid");
+      const topicGroups = getAvailableTopics().filter(t => t !== "All");
+
+      let cardsHtml = "";
+      topicGroups.forEach(t => {
+        const savedCards = all.filter(c => c.topic === t && state.savedByTopic[c.id]);
+        cardsHtml += `
+          <div onclick="openSavedCollection('topic:${t}')" class="cursor-pointer group border border-slate-200 hover:border-indigo-400 rounded-xl p-3.5 bg-slate-50/60 hover:bg-indigo-50/30 transition flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 group-hover:text-indigo-700">📁 ${t}</span>
+              <span class="text-[11px] font-bold bg-white border border-slate-200 px-2 py-0.5 rounded-full text-slate-700">${savedCards.length} saved</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2 truncate">
+              ${savedCards.length ? savedCards.map(c => c.title).join(" • ") : "Tap bookmark icon on any " + t + " card"}
+            </p>
+          </div>
+        `;
+      });
+
+      Object.keys(state.customLists).forEach(listName => {
+        const ids = state.customLists[listName] || [];
+        const savedCards = all.filter(c => ids.includes(c.id));
+        cardsHtml += `
+          <div onclick="openSavedCollection('custom:${listName}')" class="cursor-pointer group border border-indigo-200 hover:border-indigo-500 rounded-xl p-3.5 bg-indigo-50/30 hover:bg-indigo-50/70 transition flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-900">⭐ ${listName}</span>
+              <span class="text-[11px] font-bold bg-white border border-indigo-200 px-2 py-0.5 rounded-full text-indigo-700">${savedCards.length} cards</span>
+            </div>
+            <p class="text-[11px] text-indigo-700/80 mt-2 truncate">
+              ${savedCards.length ? savedCards.map(c => c.title).join(" • ") : "Custom revision list"}
+            </p>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = cardsHtml;
+    }
+
+    function getPosterGradientClass(topic) {
+      if (topic === "Algebraic Identities") return "poster-algebra";
+      if (topic === "Geometry") return "poster-geometry";
+      if (topic === "Ratio & Proportion") return "poster-ratio";
+      return "poster-custom";
+    }
+
+    function renderFeed() {
+      const container = document.getElementById("feedContainer");
+      const banner = document.getElementById("activeCollectionBanner");
+      const bannerTitle = document.getElementById("activeCollectionTitle");
+
+      if (state.mainView === "saved" && !state.activeSavedList) {
+        container.innerHTML = "";
+        banner.classList.add("hidden");
+        return;
+      }
+
+      let cards = getAllCards();
+
+      // Check if filtering by a Saved Collection
+      if (state.activeSavedList) {
+        banner.classList.remove("hidden");
+        if (state.activeSavedList.startsWith("topic:")) {
+          const tName = state.activeSavedList.replace("topic:", "");
+          bannerTitle.textContent = "Topical Folder: " + tName;
+          cards = cards.filter(c => c.topic === tName && state.savedByTopic[c.id]);
+        } else if (state.activeSavedList.startsWith("custom:")) {
+          const lName = state.activeSavedList.replace("custom:", "");
+          bannerTitle.textContent = "Custom List: " + lName;
+          const ids = state.customLists[lName] || [];
+          cards = cards.filter(c => ids.includes(c.id));
+        }
+      } else {
+        banner.classList.add("hidden");
+        if (state.selectedTopic !== "All") {
+          cards = cards.filter(c => c.topic === state.selectedTopic);
+        }
+      }
+
+      // Apply secondary status filter
+      if (state.statusFilter === "needs_revision") {
+        cards = cards.filter(c =>
+          state.mastery[c.id] === "needs_revision" ||
+          (state.quizAnswers[c.id] !== undefined && state.quizAnswers[c.id] !== c.quiz.correct)
+        );
+      } else if (state.statusFilter === "unattempted") {
+        cards = cards.filter(c => state.quizAnswers[c.id] === undefined);
+      } else if (state.statusFilter === "mastered") {
+        cards = cards.filter(c => state.mastery[c.id] === "mastered");
+      }
+
+      if (cards.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white sm:rounded-2xl border border-slate-200 p-8 text-center space-y-3">
+            <div class="text-2xl">📭</div>
+            <div class="text-sm font-bold text-slate-800">No Concept Cards Match This Filter</div>
+            <p class="text-xs text-slate-500 max-w-xs mx-auto">Try switching the topic ring above or clearing the revision status filter.</p>
+            <button onclick="resetFilters()" class="text-xs font-bold bg-indigo-600 text-white px-4 py-2 rounded-xl">Show All Concepts</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = cards.map((card, index) => {
+        const posterClass = getPosterGradientClass(card.topic);
+        const userAns = state.quizAnswers[card.id];
+        const isAnswered = userAns !== undefined;
+        const isCorrect = userAns === card.quiz.correct;
+        const isSolOpen = !!state.solutionOpen[card.id];
+        const isSavedTopic = !!state.savedByTopic[card.id];
+        const isSavedAny = isCardSavedAnywhere(card.id);
+        const masteryState = state.mastery[card.id] || "none";
+        const slideIdx = state.cardSlideIndex[card.id] || 0;
+        const isCarousel = state.cardLayoutMode === "carousel";
+
+        const triggersHtml = (card.triggers || []).map(tr => `
+          <li class="flex items-start space-x-2 text-xs text-slate-700 leading-relaxed">
+            <span class="text-indigo-500 font-bold mt-0.5">•</span>
+            <span>${tr}</span>
+          </li>
+        `).join("");
+
+        const optionsHtml = card.quiz.options.map((opt, oIdx) => {
+          let optClass = "bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100";
+          let badge = "";
+          if (isAnswered) {
+            if (oIdx === card.quiz.correct) {
+              optClass = "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold shadow-2xs";
+              badge = `<span class="text-emerald-600 font-extrabold text-xs">✓ Correct</span>`;
+            } else if (oIdx === userAns) {
+              optClass = "bg-rose-50 border-rose-400 text-rose-900 font-semibold";
+              badge = `<span class="text-rose-600 font-bold text-xs">✕ Your Pick</span>`;
+            } else {
+              optClass = "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+            }
+          }
+          return `
+            <button
+              onclick="selectQuizOption('${card.id}', ${oIdx})"
+              ${isAnswered ? "disabled" : ""}
+              class="w-full text-left px-3.5 py-2.5 rounded-xl border text-xs transition flex items-center justify-between ${optClass}"
+            >
+              <span>${opt}</span>
+              ${badge}
+            </button>
+          `;
+        }).join("");
+
+        return `
+          <article class="bg-white sm:rounded-2xl border-y sm:border border-slate-200 shadow-xs overflow-hidden">
+            <!-- INSTAGRAM POST HEADER -->
+            <div class="px-4 py-3 flex items-center justify-between border-b border-slate-100">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-full ${posterClass} text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                  ${card.topic.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <div class="flex items-center space-x-1.5">
+                    <span class="text-xs font-bold text-slate-900">${card.topic}</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${card.badge || "Concept"}</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500">${card.subtopic}</div>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-1.5">
+                ${isCarousel ? `
+                  <div class="flex bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold">
+                    <button onclick="setCardSlide('${card.id}', 0)" class="px-2 py-1 rounded-md ${slideIdx === 0 ? 'bg-white text-indigo-600 shadow-2xs' : 'text-slate-500'}">1. Concept</button>
+                    <button onclick="setCardSlide('${card.id}', 1)" class="px-2 py-1 rounded-md ${slideIdx === 1 ? 'bg-white text-indigo-600 shadow-2xs' : 'text-slate-500'}">2. Quiz</button>
+                  </div>
+                ` : ""}
+                <button onclick="toggleTopicBookmark('${card.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 transition" title="Save to ${card.topic} list">
+                  <span class="text-base">${isSavedAny ? "🔖" : "🏷️"}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- SLIDE 1: VISUAL CONCEPT POSTER & EXAM TRIGGERS -->
+            <div class="${isCarousel && slideIdx !== 0 ? 'hidden' : 'block'}">
+              <div class="${posterClass} p-5 text-white space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] uppercase tracking-widest text-white/75 font-bold">Concept #${index + 1}</span>
+                  <span class="text-[10px] bg-white/15 px-2 py-0.5 rounded-full text-white/90 font-semibold">Formula Card</span>
+                </div>
+                <h2 class="text-base font-extrabold tracking-tight text-white leading-snug">${card.title}</h2>
+                <div class="py-2">
+                  ${card.formula_html}
+                </div>
+                <div class="bg-black/25 rounded-xl px-3.5 py-2 text-xs text-amber-200 flex items-center space-x-2">
+                  <span>💡</span>
+                  <span><strong>Memory Hook:</strong> ${card.memory_hook}</span>
+                </div>
+              </div>
+
+              <!-- Key Exam Triggers & Recognition Cues -->
+              <div class="p-4 bg-white space-y-2 border-b border-slate-100">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Exam Recognition &amp; Traps</div>
+                <ul class="space-y-1.5">
+                  ${triggersHtml}
+                </ul>
+              </div>
+            </div>
+
+            <!-- SLIDE 2: 15-SECOND CONCEPT REVISION QUIZ -->
+            <div class="${isCarousel && slideIdx !== 1 ? 'hidden' : 'block'} p-4 bg-slate-50/50 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 flex items-center space-x-1">
+                  <span>🎯</span><span>Concept Recall Check</span>
+                </span>
+                ${isAnswered ? `
+                  <button onclick="resetSingleQuiz('${card.id}')" class="text-[11px] text-slate-500 hover:text-slate-800 underline font-semibold">Retry Quiz</button>
+                ` : `<span class="text-[11px] text-slate-400">Tap to test recall</span>`}
+              </div>
+
+              <p class="text-xs sm:text-sm font-semibold text-slate-900 leading-relaxed">${card.quiz.question}</p>
+
+              <div class="space-y-2">
+                ${optionsHtml}
+              </div>
+
+              <!-- Collapsible Derivation / Solution Drawer -->
+              <div class="pt-1 flex items-center justify-between text-xs">
+                <button onclick="toggleSolutionDrawer('${card.id}')" class="font-bold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1">
+                  <span>${isSolOpen ? "Hide Concept Derivation ▲" : "Tap-to-Reveal Derivation ▼"}</span>
+                </button>
+              </div>
+
+              ${isSolOpen ? `
+                <div class="bg-indigo-50/80 border border-indigo-100 rounded-xl p-3.5 text-xs text-slate-700 leading-relaxed">
+                  <strong class="text-indigo-950 block mb-1">Concept Derivation:</strong>
+                  ${card.quiz.explanation}
+                </div>
+              ` : ""}
+            </div>
+
+            <!-- INSTAGRAM ACTION BAR (Mastery, Revise Queue, Save to List) -->
+            <div class="px-4 py-2.5 bg-white border-t border-slate-100 flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <button
+                  onclick="toggleMastery('${card.id}', 'mastered')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 ${masteryState === 'mastered' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+                >
+                  <span>✅</span><span>${masteryState === 'mastered' ? 'Mastered' : 'Mark Mastered'}</span>
+                </button>
+                <button
+                  onclick="toggleMastery('${card.id}', 'needs_revision')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 ${masteryState === 'needs_revision' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
+                >
+                  <span>⚡</span><span>${masteryState === 'needs_revision' ? 'In Revise Queue' : 'Revise Later'}</span>
+                </button>
+              </div>
+
+              <div class="flex items-center space-x-1.5">
+                <button
+                  onclick="openSaveModal('${card.id}')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold border transition ${isSavedAny ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600 hover:bg-slate-100'}"
+                >
+                  ${isSavedTopic ? "🔖 Saved in " + card.topic.split(" ")[0] : "+ Save to List"}
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // =========================================================================
+    // USER INTERACTION HANDLERS
+    // =========================================================================
+    function switchMainView(view) {
+      state.mainView = view;
+      if (view === "feed") {
+        state.activeSavedList = null;
+      }
+      renderAll();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function selectTopic(topic) {
+      state.mainView = "feed";
+      state.activeSavedList = null;
+      state.selectedTopic = topic;
+      renderAll();
+    }
+
+    function setStatusFilter(status) {
+      state.statusFilter = status;
+      renderAll();
+    }
+
+    function resetFilters() {
+      state.selectedTopic = "All";
+      state.statusFilter = "all";
+      state.activeSavedList = null;
+      state.mainView = "feed";
+      renderAll();
+    }
+
+    function toggleCardLayoutMode() {
+      state.cardLayoutMode = state.cardLayoutMode === "stacked" ? "carousel" : "stacked";
+      saveState();
+      renderAll();
+    }
+
+    function setCardSlide(cardId, slideIdx) {
+      state.cardSlideIndex[cardId] = slideIdx;
+      renderFeed();
+    }
+
+    function selectQuizOption(cardId, optIdx) {
+      const card = getAllCards().find(c => c.id === cardId);
+      if (!card) return;
+      state.quizAnswers[cardId] = optIdx;
+      // Automatically open explanation drawer and flag if wrong
+      state.solutionOpen[cardId] = true;
+      if (optIdx !== card.quiz.correct) {
+        state.mastery[cardId] = "needs_revision";
+      }
+      saveState();
+      renderAll();
+    }
+
+    function resetSingleQuiz(cardId) {
+      delete state.quizAnswers[cardId];
+      state.solutionOpen[cardId] = false;
+      saveState();
+      renderAll();
+    }
+
+    function resetAllQuizAttempts() {
+      state.quizAnswers = {};
+      state.solutionOpen = {};
+      saveState();
+      renderAll();
+    }
+
+    function toggleSolutionDrawer(cardId) {
+      state.solutionOpen[cardId] = !state.solutionOpen[cardId];
+      renderFeed();
+    }
+
+    function toggleMastery(cardId, targetStatus) {
+      if (state.mastery[cardId] === targetStatus) {
+        delete state.mastery[cardId];
+      } else {
+        state.mastery[cardId] = targetStatus;
+      }
+      saveState();
+      renderAll();
+    }
+
+    function toggleTopicBookmark(cardId) {
+      state.savedByTopic[cardId] = !state.savedByTopic[cardId];
+      saveState();
+      renderAll();
+    }
+
+    function openSavedCollection(collectionKey) {
+      state.activeSavedList = collectionKey;
+      state.mainView = "feed";
+      state.statusFilter = "all";
+      renderAll();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function clearSavedListFilter() {
+      state.activeSavedList = null;
+      state.mainView = "saved";
+      renderAll();
+    }
+
+    // =========================================================================
+    // SAVE TO COLLECTION MODAL
+    // =========================================================================
+    function openSaveModal(cardId) {
+      state.activeModalCardId = cardId;
+      const card = getAllCards().find(c => c.id === cardId);
+      if (!card) return;
+      document.getElementById("modalSaveCardTitle").textContent = card.title;
+      document.getElementById("modalSaveList").classList.remove("hidden");
+      renderSaveModalOptions();
+    }
+
+    function closeSaveModal() {
+      state.activeModalCardId = null;
+      document.getElementById("modalSaveList").classList.add("hidden");
+    }
+
+    function renderSaveModalOptions() {
+      const cardId = state.activeModalCardId;
+      const card = getAllCards().find(c => c.id === cardId);
+      if (!card) return;
+
+      const box = document.getElementById("modalSaveListOptions");
+      const inTopic = !!state.savedByTopic[cardId];
+
+      let html = `
+        <label class="flex items-center justify-between p-3 rounded-xl border ${inTopic ? 'border-indigo-500 bg-indigo-50/60' : 'border-slate-200'} cursor-pointer">
+          <div>
+            <div class="text-xs font-bold text-slate-900">📁 ${card.topic} (Topical Folder)</div>
+            <div class="text-[11px] text-slate-500">Auto-grouped by concept topic</div>
+          </div>
+          <input type="checkbox" ${inTopic ? 'checked' : ''} onchange="toggleTopicBookmark('${cardId}'); renderSaveModalOptions();" class="w-4 h-4 accent-indigo-600" />
+        </label>
+      `;
+
+      Object.keys(state.customLists).forEach(listName => {
+        const arr = state.customLists[listName] || [];
+        const checked = arr.includes(cardId);
+        html += `
+          <label class="flex items-center justify-between p-3 rounded-xl border ${checked ? 'border-indigo-500 bg-indigo-50/60' : 'border-slate-200'} cursor-pointer">
+            <div class="text-xs font-bold text-slate-800">⭐ ${listName}</div>
+            <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleCustomListMembership('${listName}', '${cardId}')" class="w-4 h-4 accent-indigo-600" />
+          </label>
+        `;
+      });
+
+      box.innerHTML = html;
+    }
+
+    function toggleCustomListMembership(listName, cardId) {
+      const arr = state.customLists[listName] || [];
+      const idx = arr.indexOf(cardId);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+      } else {
+        arr.push(cardId);
+      }
+      state.customLists[listName] = arr;
+      saveState();
+      renderSaveModalOptions();
+      renderAll();
+    }
+
+    function createCustomListFromModal() {
+      const input = document.getElementById("inputNewListName");
+      const name = (input.value || "").trim();
+      if (!name) return;
+      if (!state.customLists[name]) {
+        state.customLists[name] = [];
+      }
+      if (state.activeModalCardId && !state.customLists[name].includes(state.activeModalCardId)) {
+        state.customLists[name].push(state.activeModalCardId);
+      }
+      input.value = "";
+      saveState();
+      renderSaveModalOptions();
+      renderAll();
+    }
+
+    function promptNewCustomList() {
+      const name = prompt("Enter name for new custom revision list (e.g., 'Geometry Traps'):");
+      if (!name || !name.trim()) return;
+      const clean = name.trim();
+      if (!state.customLists[clean]) {
+        state.customLists[clean] = [];
+        saveState();
+        renderAll();
+      }
+    }
+
+    // =========================================================================
+    // ADD CUSTOM CONCEPT CARD MODAL
+    // =========================================================================
+    function openAddCardModal() {
+      document.getElementById("modalAddCard").classList.remove("hidden");
+    }
+
+    function closeAddCardModal() {
+      document.getElementById("modalAddCard").classList.add("hidden");
+    }
+
+    function saveNewCustomCard() {
+      const topic = document.getElementById("newCardTopic").value;
+      const subtopic = document.getElementById("newCardSubtopic").value.trim() || "Custom Concept";
+      const title = document.getElementById("newCardTitle").value.trim();
+      const formula = document.getElementById("newCardFormula").value.trim();
+      const triggersRaw = document.getElementById("newCardTriggers").value.trim();
+      const quizQ = document.getElementById("newCardQuizQ").value.trim();
+      const opt0 = document.getElementById("newCardOpt0").value.trim() || "Option A";
+      const opt1 = document.getElementById("newCardOpt1").value.trim() || "Option B";
+      const opt2 = document.getElementById("newCardOpt2").value.trim() || "Option C";
+      const opt3 = document.getElementById("newCardOpt3").value.trim() || "Option D";
+      const correct = parseInt(document.getElementById("newCardCorrect").value, 10) || 0;
+      const exp = document.getElementById("newCardExp").value.trim() || "Direct application of the concept.";
+
+      if (!title || !formula || !quizQ) {
+        alert("Please fill in at least the Title, Formula, and Quiz Question.");
+        return;
+      }
+
+      const newCard = {
+        id: "custom_" + Date.now(),
+        topic,
+        subtopic,
+        badge: "Custom Card",
+        title,
+        formula_html: `<div class="math-main">${formula}</div>`,
+        triggers: triggersRaw ? triggersRaw.split("\n").filter(Boolean) : ["Custom revision note."],
+        memory_hook: subtopic,
+        quiz: {
+          question: quizQ,
+          options: ["A) " + opt0, "B) " + opt1, "C) " + opt2, "D) " + opt3],
+          correct,
+          explanation: exp
+        }
+      };
+
+      state.customCards.unshift(newCard);
+      state.savedByTopic[newCard.id] = true;
+      saveState();
+      closeAddCardModal();
+      renderAll();
+    }
+
+    // =========================================================================
+    // SYNC / BACKUP MODAL
+    // =========================================================================
+    function openSyncModal() {
+      renderDesktopSidebars();
+      const exportObj = {
+        quizAnswers: state.quizAnswers,
+        mastery: state.mastery,
+        savedByTopic: state.savedByTopic,
+        customLists: state.customLists,
+        customCards: state.customCards
+      };
+      document.getElementById("syncJsonBox").value = JSON.stringify(exportObj, null, 2);
+      document.getElementById("modalSync").classList.remove("hidden");
+    }
+
+    function closeSyncModal() {
+      document.getElementById("modalSync").classList.add("hidden");
+    }
+
+    function copySyncJson() {
+      const box = document.getElementById("syncJsonBox");
+      box.select();
+      document.execCommand("copy");
+      alert("Backup JSON copied! Paste this on your phone or laptop to sync your saved lists and progress.");
+    }
+
+    function importSyncJson() {
+      try {
+        const raw = document.getElementById("syncJsonBox").value;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          state.quizAnswers = parsed.quizAnswers || {};
+          state.mastery = parsed.mastery || {};
+          state.savedByTopic = parsed.savedByTopic || {};
+          state.customLists = parsed.customLists || state.customLists;
+          state.customCards = parsed.customCards || [];
+          saveState();
+          renderAll();
+          closeSyncModal();
+          alert("Progress & Saved Lists restored!");
+        }
+      } catch (e) {
+        alert("Invalid JSON format.");
+      }
+    }
+
+    // Initialize App
+    loadState();
+    renderAll();
+  </script>
+</body>
+</html>
