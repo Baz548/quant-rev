@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v2.2 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf v2.3 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -59,7 +59,7 @@
     <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="font-black text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.2 Ladder + SVG</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.3 Verified</span>
       </div>
       <div class="flex items-center space-x-2">
         <button onclick="window.app.openAddModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">+ Add</button>
@@ -87,9 +87,23 @@
       <div id="topic-bar" class="max-w-4xl mx-auto px-4 py-2 flex space-x-2 overflow-x-auto no-scrollbar"></div>
     </div>
 
-    <!-- SCOPED CHAPTER / SUBTOPIC BAR (Strictly synced to Parent Topic) -->
+    <!-- SCOPED CHAPTER BAR: v2.1 SECTIONAL DROPDOWN ON THE LEFT + HORIZONTAL BUTTONS ON THE RIGHT -->
     <div class="border-t border-white/5 bg-black/25">
-      <div id="subtopic-bar" class="max-w-4xl mx-auto px-4 py-1.5 flex space-x-1.5 overflow-x-auto no-scrollbar"></div>
+      <div class="max-w-4xl mx-auto px-4 py-1.5 flex items-center space-x-2">
+        <!-- Left: Sectional Chapter Dropdown -->
+        <div class="relative shrink-0">
+          <select
+            id="subtopic-select"
+            aria-label="Select Chapter"
+            onchange="window.app.setSubtopic(this.value)"
+            class="bg-slate-900/90 text-amber-300 border border-amber-400/40 rounded-lg px-2.5 py-1 text-[11px] font-semibold focus:outline-none focus:border-amber-400 max-w-[175px] sm:max-w-[220px] truncate cursor-pointer shadow-sm"
+          ></select>
+        </div>
+        <!-- Divider -->
+        <span class="text-white/20 text-xs select-none">|</span>
+        <!-- Right: Quick Horizontal Chapter Buttons (starts with "All 26 Chapters" button) -->
+        <div id="subtopic-bar" class="flex space-x-1.5 overflow-x-auto no-scrollbar flex-1 items-center"></div>
+      </div>
     </div>
   </header>
 
@@ -202,200 +216,258 @@
   <!-- APPLICATION SCRIPT (ZERO-COMPILE ES6) -->
   <script>
     // =========================================================================
-    // 1. STRICT TOPIC <-> 26 CHAPTER TAXONOMY (Audited T.I.M.E. Mapping)
+    // 1. STRICT TOPIC <-> 26 CHAPTER TAXONOMY (Verified Across All 3 T.I.M.E. Booklets)
+    //    Booklet 1 (SM1002406): 7 Chapters
+    //    Booklet 2 (SM1002408): 9 Chapters
+    //    Booklet 3 (SM1002410): 10 Chapters
+    //    Total = 26 Chapters
     // =========================================================================
     const TOPIC_CHAPTER_MAP = {
       "Algebra": [
-        "Simple Equations",
-        "Special Equations",
-        "Quadratic Equations",
-        "Inequalities and Modulus",
-        "Sequences and Series",
-        "Functions",
-        "Graphs",
-        "Indices – Surds",
-        "Logarithms",
-        "Operator Based Questions"
+        "Simple Equations",           // Booklet 1, Ch 1
+        "Special Equations",          // Booklet 3, Ch 1
+        "Quadratic Equations",        // Booklet 3, Ch 2
+        "Inequalities and Modulus",   // Booklet 3, Ch 3
+        "Sequences and Series",       // Booklet 3, Ch 4
+        "Functions",                  // Booklet 3, Ch 5
+        "Graphs",                     // Booklet 3, Ch 6
+        "Indices – Surds",            // Booklet 3, Ch 7
+        "Logarithms",                 // Booklet 3, Ch 8
+        "Operator Based Questions"    // Booklet 2, Ch 8
       ],
       "Number Theory": [
-        "Numbers – I",
-        "Numbers – II",
-        "Number Systems"
+        "Numbers – I",                // Booklet 2, Ch 1
+        "Numbers – II",               // Booklet 2, Ch 2
+        "Number Systems"              // Booklet 2, Ch 3
       ],
       "Geometry": [
-        "Geometry",
-        "Mensuration",
-        "Co-ordinate Geometry",
-        "Trigonometry"
+        "Geometry",                   // Booklet 2, Ch 4
+        "Mensuration",                // Booklet 2, Ch 5
+        "Co-ordinate Geometry",       // Booklet 2, Ch 6
+        "Trigonometry"                // Booklet 2, Ch 7
       ],
       "Ratio & Mixtures": [
-        "Ratio – Proportion – Variation",
-        "Averages – Mixtures – Alligations"
+        "Ratio – Proportion – Variation",     // Booklet 1, Ch 2
+        "Averages – Mixtures – Alligations"   // Booklet 1, Ch 7
       ],
       "Arithmetic": [
-        "Percentages – Profit & Loss – Partnerships",
-        "Simple Interest and Compound Interest",
-        "Time and Distance",
-        "Time and Work"
+        "Percentages – Profit & Loss – Partnerships", // Booklet 1, Ch 3
+        "Simple Interest and Compound Interest",      // Booklet 1, Ch 4
+        "Time and Distance",                          // Booklet 1, Ch 5
+        "Time and Work"                               // Booklet 1, Ch 6
       ],
       "Modern Math": [
-        "Permutations and Combinations",
-        "Probability",
-        "Statistics"
+        "Permutations and Combinations", // Booklet 3, Ch 9
+        "Probability",                   // Booklet 3, Ch 10
+        "Statistics"                     // Booklet 2, Ch 9
       ]
     };
 
     const TOPICS = ["All", ...Object.keys(TOPIC_CHAPTER_MAP)];
 
     // =========================================================================
-    // 2. INLINE SVG CONCEPT DIAGRAMS (High-Contrast Dark/Indigo Theme)
+    // 2. AUDITED & MATHEMATICALLY VERIFIED INLINE SVG DIAGRAMS
     // =========================================================================
     const SVG_DIAGRAMS = {
+      // FIXED: Quadratic Parabola y = a(x - α)(x - β)
+      // X-axis at y=52; curve M 85 14 Q 165 130 245 14 crosses y=52 at x=117 (α) and x=213 (β)
+      // Axis of symmetry at x=165; exact minimum vertex at (165, 72)
       parabola_roots: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <line x1="20" y1="70" x2="300" y2="70" stroke="#64748b" stroke-width="1.2"/>
-          <line x1="80" y1="10" x2="80" y2="90" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
-          <path d="M 95 15 Q 175 115 255 15" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
-          <circle cx="122" cy="70" r="3.5" fill="#fbbf24"/>
-          <circle cx="228" cy="70" r="3.5" fill="#fbbf24"/>
-          <circle cx="175" cy="65" r="4" fill="#f43f5e"/>
-          <text x="115" y="84" fill="#fde68a" font-size="10" font-family="monospace">α</text>
-          <text x="225" y="84" fill="#fde68a" font-size="10" font-family="monospace">β</text>
-          <text x="135" y="55" fill="#fda4af" font-size="9" font-family="monospace">Vertex (-b/2a, -D/4a)</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <!-- X-axis (y = 0) and Y-axis -->
+          <line x1="25" y1="52" x2="295" y2="52" stroke="#94a3b8" stroke-width="1.3"/>
+          <line x1="65" y1="10" x2="65" y2="90" stroke="#64748b" stroke-width="1.2"/>
+          <!-- Axis of Symmetry x = -b/(2a) -->
+          <line x1="165" y1="12" x2="165" y2="88" stroke="#f43f5e" stroke-width="1.1" stroke-dasharray="3,3"/>
+          <!-- Parabola Curve (a > 0, D > 0) -->
+          <path d="M 85 14 Q 165 130 245 14" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+          <!-- Roots α and β on X-axis (y=52) -->
+          <circle cx="117" cy="52" r="3.8" fill="#fbbf24"/>
+          <circle cx="213" cy="52" r="3.8" fill="#fbbf24"/>
+          <!-- Exact Vertex Minimum at (165, 72) -->
+          <circle cx="165" cy="72" r="4" fill="#f43f5e"/>
+          <!-- Labels -->
+          <text x="108" y="45" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">α</text>
+          <text x="217" y="45" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">β</text>
+          <text x="172" y="85" fill="#fda4af" font-size="9.5" font-family="monospace">Vertex (-b/2a, -D/4a)</text>
+          <text x="28" y="48" fill="#94a3b8" font-size="8.5" font-family="monospace">y=0</text>
         </svg>`,
+
+      // Flat-bottom modulus graph y = |x - a| + |x - b|
       modulus_bucket: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <line x1="20" y1="80" x2="300" y2="80" stroke="#64748b" stroke-width="1.2"/>
-          <polyline points="55,15 115,58 205,58 265,15" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
-          <line x1="115" y1="58" x2="115" y2="80" stroke="#94a3b8" stroke-dasharray="3,3"/>
-          <line x1="205" y1="58" x2="205" y2="80" stroke="#94a3b8" stroke-dasharray="3,3"/>
-          <text x="105" y="91" fill="#e2e8f0" font-size="10" font-family="monospace">x = a</text>
-          <text x="195" y="91" fill="#e2e8f0" font-size="10" font-family="monospace">x = b</text>
-          <text x="122" y="48" fill="#fde68a" font-size="9.5" font-family="monospace">Min = |b − a|</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="25" y1="80" x2="295" y2="80" stroke="#64748b" stroke-width="1.2"/>
+          <polyline points="55,14 115,56 205,56 265,14" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
+          <line x1="115" y1="56" x2="115" y2="80" stroke="#94a3b8" stroke-dasharray="3,3"/>
+          <line x1="205" y1="56" x2="205" y2="80" stroke="#94a3b8" stroke-dasharray="3,3"/>
+          <circle cx="115" cy="56" r="3.2" fill="#38bdf8"/>
+          <circle cx="205" cy="56" r="3.2" fill="#38bdf8"/>
+          <text x="103" y="92" fill="#e2e8f0" font-size="9.5" font-family="monospace">x = a</text>
+          <text x="193" y="92" fill="#e2e8f0" font-size="9.5" font-family="monospace">x = b</text>
+          <text x="122" y="47" fill="#fde68a" font-size="9.5" font-family="monospace">Min = |b − a|</text>
         </svg>`,
+
+      // Enclosed Diamond |x| + |y| <= a
       diamond_graph: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <line x1="40" y1="48" x2="280" y2="48" stroke="#64748b" stroke-width="1.2"/>
-          <line x1="160" y1="6" x2="160" y2="90" stroke="#64748b" stroke-width="1.2"/>
-          <polygon points="160,12 215,48 160,84 105,48" fill="#38bdf8" fill-opacity="0.18" stroke="#38bdf8" stroke-width="2"/>
-          <text x="220" y="51" fill="#fde68a" font-size="9.5" font-family="monospace">(a,0)</text>
-          <text x="165" y="16" fill="#fde68a" font-size="9.5" font-family="monospace">(0,a)</text>
-          <text x="52" y="25" fill="#e2e8f0" font-size="9.5" font-family="monospace">|x| + |y| ≤ a</text>
-          <text x="52" y="38" fill="#38bdf8" font-size="9.5" font-family="monospace">Area = 2a²</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="40" y1="49" x2="280" y2="49" stroke="#64748b" stroke-width="1.2"/>
+          <line x1="160" y1="6" x2="160" y2="92" stroke="#64748b" stroke-width="1.2"/>
+          <polygon points="160,13 214,49 160,85 106,49" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="2.2"/>
+          <circle cx="214" cy="49" r="3" fill="#fbbf24"/>
+          <circle cx="160" cy="13" r="3" fill="#fbbf24"/>
+          <text x="219" y="46" fill="#fde68a" font-size="9.5" font-family="monospace">(a,0)</text>
+          <text x="166" y="16" fill="#fde68a" font-size="9.5" font-family="monospace">(0,a)</text>
+          <text x="45" y="24" fill="#e2e8f0" font-size="9.5" font-family="monospace">|x| + |y| ≤ a</text>
+          <text x="45" y="38" fill="#38bdf8" font-size="9.5" font-weight="bold" font-family="monospace">Area = 2a²</text>
         </svg>`,
+
+      // Triangle Centroid G dividing median AD in 2:1 ratio
       triangle_centroid: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
           <polygon points="155,10 65,82 245,82" fill="none" stroke="#a5b4fc" stroke-width="2"/>
+          <!-- 3 Medians intersecting at G(155, 58) -->
           <line x1="155" y1="10" x2="155" y2="82" stroke="#fbbf24" stroke-width="2"/>
           <line x1="65" y1="82" x2="200" y2="46" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
           <line x1="245" y1="82" x2="110" y2="46" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
           <circle cx="155" cy="58" r="4" fill="#f43f5e"/>
-          <text x="142" y="9" fill="#ffffff" font-size="9.5" font-family="monospace">A</text>
-          <text x="150" y="92" fill="#fde68a" font-size="9.5" font-family="monospace">D (Midpoint)</text>
-          <text x="163" y="56" fill="#fda4af" font-size="10" font-family="monospace">G (2 : 1)</text>
-          <text x="160" y="36" fill="#fde68a" font-size="9" font-family="monospace">2 parts</text>
-          <text x="160" y="74" fill="#fde68a" font-size="9" font-family="monospace">1 part</text>
+          <text x="143" y="11" fill="#ffffff" font-size="9.5" font-family="monospace">A</text>
+          <text x="53" y="86" fill="#94a3b8" font-size="9.5" font-family="monospace">B</text>
+          <text x="250" y="86" fill="#94a3b8" font-size="9.5" font-family="monospace">C</text>
+          <text x="151" y="94" fill="#fde68a" font-size="9" font-family="monospace">D</text>
+          <text x="163" y="56" fill="#fda4af" font-size="10" font-weight="bold" font-family="monospace">G (2:1)</text>
+          <text x="160" y="36" fill="#fde68a" font-size="8.5" font-family="monospace">AG = 2</text>
+          <text x="160" y="74" fill="#fde68a" font-size="8.5" font-family="monospace">GD = 1</text>
         </svg>`,
+
+      // Circle Secant-Tangent Power Theorem: PT² = PA × PB
+      // Circle center (210, 49), R=36. External point P(50, 75).
+      // Secant line from P(50,75) through A(175.3, 57.9) to B(245.5, 48.3) — strictly collinear!
+      // Tangent line from P(50,75) to T(196, 15.8) where CT ⊥ PT.
       circle_secant: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <circle cx="205" cy="48" r="36" fill="none" stroke="#38bdf8" stroke-width="2"/>
-          <line x1="55" y1="72" x2="195" y2="13" stroke="#fbbf24" stroke-width="2"/>
-          <line x1="55" y1="72" x2="241" y2="52" stroke="#a5b4fc" stroke-width="2"/>
-          <circle cx="55" cy="72" r="3" fill="#ffffff"/>
-          <circle cx="195" cy="13" r="3.5" fill="#fbbf24"/>
-          <circle cx="170" cy="60" r="3" fill="#f43f5e"/>
-          <circle cx="241" cy="52" r="3" fill="#f43f5e"/>
-          <text x="42" y="75" fill="#ffffff" font-size="10" font-family="monospace">P</text>
-          <text x="190" y="10" fill="#fde68a" font-size="10" font-family="monospace">T</text>
-          <text x="163" y="74" fill="#fda4af" font-size="10" font-family="monospace">A</text>
-          <text x="246" y="56" fill="#fda4af" font-size="10" font-family="monospace">B</text>
-          <text x="65" y="34" fill="#fde68a" font-size="9.5" font-family="monospace">PT² = PA × PB</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <circle cx="210" cy="49" r="36" fill="#38bdf8" fill-opacity="0.08" stroke="#38bdf8" stroke-width="2"/>
+          <!-- Tangent Segment PT -->
+          <line x1="50" y1="75" x2="196" y2="15.8" stroke="#fbbf24" stroke-width="2.2"/>
+          <!-- Collinear Secant Line P -> A -> B -->
+          <line x1="50" y1="75" x2="245.5" y2="48.3" stroke="#a5b4fc" stroke-width="2"/>
+          <circle cx="50" cy="75" r="3.5" fill="#ffffff"/>
+          <circle cx="196" cy="15.8" r="3.5" fill="#fbbf24"/>
+          <circle cx="175.3" cy="57.9" r="3.5" fill="#f43f5e"/>
+          <circle cx="245.5" cy="48.3" r="3.5" fill="#f43f5e"/>
+          <text x="36" y="79" fill="#ffffff" font-size="10" font-weight="bold" font-family="monospace">P</text>
+          <text x="190" y="11" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">T</text>
+          <text x="166" y="73" fill="#fda4af" font-size="10" font-weight="bold" font-family="monospace">A</text>
+          <text x="251" y="52" fill="#fda4af" font-size="10" font-weight="bold" font-family="monospace">B</text>
+          <text x="58" y="34" fill="#fde68a" font-size="9.5" font-weight="bold" font-family="monospace">PT² = PA × PB</text>
         </svg>`,
+
+      // Mensuration 1 : 2 : 3 Volume Ratio (Cone : Hemisphere : Cylinder with r = h)
       mensuration_123: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <!-- Cone -->
-          <polygon points="55,18 30,72 80,72" fill="#fbbf24" fill-opacity="0.2" stroke="#fbbf24" stroke-width="1.8"/>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <!-- Cone (h = r) -->
+          <polygon points="55,26 30,72 80,72" fill="#fbbf24" fill-opacity="0.2" stroke="#fbbf24" stroke-width="1.8"/>
           <ellipse cx="55" cy="72" rx="25" ry="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
-          <text x="34" y="89" fill="#fde68a" font-size="9.5" font-family="monospace">Cone (1)</text>
-          <!-- Hemisphere -->
-          <path d="M 130 72 A 28 28 0 0 1 186 72 Z" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1.8"/>
-          <ellipse cx="158" cy="72" rx="28" ry="6" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
-          <text x="132" y="89" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hemi (2)</text>
-          <!-- Cylinder -->
-          <rect x="232" y="22" width="52" height="50" fill="#a5b4fc" fill-opacity="0.2" stroke="#a5b4fc" stroke-width="1.8"/>
-          <ellipse cx="258" cy="22" rx="26" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
-          <ellipse cx="258" cy="72" rx="26" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
-          <text x="236" y="89" fill="#c7d2fe" font-size="9.5" font-family="monospace">Cyl (3)</text>
+          <text x="31" y="90" fill="#fde68a" font-size="9.5" font-family="monospace">Cone (1)</text>
+          <!-- Hemisphere (h = r) -->
+          <path d="M 133 72 A 25 25 0 0 1 183 72" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1.8"/>
+          <ellipse cx="158" cy="72" rx="25" ry="6" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="133" y="90" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hemi (2)</text>
+          <!-- Cylinder (h = r) -->
+          <rect x="233" y="26" width="50" height="46" fill="#a5b4fc" fill-opacity="0.2" stroke="#a5b4fc" stroke-width="1.8"/>
+          <ellipse cx="258" cy="26" rx="25" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
+          <ellipse cx="258" cy="72" rx="25" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
+          <text x="236" y="90" fill="#c7d2fe" font-size="9.5" font-family="monospace">Cyl (3)</text>
         </svg>`,
+
+      // Co-ordinate Reflection across Mirror Line ax + by + c = 0 (Strictly 90° perpendicular)
+      // Mirror line from (50, 74) to (250, 24) has slope -1/4.
+      // Perpendicular segment from P(143, 21) through Foot M(150, 49) to Image P'(157, 77) has slope +4.
       coord_reflection: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <line x1="40" y1="80" x2="270" y2="15" stroke="#38bdf8" stroke-width="2"/>
-          <line x1="125" y1="20" x2="175" y2="76" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="4,3"/>
-          <circle cx="125" cy="20" r="3.5" fill="#fbbf24"/>
-          <circle cx="150" cy="48" r="3" fill="#ffffff"/>
-          <circle cx="175" cy="76" r="3.5" fill="#f43f5e"/>
-          <text x="72" y="22" fill="#fde68a" font-size="9.5" font-family="monospace">P(x₁,y₁)</text>
-          <text x="183" y="80" fill="#fda4af" font-size="9.5" font-family="monospace">P'(Image)</text>
-          <text x="195" y="25" fill="#7dd3fc" font-size="9.5" font-family="monospace">ax+by+c=0</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <!-- Mirror Line ax + by + c = 0 -->
+          <line x1="50" y1="74" x2="250" y2="24" stroke="#38bdf8" stroke-width="2.2"/>
+          <!-- Perpendicular Segment P -> M -> P' -->
+          <line x1="143" y1="21" x2="157" y2="77" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="3,3"/>
+          <circle cx="143" cy="21" r="3.5" fill="#fbbf24"/>
+          <circle cx="150" cy="49" r="3.2" fill="#ffffff"/>
+          <circle cx="157" cy="77" r="3.5" fill="#f43f5e"/>
+          <text x="82" y="23" fill="#fde68a" font-size="9.5" font-family="monospace">P(x₁,y₁)</text>
+          <text x="158" y="45" fill="#ffffff" font-size="8.5" font-family="monospace">Foot(k=1)</text>
+          <text x="165" y="81" fill="#fda4af" font-size="9.5" font-family="monospace">P' Image(k=2)</text>
+          <text x="205" y="21" fill="#7dd3fc" font-size="9.5" font-family="monospace">ax+by+c=0</text>
         </svg>`,
+
+      // Trigonometry Right Triangle
       trig_triangle: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <polygon points="70,76 230,76 230,16" fill="#38bdf8" fill-opacity="0.15" stroke="#38bdf8" stroke-width="2"/>
-          <rect x="220" y="66" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
-          <text x="95" y="72" fill="#fde68a" font-size="10" font-family="monospace">θ</text>
-          <text x="135" y="89" fill="#e2e8f0" font-size="9.5" font-family="monospace">Adjacent (Base)</text>
-          <text x="236" y="50" fill="#fde68a" font-size="9.5" font-family="monospace">Opposite</text>
-          <text x="115" y="40" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hypotenuse</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <polygon points="70,76 225,76 225,16" fill="#38bdf8" fill-opacity="0.15" stroke="#38bdf8" stroke-width="2"/>
+          <rect x="215" y="66" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+          <text x="98" y="72" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">θ</text>
+          <text x="125" y="90" fill="#e2e8f0" font-size="9.5" font-family="monospace">Adjacent (Base)</text>
+          <text x="232" y="50" fill="#fde68a" font-size="9.5" font-family="monospace">Opposite</text>
+          <text x="105" y="40" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hypotenuse</text>
         </svg>`,
+
+      // Two-Angle Tower Elevation h = d / (cot α - cot β)
       trig_elevation: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
           <line x1="40" y1="78" x2="265" y2="78" stroke="#94a3b8" stroke-width="1.5"/>
-          <line x1="250" y1="14" x2="250" y2="78" stroke="#f43f5e" stroke-width="3"/>
-          <line x1="65" y1="78" x2="250" y2="14" stroke="#fbbf24" stroke-width="1.6"/>
-          <line x1="155" y1="78" x2="250" y2="14" stroke="#38bdf8" stroke-width="1.6"/>
-          <text x="85" y="74" fill="#fde68a" font-size="9.5" font-family="monospace">α</text>
+          <line x1="245" y1="14" x2="245" y2="78" stroke="#f43f5e" stroke-width="3"/>
+          <line x1="60" y1="78" x2="245" y2="14" stroke="#fbbf24" stroke-width="1.8"/>
+          <line x1="155" y1="78" x2="245" y2="14" stroke="#38bdf8" stroke-width="1.8"/>
+          <text x="82" y="74" fill="#fde68a" font-size="9.5" font-family="monospace">α</text>
           <text x="172" y="74" fill="#7dd3fc" font-size="9.5" font-family="monospace">β</text>
-          <text x="100" y="90" fill="#e2e8f0" font-size="9.5" font-family="monospace">← d →</text>
-          <text x="256" y="48" fill="#fda4af" font-size="10" font-family="monospace">h</text>
+          <text x="95" y="91" fill="#e2e8f0" font-size="9.5" font-family="monospace">← d →</text>
+          <text x="252" y="48" fill="#fda4af" font-size="10" font-weight="bold" font-family="monospace">h</text>
         </svg>`,
+
+      // Criss-Cross Alligation Grid
       alligation_grid: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <line x1="85" y1="24" x2="225" y2="72" stroke="#64748b" stroke-width="1.5"/>
-          <line x1="85" y1="72" x2="225" y2="24" stroke="#64748b" stroke-width="1.5"/>
-          <circle cx="155" cy="48" r="18" fill="#1e1b4b" stroke="#fbbf24" stroke-width="2"/>
-          <text x="50" y="26" fill="#7dd3fc" font-size="10" font-family="monospace">A₁</text>
-          <text x="50" y="76" fill="#7dd3fc" font-size="10" font-family="monospace">A₂</text>
-          <text x="142" y="51" fill="#fde68a" font-size="9.5" font-family="monospace">Avg</text>
-          <text x="232" y="26" fill="#fda4af" font-size="9.5" font-family="monospace">|A₂ − Avg| (w₁)</text>
-          <text x="232" y="76" fill="#fda4af" font-size="9.5" font-family="monospace">|Avg − A₁| (w₂)</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="85" y1="24" x2="220" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="85" y1="74" x2="220" y2="24" stroke="#94a3b8" stroke-width="1.5"/>
+          <circle cx="152" cy="49" r="18" fill="#1e1b4b" stroke="#fbbf24" stroke-width="2"/>
+          <text x="52" y="27" fill="#7dd3fc" font-size="10" font-weight="bold" font-family="monospace">A₁</text>
+          <text x="52" y="77" fill="#7dd3fc" font-size="10" font-weight="bold" font-family="monospace">A₂</text>
+          <text x="140" y="52" fill="#fde68a" font-size="9.5" font-weight="bold" font-family="monospace">Avg</text>
+          <text x="228" y="27" fill="#fda4af" font-size="9.5" font-family="monospace">|A₂ − Avg| (w₁)</text>
+          <text x="228" y="77" fill="#fda4af" font-size="9.5" font-family="monospace">|Avg − A₁| (w₂)</text>
         </svg>`,
+
+      // Post-Crossing Trains S₁/S₂ = √(t₂/t₁)
       trains_crossing: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
           <line x1="35" y1="52" x2="285" y2="52" stroke="#94a3b8" stroke-width="2"/>
           <circle cx="35" cy="52" r="4" fill="#38bdf8"/>
           <circle cx="160" cy="52" r="4.5" fill="#fbbf24"/>
           <circle cx="285" cy="52" r="4" fill="#f43f5e"/>
-          <text x="30" y="70" fill="#7dd3fc" font-size="10" font-family="monospace">X (S₁→)</text>
-          <text x="145" y="70" fill="#fde68a" font-size="10" font-family="monospace">Meet M</text>
-          <text x="245" y="70" fill="#fda4af" font-size="10" font-family="monospace">(←S₂) Y</text>
-          <text x="65" y="34" fill="#fda4af" font-size="9.5" font-family="monospace">← B takes t₂</text>
-          <text x="180" y="34" fill="#7dd3fc" font-size="9.5" font-family="monospace">A takes t₁ →</text>
+          <text x="28" y="72" fill="#7dd3fc" font-size="10" font-family="monospace">X (S₁→)</text>
+          <text x="142" y="72" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">Meet M</text>
+          <text x="242" y="72" fill="#fda4af" font-size="10" font-family="monospace">(←S₂) Y</text>
+          <text x="62" y="35" fill="#fda4af" font-size="9.5" font-family="monospace">← B takes t₂</text>
+          <text x="178" y="35" fill="#7dd3fc" font-size="9.5" font-family="monospace">A takes t₁ →</text>
         </svg>`,
+
+      // Venn Diagram P(A U B)
       venn_union: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <circle cx="135" cy="48" r="32" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="2"/>
-          <circle cx="185" cy="48" r="32" fill="#fbbf24" fill-opacity="0.25" stroke="#fbbf24" stroke-width="2"/>
-          <text x="102" y="51" fill="#7dd3fc" font-size="10" font-family="monospace">P(A)</text>
-          <text x="195" y="51" fill="#fde68a" font-size="10" font-family="monospace">P(B)</text>
-          <text x="147" y="51" fill="#ffffff" font-size="9" font-family="monospace">A∩B</text>
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <circle cx="135" cy="49" r="33" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="2"/>
+          <circle cx="185" cy="49" r="33" fill="#fbbf24" fill-opacity="0.25" stroke="#fbbf24" stroke-width="2"/>
+          <text x="98" y="52" fill="#7dd3fc" font-size="10" font-weight="bold" font-family="monospace">P(A)</text>
+          <text x="196" y="52" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">P(B)</text>
+          <text x="148" y="52" fill="#ffffff" font-size="9" font-weight="bold" font-family="monospace">A∩B</text>
         </svg>`,
+
+      // Statistics Normal Bell Shift (+k shifts Mean, leaves SD unchanged)
       stats_bell: `
-        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+        <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
           <line x1="25" y1="78" x2="295" y2="78" stroke="#64748b" stroke-width="1.2"/>
-          <path d="M 45 78 C 85 78, 105 16, 135 16 C 165 16, 185 78, 225 78" fill="none" stroke="#38bdf8" stroke-width="2"/>
-          <path d="M 95 78 C 135 78, 155 16, 185 16 C 215 16, 235 78, 275 78" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4,3"/>
-          <text x="128" y="90" fill="#7dd3fc" font-size="9.5" font-family="monospace">μ</text>
-          <text x="176" y="90" fill="#fde68a" font-size="9.5" font-family="monospace">μ + k (Same σ)</text>
+          <path d="M 45 78 C 85 78, 105 16, 135 16 C 165 16, 185 78, 225 78" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+          <path d="M 95 78 C 135 78, 155 16, 185 16 C 215 16, 235 78, 275 78" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="4,3"/>
+          <line x1="135" y1="16" x2="135" y2="78" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2"/>
+          <line x1="185" y1="16" x2="185" y2="78" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2,2"/>
+          <text x="128" y="91" fill="#7dd3fc" font-size="9.5" font-family="monospace">μ</text>
+          <text x="176" y="91" fill="#fde68a" font-size="9.5" font-family="monospace">μ + k (Same σ)</text>
         </svg>`
     };
 
@@ -406,7 +478,7 @@
       // -----------------------------------------------------------------------
       // TOPIC 1: ALGEBRA (10 Chapters -> 20 Cards)
       // -----------------------------------------------------------------------
-      // Ch 1: Simple Equations
+      // Ch 1: Simple Equations (Booklet 1, Ch 1)
       {
         id: "c_se_1",
         topic: "Algebra",
@@ -436,7 +508,7 @@
         hook: "Swapped coefficients? Add & subtract. Reversed digits? Factor out 9."
       },
 
-      // Ch 2: Special Equations
+      // Ch 2: Special Equations (Booklet 3, Ch 1)
       {
         id: "c_spe_1",
         topic: "Algebra",
@@ -466,7 +538,7 @@
         hook: "Bound k on both ends; watch zero vs positive integer wording."
       },
 
-      // Ch 3: Quadratic Equations
+      // Ch 3: Quadratic Equations (Booklet 3, Ch 2)
       {
         id: "c_qe_1",
         topic: "Algebra",
@@ -488,7 +560,7 @@
         subtopic: "Quadratic Equations",
         level: "Advanced",
         title: "Root Transformations, Vertex Extremum & Cubic Vieta",
-        formula: "Reciprocal roots (1/α, 1/β): cx² + bx + a = 0\nRoots shifted by k (α−k, β−k): a(x+k)² + b(x+k) + c = 0\nVertex of ax² + bx + c at x = −b/(2a) with extreme value (4ac − b²)/(4a)",
+        formula: "Reciprocal roots (1/α, 1/β): cx² + bx + a = 0\nRoots shifted by k (α−k, β−k): a(x+k)² + b(x+k) + c = 0\nVertex of ax² + bx + c at x = −b/(2a) with extreme value −D/(4a) = (4ac − b²)/(4a)",
         highlight: "For cubic ax³ + bx² + cx + d = 0: ∑α = −b/a,  ∑αβ = c/a,  αβγ = −d/a",
         bullets: [
           "If both roots of ax² + bx + c = 0 are positive, then −b/a > 0 AND c/a > 0 AND D ≥ 0.",
@@ -497,7 +569,7 @@
         hook: "Reciprocal roots flip a and c; always check D ≥ 0 before claiming real roots."
       },
 
-      // Ch 4: Inequalities and Modulus
+      // Ch 4: Inequalities and Modulus (Booklet 3, Ch 3)
       {
         id: "c_im_1",
         topic: "Algebra",
@@ -528,7 +600,7 @@
         hook: "Sum of absolute distances hits its floor at the median point."
       },
 
-      // Ch 5: Sequences and Series
+      // Ch 5: Sequences and Series (Booklet 3, Ch 4)
       {
         id: "c_ss_1",
         topic: "Algebra",
@@ -558,7 +630,7 @@
         hook: "Split denominator product by the gap d; watch inner terms cancel."
       },
 
-      // Ch 6: Functions
+      // Ch 6: Functions (Booklet 3, Ch 5)
       {
         id: "c_fn_1",
         topic: "Algebra",
@@ -588,7 +660,7 @@
         hook: "Spot the functional pattern, substitute the known template, and solve the power."
       },
 
-      // Ch 7: Graphs
+      // Ch 7: Graphs (Booklet 3, Ch 6)
       {
         id: "c_gr_1",
         topic: "Algebra",
@@ -619,7 +691,7 @@
         hook: "|f(x)| bounces the bottom up; |x|+|y|=a encloses area 2a²."
       },
 
-      // Ch 8: Indices – Surds
+      // Ch 8: Indices – Surds (Booklet 3, Ch 7)
       {
         id: "c_is_1",
         topic: "Algebra",
@@ -649,7 +721,7 @@
         hook: "Consecutive factors n(n+1)? Plus picks (n+1), Minus picks n."
       },
 
-      // Ch 9: Logarithms
+      // Ch 9: Logarithms (Booklet 3, Ch 8)
       {
         id: "c_log_1",
         topic: "Algebra",
@@ -679,7 +751,7 @@
         hook: "Base power goes to the bottom; fractional base (<1) flips the inequality."
       },
 
-      // Ch 10: Operator Based Questions
+      // Ch 10: Operator Based Questions (Booklet 2, Ch 8)
       {
         id: "c_op_1",
         topic: "Algebra",
@@ -712,7 +784,7 @@
       // -----------------------------------------------------------------------
       // TOPIC 2: NUMBER THEORY (3 Chapters -> 6 Cards)
       // -----------------------------------------------------------------------
-      // Ch 11: Numbers – I
+      // Ch 11: Numbers – I (Booklet 2, Ch 1)
       {
         id: "c_n1_1",
         topic: "Number Theory",
@@ -742,7 +814,7 @@
         hook: "Add 1 to prime powers for factor count; zero sum collapses cubes to 3abc."
       },
 
-      // Ch 12: Numbers – II
+      // Ch 12: Numbers – II (Booklet 2, Ch 2)
       {
         id: "c_n2_1",
         topic: "Number Theory",
@@ -772,7 +844,7 @@
         hook: "Coprime base? Chop exponent mod φ(n). Cancel factor k? Multiply remainder by k."
       },
 
-      // Ch 13: Number Systems
+      // Ch 13: Number Systems (Booklet 2, Ch 3)
       {
         id: "c_ns_1",
         topic: "Number Theory",
@@ -805,7 +877,7 @@
       // -----------------------------------------------------------------------
       // TOPIC 3: GEOMETRY (4 Chapters -> 8 Cards)
       // -----------------------------------------------------------------------
-      // Ch 14: Geometry
+      // Ch 14: Geometry (Booklet 2, Ch 4)
       {
         id: "c_geo_1",
         topic: "Geometry",
@@ -837,7 +909,7 @@
         hook: "Tangent squared equals Outside piece (PA) times Whole secant (PB)."
       },
 
-      // Ch 15: Mensuration
+      // Ch 15: Mensuration (Booklet 2, Ch 5)
       {
         id: "c_men_1",
         topic: "Geometry",
@@ -868,7 +940,7 @@
         hook: "Same radius & height r? Cone : Hemisphere : Cylinder volumes go 1 : 2 : 3."
       },
 
-      // Ch 16: Co-ordinate Geometry
+      // Ch 16: Co-ordinate Geometry (Booklet 2, Ch 6)
       {
         id: "c_cg_1",
         topic: "Geometry",
@@ -899,7 +971,7 @@
         hook: "k=1 lands on the mirror (Foot); k=2 jumps across the mirror (Image)."
       },
 
-      // Ch 17: Trigonometry
+      // Ch 17: Trigonometry (Booklet 2, Ch 7)
       {
         id: "c_trig_1",
         topic: "Geometry",
@@ -934,7 +1006,7 @@
       // -----------------------------------------------------------------------
       // TOPIC 4: RATIO & MIXTURES (2 Chapters -> 4 Cards)
       // -----------------------------------------------------------------------
-      // Ch 18: Ratio – Proportion – Variation
+      // Ch 18: Ratio – Proportion – Variation (Booklet 1, Ch 2)
       {
         id: "c_rpv_1",
         topic: "Ratio & Mixtures",
@@ -964,7 +1036,7 @@
         hook: "Sum over Difference untangles x and y; cyclic ratios have two answers (1/2 or -1)."
       },
 
-      // Ch 19: Averages – Mixtures – Alligations
+      // Ch 19: Averages – Mixtures – Alligations (Booklet 1, Ch 7)
       {
         id: "c_ama_1",
         topic: "Ratio & Mixtures",
@@ -998,7 +1070,7 @@
       // -----------------------------------------------------------------------
       // TOPIC 5: ARITHMETIC (4 Chapters -> 8 Cards)
       // -----------------------------------------------------------------------
-      // Ch 20: Percentages – Profit & Loss – Partnerships
+      // Ch 20: Percentages – Profit & Loss – Partnerships (Booklet 1, Ch 3)
       {
         id: "c_ppl_1",
         topic: "Arithmetic",
@@ -1028,7 +1100,7 @@
         hook: "Dishonest scale denominator is ALWAYS the actual weight that leaves the shop."
       },
 
-      // Ch 21: Simple Interest and Compound Interest
+      // Ch 21: Simple Interest and Compound Interest (Booklet 1, Ch 4)
       {
         id: "c_sici_1",
         topic: "Arithmetic",
@@ -1058,7 +1130,7 @@
         hook: "2-Yr gap is P(R/100)²; 3-Yr gap multiplies that by (3 + R/100)."
       },
 
-      // Ch 22: Time and Distance
+      // Ch 22: Time and Distance (Booklet 1, Ch 5)
       {
         id: "c_td_1",
         topic: "Arithmetic",
@@ -1089,7 +1161,7 @@
         hook: "Post-meeting times flip under a square root; reduce track speeds to coprime integers first."
       },
 
-      // Ch 23: Time and Work
+      // Ch 23: Time and Work (Booklet 1, Ch 6)
       {
         id: "c_tw_1",
         topic: "Arithmetic",
@@ -1122,7 +1194,7 @@
       // -----------------------------------------------------------------------
       // TOPIC 6: MODERN MATH (3 Chapters -> 6 Cards)
       // -----------------------------------------------------------------------
-      // Ch 24: Permutations and Combinations
+      // Ch 24: Permutations and Combinations (Booklet 3, Ch 9)
       {
         id: "c_pc_1",
         topic: "Modern Math",
@@ -1152,7 +1224,7 @@
         hook: "Identical coins to r beggars: (n+r−1)C(r−1); memorize D₄ = 9 and D₅ = 44."
       },
 
-      // Ch 25: Probability
+      // Ch 25: Probability (Booklet 3, Ch 10)
       {
         id: "c_prob_1",
         topic: "Modern Math",
@@ -1183,7 +1255,7 @@
         hook: "Bayes = (Target Branch) / (Sum of All Branches reaching the observed outcome)."
       },
 
-      // Ch 26: Statistics
+      // Ch 26: Statistics (Booklet 2, Ch 9)
       {
         id: "c_stat_1",
         topic: "Modern Math",
@@ -1236,10 +1308,10 @@
         topic: "Algebra",
         subtopic: "Special Equations",
         difficulty: "Medium",
-        question: "How many positive integer solutions (x, y ≥ 1) satisfy the equation 3x + 7y = 100?",
+        question: "How many positive integer solutions (x, y ≥ 1) satisfy the equation 3x + 7y = 95?",
         options: ["3", "4", "5", "6"],
         correctIndex: 1,
-        shortcut: "Find first positive y: 100 − 7y ≡ 0 (mod 3) ⇒ 1 − y ≡ 0 (mod 3) ⇒ y₀ = 1 (gives x₀ = 31). Step y by +3: y ∈ {1, 4, 7, 10, 13}. At y = 13, x = (100−91)/3 = 3 ≥ 1.Wait: {1, 4, 7, 10, 13} is 5 solutions? Let's check: y=1(x=31), y=4(x=24), y=7(x=17), y=10(x=10), y=13(x=3) → 5 solutions! Wait: let's set question to 3x + 7y = 95: y=2(x=27), y=5(x=20), y=8(x=13), y=11(x=6) → 4 solutions.",
+        shortcut: "Find first positive y: 95 − 7y ≡ 0 (mod 3) ⇒ 2 − y ≡ 0 (mod 3) ⇒ y₀ = 2 (gives x₀ = 27). Step y by +3: y ∈ {2, 5, 8, 11}, giving x ∈ {27, 20, 13, 6} → 4 positive integer solutions.",
         trap: "Missing the boundary solution or including x = 0 when strictly positive integers are required.",
         concept_ref: "c_spe_2"
       },
@@ -1322,7 +1394,7 @@
         difficulty: "Medium",
         question: "Evaluate: log₈(128) + log₂₇(81)",
         options: ["3", "31/9", "11/3", "4"],
-        correctIndex: 1,
+        correctIndex: 2,
         shortcut: "Write as prime powers: log_(2³)(2⁷) + log_(3³)(3⁴) = (7/3)·log₂(2) + (4/3)·log₃(3) = 7/3 + 4/3 = 11/3.",
         trap: "Inverting the power ratio as 3/7 + 3/4.",
         concept_ref: "c_log_2"
@@ -1533,10 +1605,6 @@
       }
     ];
 
-    // Fix q_spe_1 question text so 4 is the exact count for 3x + 7y = 95
-    SEED_QUESTIONS[1].question = "How many positive integer solutions (x, y ≥ 1) satisfy the equation 3x + 7y = 95?";
-    SEED_QUESTIONS[1].shortcut = "Find first positive y: 95 − 7y ≡ 0 (mod 3) ⇒ 2 − y ≡ 0 (mod 3) ⇒ y₀ = 2 (gives x₀ = 27). Step y by +3: y ∈ {2, 5, 8, 11}, giving x ∈ {27, 20, 13, 6} → 4 positive integer solutions.";
-
     // =========================================================================
     // 5. STATE MANAGEMENT & STRICT FILTER SYNC (quantbyprof_v2_state)
     // =========================================================================
@@ -1562,7 +1630,7 @@
         this.state = this.loadState();
         this.section = "revise";     // 'revise' | 'questions' | 'arcade'
         this.topic = "All";          // Parent Topic pill
-        this.subtopic = "All";       // Scoped Chapter pill
+        this.subtopic = "All";       // Scoped Chapter selection (Dropdown + Pill bar)
         this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
         this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
         this.questionSub = "all";    // 'all' | 'unattempted' | 'retry' | 'saved' | 'correct'
@@ -1609,6 +1677,14 @@
           return Object.values(TOPIC_CHAPTER_MAP).flat();
         }
         return TOPIC_CHAPTER_MAP[this.topic] || [];
+      }
+
+      // Helper to find parent topic for any chapter
+      findParentTopicForChapter(chapterName) {
+        for (const [t, chapters] of Object.entries(TOPIC_CHAPTER_MAP)) {
+          if (chapters.includes(chapterName)) return t;
+        }
+        return "All";
       }
 
       // Concepts scoped by Topic + Subtopic (before status/level sub-filters)
@@ -1691,7 +1767,13 @@
 
       setSubtopic(sub) {
         this.subtopic = sub;
-        // If user picks a specific chapter while parent Topic is "All", keep or highlight naturally
+        // If a specific parent topic is active and user selects a chapter outside it, keep parent synced
+        if (sub !== "All" && this.topic !== "All") {
+          const parentOfSub = this.findParentTopicForChapter(sub);
+          if (parentOfSub !== this.topic) {
+            this.topic = parentOfSub;
+          }
+        }
         this.renderAll();
       }
 
@@ -2125,11 +2207,37 @@
       }
 
       renderSubtopicBar() {
+        const selectEl = document.getElementById("subtopic-select");
         const container = document.getElementById("subtopic-bar");
         const chapters = this.getAvailableSubtopics();
         const allLabel = this.topic === "All" ? `All 26 Chapters` : `All ${this.topic} (${chapters.length})`;
-        const pills = ["All", ...chapters];
 
+        // 1. Populate Left Sectional Dropdown (<optgroup> when "All" topics active, or scoped group when specific topic active)
+        if (selectEl) {
+          let optionsHtml = `<option value="All">📂 ${allLabel}</option>`;
+          if (this.topic === "All") {
+            for (const [grpTopic, grpChapters] of Object.entries(TOPIC_CHAPTER_MAP)) {
+              optionsHtml += `<optgroup label="── ${grpTopic} (${grpChapters.length}) ──">`;
+              grpChapters.forEach(ch => {
+                const isSelected = this.subtopic === ch ? "selected" : "";
+                optionsHtml += `<option value="${ch}" ${isSelected}>${ch}</option>`;
+              });
+              optionsHtml += `</optgroup>`;
+            }
+          } else {
+            optionsHtml += `<optgroup label="── ${this.topic} (${chapters.length}) ──">`;
+            chapters.forEach(ch => {
+              const isSelected = this.subtopic === ch ? "selected" : "";
+              optionsHtml += `<option value="${ch}" ${isSelected}>${ch}</option>`;
+            });
+            optionsHtml += `</optgroup>`;
+          }
+          selectEl.innerHTML = optionsHtml;
+          selectEl.value = this.subtopic;
+        }
+
+        // 2. Populate Right Horizontal Buttons (starting with "All 26 Chapters" / "All <Topic>")
+        const pills = ["All", ...chapters];
         container.innerHTML = pills.map(ch => {
           const active = this.subtopic === ch;
           const label = ch === "All" ? allLabel : ch;
