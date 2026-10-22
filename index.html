@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v2.1 — 26-Chapter Master Syllabus Edition</title>
+  <title>QuantByProf v2.2 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -23,7 +23,7 @@
       color: #1e1b4b;
     }
     .revise-card-gradient {
-      background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%);
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #3730a3 100%);
     }
 
     /* 2. Questions Theme: Cyber Teal & Crisp Slate Arena */
@@ -56,10 +56,10 @@
 
   <!-- TOP NAVIGATION BAR -->
   <header id="app-header" class="sticky top-0 z-40 shadow-md transition-colors duration-300 bg-[#1e1b4b] text-white">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="font-black text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.1 • 26 Ch</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.2 Ladder + SVG</span>
       </div>
       <div class="flex items-center space-x-2">
         <button onclick="window.app.openAddModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">+ Add</button>
@@ -68,13 +68,13 @@
     </div>
 
     <!-- PRIMARY MODE SWITCHER (Revise | Questions | Arcade) -->
-    <div class="max-w-3xl mx-auto px-4 pb-2.5">
+    <div class="max-w-4xl mx-auto px-4 pb-2.5">
       <div class="grid grid-cols-3 gap-1.5 bg-black/25 p-1 rounded-xl">
         <button id="tab-revise" onclick="window.app.setSection('revise')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
-          <span>📖 Revise</span>
+          <span>📖 Revise (52)</span>
         </button>
         <button id="tab-questions" onclick="window.app.setSection('questions')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
-          <span>🎯 Questions</span>
+          <span>🎯 Questions (26)</span>
         </button>
         <button id="tab-arcade" onclick="window.app.setSection('arcade')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
           <span>🎮 Minigames</span>
@@ -82,42 +82,39 @@
       </div>
     </div>
 
-    <!-- 1. SHARED PARENT TOPIC PILL BAR (6 PILLS + ALL) -->
+    <!-- PARENT TOPIC PILL BAR (6 Core Categories) -->
     <div class="border-t border-white/10 bg-black/15">
-      <div id="topic-bar" class="max-w-3xl mx-auto px-4 py-2 flex space-x-2 overflow-x-auto no-scrollbar"></div>
+      <div id="topic-bar" class="max-w-4xl mx-auto px-4 py-2 flex space-x-2 overflow-x-auto no-scrollbar"></div>
     </div>
 
-    <!-- 2. NEW SUBTOPIC (26 CHAPTERS) MENU BAR -->
-    <div class="border-t border-white/10 bg-black/30">
-      <div class="max-w-3xl mx-auto px-4 py-2 flex items-center space-x-2">
-        <span class="text-[10px] font-mono-code uppercase tracking-wider text-amber-300 font-bold shrink-0">📑 Subtopic:</span>
-        <select
-          id="subtopic-select"
-          onchange="window.app.setSubtopic(this.value)"
-          class="bg-white/10 hover:bg-white/15 text-white text-xs font-semibold rounded-lg px-2.5 py-1.5 border border-white/20 focus:outline-none focus:border-amber-400 shrink-0 max-w-[210px] sm:max-w-xs truncate"
-        ></select>
-        <div id="subtopic-pills" class="flex space-x-1.5 overflow-x-auto no-scrollbar py-0.5"></div>
-      </div>
+    <!-- SCOPED CHAPTER / SUBTOPIC BAR (Strictly synced to Parent Topic) -->
+    <div class="border-t border-white/5 bg-black/25">
+      <div id="subtopic-bar" class="max-w-4xl mx-auto px-4 py-1.5 flex space-x-1.5 overflow-x-auto no-scrollbar"></div>
     </div>
   </header>
 
-  <!-- SUB-FILTER / ARCADE MODE BAR -->
-  <div id="subfilter-container" class="max-w-3xl w-full mx-auto px-4 pt-3">
-    <div id="subfilter-bar" class="flex space-x-2 overflow-x-auto no-scrollbar pb-1"></div>
+  <!-- SUB-FILTER & LEVEL LADDER BAR -->
+  <div id="subfilter-container" class="max-w-4xl w-full mx-auto px-4 pt-3 space-y-2">
+    <div id="subfilter-bar" class="flex space-x-2 overflow-x-auto no-scrollbar pb-0.5"></div>
+    <div id="level-bar" class="flex space-x-2 overflow-x-auto no-scrollbar"></div>
   </div>
 
   <!-- MAIN VIEWPORT -->
-  <main id="main-content" class="max-w-3xl w-full mx-auto px-4 pt-3 flex-1"></main>
+  <main id="main-content" class="max-w-4xl w-full mx-auto px-4 pt-3 flex-1"></main>
 
   <!-- CONCEPT SHIELD / REFERENCE POPUP MODAL -->
   <div id="concept-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-indigo-400/30 bg-[#1e1b4b] text-white p-5">
-      <div class="flex justify-between items-start mb-3">
-        <span id="modal-concept-badge" class="text-[11px] font-mono-code uppercase px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">🛡️ Concept Shield</span>
-        <button onclick="window.app.closeConceptModal()" class="text-white/60 hover:text-white text-lg leading-none">&times;</button>
+    <div class="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-indigo-400/30 bg-[#1e1b4b] text-white p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-2">
+        <div class="flex items-center space-x-2">
+          <span id="modal-concept-badge" class="text-[10px] font-mono-code uppercase px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">🛡️ Concept Shield</span>
+          <span id="modal-concept-level" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full"></span>
+        </div>
+        <button onclick="window.app.closeConceptModal()" class="text-white/60 hover:text-white text-xl leading-none">&times;</button>
       </div>
-      <h3 id="modal-concept-title" class="text-base font-bold text-white mb-2"></h3>
-      <div class="p-3 rounded-xl bg-black/30 border border-white/10 font-mono-code text-xs text-indigo-200 mb-2" id="modal-concept-formula"></div>
+      <h3 id="modal-concept-title" class="text-base font-bold text-white mb-2.5"></h3>
+      <div id="modal-concept-svg" class="mb-2.5 hidden"></div>
+      <div class="p-3 rounded-xl bg-black/35 border border-white/10 font-mono-code text-xs text-indigo-100 mb-2.5 whitespace-pre-line leading-relaxed" id="modal-concept-formula"></div>
       <div class="p-2.5 rounded-lg bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs font-semibold mb-3" id="modal-concept-highlight"></div>
       <ul id="modal-concept-bullets" class="space-y-1.5 text-xs text-indigo-100 mb-3 list-disc pl-4"></ul>
       <div class="text-xs italic text-amber-300 bg-black/20 p-2.5 rounded-lg border border-white/5" id="modal-concept-hook"></div>
@@ -133,10 +130,10 @@
         <button onclick="window.app.closeAddModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
       </div>
       <form id="add-form" onsubmit="window.app.saveCustomConcept(event)" class="space-y-3 text-xs">
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="block font-semibold mb-1">Topic (6 Categories)</label>
-            <select id="add-topic" onchange="window.app.populateAddSubtopics()" class="w-full p-2 rounded-lg border border-slate-300">
+            <label class="block font-semibold mb-1">Parent Topic</label>
+            <select id="add-topic" onchange="window.app.populateModalSubtopics()" class="w-full p-2 rounded-lg border border-slate-300">
               <option value="Algebra">Algebra</option>
               <option value="Number Theory">Number Theory</option>
               <option value="Geometry">Geometry</option>
@@ -146,29 +143,36 @@
             </select>
           </div>
           <div>
-            <label class="block font-semibold mb-1">Subtopic (26 Chapters)</label>
+            <label class="block font-semibold mb-1">Chapter (Subtopic)</label>
             <select id="add-subtopic" class="w-full p-2 rounded-lg border border-slate-300"></select>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1">Stage / Level</label>
+            <select id="add-level" class="w-full p-2 rounded-lg border border-slate-300">
+              <option value="Foundation">🌱 Foundation</option>
+              <option value="Advanced">🚀 Advanced</option>
+            </select>
           </div>
         </div>
         <div>
           <label class="block font-semibold mb-1">Concept Title</label>
-          <input id="add-title" required placeholder="e.g., Vieta's Root Relations" class="w-full p-2 rounded-lg border border-slate-300" />
+          <input id="add-title" required placeholder="e.g., Remainder Cycle Theorem" class="w-full p-2 rounded-lg border border-slate-300" />
         </div>
         <div>
           <label class="block font-semibold mb-1">Core Formula</label>
-          <input id="add-formula" required placeholder="e.g., α + β = -b/a, αβ = c/a" class="w-full p-2 rounded-lg border border-slate-300 font-mono-code" />
+          <textarea id="add-formula" rows="2" required placeholder="e.g., log_b(xy) = log_b(x) + log_b(y)" class="w-full p-2 rounded-lg border border-slate-300 font-mono-code"></textarea>
         </div>
         <div>
-          <label class="block font-semibold mb-1">Gold Highlight (Key Condition)</label>
-          <input id="add-highlight" required placeholder="e.g., Sum of roots flips sign; product keeps sign" class="w-full p-2 rounded-lg border border-slate-300" />
+          <label class="block font-semibold mb-1">Gold Highlight (Key Rule / Condition)</label>
+          <input id="add-highlight" required placeholder="e.g., Base and argument must be strictly positive" class="w-full p-2 rounded-lg border border-slate-300" />
         </div>
         <div>
-          <label class="block font-semibold mb-1">Recognition / Trap Bullet 1</label>
-          <input id="add-b1" required placeholder="Pattern recognition trigger..." class="w-full p-2 rounded-lg border border-slate-300" />
+          <label class="block font-semibold mb-1">Building Block / Recognition Bullet 1</label>
+          <input id="add-b1" required placeholder="Step-by-step intuition or pattern cue..." class="w-full p-2 rounded-lg border border-slate-300" />
         </div>
         <div>
-          <label class="block font-semibold mb-1">Recognition / Trap Bullet 2</label>
-          <input id="add-b2" required placeholder="Common exam converse trap..." class="w-full p-2 rounded-lg border border-slate-300" />
+          <label class="block font-semibold mb-1">Exam Trap / Shortcut Bullet 2</label>
+          <input id="add-b2" required placeholder="Common converse trap to avoid..." class="w-full p-2 rounded-lg border border-slate-300" />
         </div>
         <div>
           <label class="block font-semibold mb-1">1-Line Memory Hook</label>
@@ -186,7 +190,7 @@
         <h3 class="font-bold text-base">State Backup & JSON Sync</h3>
         <button onclick="window.app.closeSyncModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
       </div>
-      <p class="text-xs text-slate-500 mb-3">Copy your `quantbyprof_v2_state` JSON backup or paste an existing state string below to restore progress and arcade stats.</p>
+      <p class="text-xs text-slate-500 mb-3">Copy your <code>quantbyprof_v2_state</code> JSON backup or paste an existing state string below to restore progress and arcade stats.</p>
       <textarea id="sync-textarea" rows="7" class="w-full p-3 rounded-xl border border-slate-300 font-mono-code text-[11px] mb-3 focus:outline-none focus:border-indigo-600"></textarea>
       <div class="flex space-x-2">
         <button onclick="window.app.copySyncState()" class="flex-1 py-2.5 rounded-xl bg-slate-800 text-white font-bold text-xs">📋 Copy Backup</button>
@@ -198,19 +202,9 @@
   <!-- APPLICATION SCRIPT (ZERO-COMPILE ES6) -->
   <script>
     // =========================================================================
-    // 1. MASTER 6 TOPICS & 26 CHAPTERS MAPPING (T.I.M.E. Booklets 1, 2, 3)
+    // 1. STRICT TOPIC <-> 26 CHAPTER TAXONOMY (Audited T.I.M.E. Mapping)
     // =========================================================================
-    const TOPICS = [
-      "All",
-      "Algebra",
-      "Number Theory",
-      "Geometry",
-      "Ratio & Mixtures",
-      "Arithmetic",
-      "Modern Math"
-    ];
-
-    const TOPIC_CHAPTERS = {
+    const TOPIC_CHAPTER_MAP = {
       "Algebra": [
         "Simple Equations",
         "Special Equations",
@@ -251,535 +245,1114 @@
       ]
     };
 
-    const ALL_26_CHAPTERS = Object.values(TOPIC_CHAPTERS).flat();
-
-    // Reverse lookup helper: Subtopic -> Parent Topic
-    const SUBTOPIC_TO_TOPIC = {};
-    Object.entries(TOPIC_CHAPTERS).forEach(([t, subs]) => {
-      subs.forEach(s => { SUBTOPIC_TO_TOPIC[s] = t; });
-    });
+    const TOPICS = ["All", ...Object.keys(TOPIC_CHAPTER_MAP)];
 
     // =========================================================================
-    // 2. SEED CONCEPTS (28 High-Yield Cards Covering All 26 Chapters)
+    // 2. INLINE SVG CONCEPT DIAGRAMS (High-Contrast Dark/Indigo Theme)
+    // =========================================================================
+    const SVG_DIAGRAMS = {
+      parabola_roots: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="20" y1="70" x2="300" y2="70" stroke="#64748b" stroke-width="1.2"/>
+          <line x1="80" y1="10" x2="80" y2="90" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
+          <path d="M 95 15 Q 175 115 255 15" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+          <circle cx="122" cy="70" r="3.5" fill="#fbbf24"/>
+          <circle cx="228" cy="70" r="3.5" fill="#fbbf24"/>
+          <circle cx="175" cy="65" r="4" fill="#f43f5e"/>
+          <text x="115" y="84" fill="#fde68a" font-size="10" font-family="monospace">α</text>
+          <text x="225" y="84" fill="#fde68a" font-size="10" font-family="monospace">β</text>
+          <text x="135" y="55" fill="#fda4af" font-size="9" font-family="monospace">Vertex (-b/2a, -D/4a)</text>
+        </svg>`,
+      modulus_bucket: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="20" y1="80" x2="300" y2="80" stroke="#64748b" stroke-width="1.2"/>
+          <polyline points="55,15 115,58 205,58 265,15" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
+          <line x1="115" y1="58" x2="115" y2="80" stroke="#94a3b8" stroke-dasharray="3,3"/>
+          <line x1="205" y1="58" x2="205" y2="80" stroke="#94a3b8" stroke-dasharray="3,3"/>
+          <text x="105" y="91" fill="#e2e8f0" font-size="10" font-family="monospace">x = a</text>
+          <text x="195" y="91" fill="#e2e8f0" font-size="10" font-family="monospace">x = b</text>
+          <text x="122" y="48" fill="#fde68a" font-size="9.5" font-family="monospace">Min = |b − a|</text>
+        </svg>`,
+      diamond_graph: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="40" y1="48" x2="280" y2="48" stroke="#64748b" stroke-width="1.2"/>
+          <line x1="160" y1="6" x2="160" y2="90" stroke="#64748b" stroke-width="1.2"/>
+          <polygon points="160,12 215,48 160,84 105,48" fill="#38bdf8" fill-opacity="0.18" stroke="#38bdf8" stroke-width="2"/>
+          <text x="220" y="51" fill="#fde68a" font-size="9.5" font-family="monospace">(a,0)</text>
+          <text x="165" y="16" fill="#fde68a" font-size="9.5" font-family="monospace">(0,a)</text>
+          <text x="52" y="25" fill="#e2e8f0" font-size="9.5" font-family="monospace">|x| + |y| ≤ a</text>
+          <text x="52" y="38" fill="#38bdf8" font-size="9.5" font-family="monospace">Area = 2a²</text>
+        </svg>`,
+      triangle_centroid: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <polygon points="155,10 65,82 245,82" fill="none" stroke="#a5b4fc" stroke-width="2"/>
+          <line x1="155" y1="10" x2="155" y2="82" stroke="#fbbf24" stroke-width="2"/>
+          <line x1="65" y1="82" x2="200" y2="46" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
+          <line x1="245" y1="82" x2="110" y2="46" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
+          <circle cx="155" cy="58" r="4" fill="#f43f5e"/>
+          <text x="142" y="9" fill="#ffffff" font-size="9.5" font-family="monospace">A</text>
+          <text x="150" y="92" fill="#fde68a" font-size="9.5" font-family="monospace">D (Midpoint)</text>
+          <text x="163" y="56" fill="#fda4af" font-size="10" font-family="monospace">G (2 : 1)</text>
+          <text x="160" y="36" fill="#fde68a" font-size="9" font-family="monospace">2 parts</text>
+          <text x="160" y="74" fill="#fde68a" font-size="9" font-family="monospace">1 part</text>
+        </svg>`,
+      circle_secant: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <circle cx="205" cy="48" r="36" fill="none" stroke="#38bdf8" stroke-width="2"/>
+          <line x1="55" y1="72" x2="195" y2="13" stroke="#fbbf24" stroke-width="2"/>
+          <line x1="55" y1="72" x2="241" y2="52" stroke="#a5b4fc" stroke-width="2"/>
+          <circle cx="55" cy="72" r="3" fill="#ffffff"/>
+          <circle cx="195" cy="13" r="3.5" fill="#fbbf24"/>
+          <circle cx="170" cy="60" r="3" fill="#f43f5e"/>
+          <circle cx="241" cy="52" r="3" fill="#f43f5e"/>
+          <text x="42" y="75" fill="#ffffff" font-size="10" font-family="monospace">P</text>
+          <text x="190" y="10" fill="#fde68a" font-size="10" font-family="monospace">T</text>
+          <text x="163" y="74" fill="#fda4af" font-size="10" font-family="monospace">A</text>
+          <text x="246" y="56" fill="#fda4af" font-size="10" font-family="monospace">B</text>
+          <text x="65" y="34" fill="#fde68a" font-size="9.5" font-family="monospace">PT² = PA × PB</text>
+        </svg>`,
+      mensuration_123: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <!-- Cone -->
+          <polygon points="55,18 30,72 80,72" fill="#fbbf24" fill-opacity="0.2" stroke="#fbbf24" stroke-width="1.8"/>
+          <ellipse cx="55" cy="72" rx="25" ry="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+          <text x="34" y="89" fill="#fde68a" font-size="9.5" font-family="monospace">Cone (1)</text>
+          <!-- Hemisphere -->
+          <path d="M 130 72 A 28 28 0 0 1 186 72 Z" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1.8"/>
+          <ellipse cx="158" cy="72" rx="28" ry="6" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="132" y="89" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hemi (2)</text>
+          <!-- Cylinder -->
+          <rect x="232" y="22" width="52" height="50" fill="#a5b4fc" fill-opacity="0.2" stroke="#a5b4fc" stroke-width="1.8"/>
+          <ellipse cx="258" cy="22" rx="26" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
+          <ellipse cx="258" cy="72" rx="26" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
+          <text x="236" y="89" fill="#c7d2fe" font-size="9.5" font-family="monospace">Cyl (3)</text>
+        </svg>`,
+      coord_reflection: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="40" y1="80" x2="270" y2="15" stroke="#38bdf8" stroke-width="2"/>
+          <line x1="125" y1="20" x2="175" y2="76" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="4,3"/>
+          <circle cx="125" cy="20" r="3.5" fill="#fbbf24"/>
+          <circle cx="150" cy="48" r="3" fill="#ffffff"/>
+          <circle cx="175" cy="76" r="3.5" fill="#f43f5e"/>
+          <text x="72" y="22" fill="#fde68a" font-size="9.5" font-family="monospace">P(x₁,y₁)</text>
+          <text x="183" y="80" fill="#fda4af" font-size="9.5" font-family="monospace">P'(Image)</text>
+          <text x="195" y="25" fill="#7dd3fc" font-size="9.5" font-family="monospace">ax+by+c=0</text>
+        </svg>`,
+      trig_triangle: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <polygon points="70,76 230,76 230,16" fill="#38bdf8" fill-opacity="0.15" stroke="#38bdf8" stroke-width="2"/>
+          <rect x="220" y="66" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+          <text x="95" y="72" fill="#fde68a" font-size="10" font-family="monospace">θ</text>
+          <text x="135" y="89" fill="#e2e8f0" font-size="9.5" font-family="monospace">Adjacent (Base)</text>
+          <text x="236" y="50" fill="#fde68a" font-size="9.5" font-family="monospace">Opposite</text>
+          <text x="115" y="40" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hypotenuse</text>
+        </svg>`,
+      trig_elevation: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="40" y1="78" x2="265" y2="78" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="250" y1="14" x2="250" y2="78" stroke="#f43f5e" stroke-width="3"/>
+          <line x1="65" y1="78" x2="250" y2="14" stroke="#fbbf24" stroke-width="1.6"/>
+          <line x1="155" y1="78" x2="250" y2="14" stroke="#38bdf8" stroke-width="1.6"/>
+          <text x="85" y="74" fill="#fde68a" font-size="9.5" font-family="monospace">α</text>
+          <text x="172" y="74" fill="#7dd3fc" font-size="9.5" font-family="monospace">β</text>
+          <text x="100" y="90" fill="#e2e8f0" font-size="9.5" font-family="monospace">← d →</text>
+          <text x="256" y="48" fill="#fda4af" font-size="10" font-family="monospace">h</text>
+        </svg>`,
+      alligation_grid: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="85" y1="24" x2="225" y2="72" stroke="#64748b" stroke-width="1.5"/>
+          <line x1="85" y1="72" x2="225" y2="24" stroke="#64748b" stroke-width="1.5"/>
+          <circle cx="155" cy="48" r="18" fill="#1e1b4b" stroke="#fbbf24" stroke-width="2"/>
+          <text x="50" y="26" fill="#7dd3fc" font-size="10" font-family="monospace">A₁</text>
+          <text x="50" y="76" fill="#7dd3fc" font-size="10" font-family="monospace">A₂</text>
+          <text x="142" y="51" fill="#fde68a" font-size="9.5" font-family="monospace">Avg</text>
+          <text x="232" y="26" fill="#fda4af" font-size="9.5" font-family="monospace">|A₂ − Avg| (w₁)</text>
+          <text x="232" y="76" fill="#fda4af" font-size="9.5" font-family="monospace">|Avg − A₁| (w₂)</text>
+        </svg>`,
+      trains_crossing: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="35" y1="52" x2="285" y2="52" stroke="#94a3b8" stroke-width="2"/>
+          <circle cx="35" cy="52" r="4" fill="#38bdf8"/>
+          <circle cx="160" cy="52" r="4.5" fill="#fbbf24"/>
+          <circle cx="285" cy="52" r="4" fill="#f43f5e"/>
+          <text x="30" y="70" fill="#7dd3fc" font-size="10" font-family="monospace">X (S₁→)</text>
+          <text x="145" y="70" fill="#fde68a" font-size="10" font-family="monospace">Meet M</text>
+          <text x="245" y="70" fill="#fda4af" font-size="10" font-family="monospace">(←S₂) Y</text>
+          <text x="65" y="34" fill="#fda4af" font-size="9.5" font-family="monospace">← B takes t₂</text>
+          <text x="180" y="34" fill="#7dd3fc" font-size="9.5" font-family="monospace">A takes t₁ →</text>
+        </svg>`,
+      venn_union: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <circle cx="135" cy="48" r="32" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-width="2"/>
+          <circle cx="185" cy="48" r="32" fill="#fbbf24" fill-opacity="0.25" stroke="#fbbf24" stroke-width="2"/>
+          <text x="102" y="51" fill="#7dd3fc" font-size="10" font-family="monospace">P(A)</text>
+          <text x="195" y="51" fill="#fde68a" font-size="10" font-family="monospace">P(B)</text>
+          <text x="147" y="51" fill="#ffffff" font-size="9" font-family="monospace">A∩B</text>
+        </svg>`,
+      stats_bell: `
+        <svg viewBox="0 0 320 95" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
+          <line x1="25" y1="78" x2="295" y2="78" stroke="#64748b" stroke-width="1.2"/>
+          <path d="M 45 78 C 85 78, 105 16, 135 16 C 165 16, 185 78, 225 78" fill="none" stroke="#38bdf8" stroke-width="2"/>
+          <path d="M 95 78 C 135 78, 155 16, 185 16 C 215 16, 235 78, 275 78" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="128" y="90" fill="#7dd3fc" font-size="9.5" font-family="monospace">μ</text>
+          <text x="176" y="90" fill="#fde68a" font-size="9.5" font-family="monospace">μ + k (Same σ)</text>
+        </svg>`
+    };
+
+    // =========================================================================
+    // 3. SEED CONCEPTS (52 Cards = 26 Chapters × 2 Levels: Foundation & Advanced)
     // =========================================================================
     const SEED_CONCEPTS = [
-      // --- ALGEBRA (10 Chapters + Algebraic Identities) ---
+      // -----------------------------------------------------------------------
+      // TOPIC 1: ALGEBRA (10 Chapters -> 20 Cards)
+      // -----------------------------------------------------------------------
+      // Ch 1: Simple Equations
       {
-        id: "c_alg_1",
+        id: "c_se_1",
         topic: "Algebra",
         subtopic: "Simple Equations",
-        title: "Euler's Conditional Cubic Identity (a + b + c = 0)",
-        formula: "a³ + b³ + c³ − 3abc = (a + b + c)(a² + b² + c² − ab − bc − ca)",
-        highlight: "If a + b + c = 0  ⟹  a³ + b³ + c³ = 3abc",
+        level: "Foundation",
+        title: "Linear System Consistency (a₁x + b₁y = c₁ & a₂x + b₂y = c₂)",
+        formula: "Unique Sol: a₁/a₂ ≠ b₁/b₂\nInfinite Sols: a₁/a₂ = b₁/b₂ = c₁/c₂\nNo Solution: a₁/a₂ = b₁/b₂ ≠ c₁/c₂",
+        highlight: "Parallel lines have equal slopes (a₁/a₂ = b₁/b₂) but different intercepts (≠ c₁/c₂)",
         bullets: [
-          "Fraction form: (a²/bc) + (b²/ca) + (c²/ab) = 3 whenever a + b + c = 0.",
-          "Converse trap: a³ + b³ + c³ = 3abc means EITHER a + b + c = 0 OR a = b = c."
+          "Unique solution means intersecting lines; Infinite solutions mean coincident (identical) lines.",
+          "Trap: When solving a₁/a₂ = b₁/b₂ for parameter k, always plug k back in to check whether c₁/c₂ matches or differs."
         ],
-        hook: "Zero sum kills the big bracket → cubes collapse to 3abc."
+        hook: "Compare x-ratio and y-ratio first; check constant ratio only if they tie."
       },
       {
-        id: "c_alg_2",
+        id: "c_se_2",
         topic: "Algebra",
         subtopic: "Simple Equations",
-        title: "Linear System Consistency & Two-Digit Reversal Rule",
-        formula: "|(10a + b) − (10b + a)| = 9|a − b|   |   (10a + b) + (10b + a) = 11(a + b)",
-        highlight: "No Solution: a₁/a₂ = b₁/b₂ ≠ c₁/c₂   |   Infinite Solutions: a₁/a₂ = b₁/b₂ = c₁/c₂",
+        level: "Advanced",
+        title: "Symmetric Swap Equations & 2-Digit Reversal Shortcut",
+        formula: "If ax + by = c & bx + ay = d:\n(x + y) = (c + d)/(a + b)   |   (x − y) = (c − d)/(a − b)\n2-Digit Number N = 10t + u  ⟹  N − Rev(N) = 9(t − u)",
+        highlight: "Difference between any 2-digit number and its reverse is ALWAYS a multiple of 9; sum is a multiple of 11",
         bullets: [
-          "For 3-digit number abc reversed to cba: |abc − cba| = 99|a − c| (middle digit cancels).",
-          "Trap: Unique solution requires a₁/a₂ ≠ b₁/b₂ regardless of constant terms c₁, c₂."
+          "Never eliminate x or y directly when coefficients swap (e.g., 37x + 41y = 70 & 41x + 37y = 86); add once and subtract once.",
+          "Trap: For a 3-digit number (100h + 10t + u), reversing gives difference = 99(h − u); middle digit t cancels out completely."
         ],
-        hook: "Digit swap difference is always a multiple of 9; sum is a multiple of 11."
+        hook: "Swapped coefficients? Add & subtract. Reversed digits? Factor out 9."
       },
+
+      // Ch 2: Special Equations
       {
-        id: "c_alg_3",
+        id: "c_spe_1",
         topic: "Algebra",
         subtopic: "Special Equations",
-        title: "Linear Diophantine Equations (ax + by = N)",
-        formula: "If (x₀, y₀) is one solution to ax + by = N  ⟹  x = x₀ + k·b,  y = y₀ − k·a",
-        highlight: "Frobenius Coin Number: Largest N with NO non-negative solution is ab − a − b",
+        level: "Foundation",
+        title: "Linear Diophantine Equations (ax + by = c) Step Rule",
+        formula: "Once one integer pair (x₀, y₀) is found:\nx = x₀ + k·b   and   y = y₀ − k·a   (where gcd(a,b) = 1)",
+        highlight: "x steps in multiples of y's coefficient (b), while y steps in the opposite direction by x's coefficient (a)",
         bullets: [
-          "Always verify gcd(a, b) divides N first; if not, zero integer solutions exist.",
-          "Trap: Carefully distinguish 'positive integers' (x, y ≥ 1) from 'non-negative integers' (x, y ≥ 0)."
+          "Find the first solution x₀ by testing small values or taking mod of the smaller coefficient.",
+          "Trap: Always divide the entire equation by gcd(a, b) before applying the step rule. If gcd(a, b) does not divide c, no integer solution exists."
         ],
-        hook: "Step x by b and step y backward by a in opposite directions."
+        hook: "Find one seed pair, then step x by b and y by minus a."
       },
       {
-        id: "c_alg_4",
+        id: "c_spe_2",
+        topic: "Algebra",
+        subtopic: "Special Equations",
+        level: "Advanced",
+        title: "Counting Positive Integer Solutions of ax + by = c",
+        formula: "Number of Positive Integer Solutions (x, y ≥ 1) ≈ ⌊ c / (ab) ⌋ or ⌊ c / (ab) ⌋ + 1\nExact: Count k values where x₀ + kb ≥ 1 and y₀ − ka ≥ 1",
+        highlight: "If c = ab, then ax + by = ab has ZERO positive integer solutions (for coprime a, b)",
+        bullets: [
+          "Frobenius Coin Theorem: Largest value of c that CANNOT be formed using non-negative integers (x, y ≥ 0) is ab − a − b.",
+          "Trap: Check whether the question asks for 'Positive Integers' (x, y ≥ 1) or 'Non-Negative / Whole Numbers' (x, y ≥ 0) — boundary hits (x=0 or y=0) change the count!"
+        ],
+        hook: "Bound k on both ends; watch zero vs positive integer wording."
+      },
+
+      // Ch 3: Quadratic Equations
+      {
+        id: "c_qe_1",
         topic: "Algebra",
         subtopic: "Quadratic Equations",
-        title: "Vieta's Root Relations & Symmetric Sum Transformation",
-        formula: "α + β = −b/a,  αβ = c/a   |   a² + b² + c² − ab − bc − ca = ½[(a−b)² + (b−c)² + (c−a)²]",
-        highlight: "Equation with reciprocal roots (1/α, 1/β) is cx² + bx + a = 0 (flip coefficients)",
+        level: "Foundation",
+        title: "Quadratic Formula, Discriminant & Vieta's Root Relations",
+        formula: "ax² + bx + c = 0  ⟹  x = [−b ± √(b² − 4ac)] / (2a)\nSum: α + β = −b/a   |   Product: αβ = c/a   |   Diff: |α − β| = √D / |a|",
+        highlight: "D > 0: Real & Distinct  |  D = 0: Real & Equal  |  D < 0: Complex Conjugate Pair",
+        svg: SVG_DIAGRAMS.parabola_roots,
         bullets: [
-          "Difference of roots: |α − β| = √(b² − 4ac) / |a|. Extreme value occurs at vertex x = −b/(2a).",
-          "Trap: Rational roots require Rational coefficients AND Discriminant D = b² − 4ac to be a perfect square."
+          "Useful derived sums: α² + β² = (α + β)² − 2αβ  and  1/α + 1/β = (α + β) / (αβ) = −b/c.",
+          "Trap: If D is a perfect square and a, b, c are rational, the roots are always Rational."
         ],
-        hook: "Sum flips sign (−b/a), Product keeps sign (c/a), Reciprocal flips the ends."
+        hook: "Sum flips the middle sign (-b/a); Product keeps the last sign (c/a)."
       },
       {
-        id: "c_alg_5",
+        id: "c_qe_2",
+        topic: "Algebra",
+        subtopic: "Quadratic Equations",
+        level: "Advanced",
+        title: "Root Transformations, Vertex Extremum & Cubic Vieta",
+        formula: "Reciprocal roots (1/α, 1/β): cx² + bx + a = 0\nRoots shifted by k (α−k, β−k): a(x+k)² + b(x+k) + c = 0\nVertex of ax² + bx + c at x = −b/(2a) with extreme value (4ac − b²)/(4a)",
+        highlight: "For cubic ax³ + bx² + cx + d = 0: ∑α = −b/a,  ∑αβ = c/a,  αβγ = −d/a",
+        bullets: [
+          "If both roots of ax² + bx + c = 0 are positive, then −b/a > 0 AND c/a > 0 AND D ≥ 0.",
+          "Trap: Having α + β > 0 and αβ > 0 does NOT guarantee real positive roots unless you also verify D = b² − 4ac ≥ 0!"
+        ],
+        hook: "Reciprocal roots flip a and c; always check D ≥ 0 before claiming real roots."
+      },
+
+      // Ch 4: Inequalities and Modulus
+      {
+        id: "c_im_1",
         topic: "Algebra",
         subtopic: "Inequalities and Modulus",
-        title: "AM-GM Reciprocal Floor & Double Modulus Flat-Bottom",
-        formula: "For x > 0: ax + b/x ≥ 2√(ab)   |   Min of |x − a| + |x − b| = |a − b|",
-        highlight: "Equality in AM-GM holds iff all terms are equal; |x−a| + |x−b| is constant on [a, b]",
+        level: "Foundation",
+        title: "Wavy Curve Sign Rule, Basic Modulus & AM ≥ GM",
+        formula: "|x| < a ⟺ −a < x < a   |   |x| > a ⟺ x > a or x < −a\nFor x₁, x₂ > 0:  (x₁ + x₂)/2 ≥ √(x₁x₂)  ⟹  ax + b/x ≥ 2√(ab)",
+        highlight: "In Wavy Curve: Sign flips across ODD power factors (x − r)³ and bounces (stays same) across EVEN power factors (x − r)²",
         bullets: [
-          "For sum of odd number of moduli |x−a₁| + |x−a₂| + |x−a₃|, minimum is at the median value.",
-          "Trap: Never cross-multiply an inequality by a variable expression without knowing its sign."
+          "Never cross-multiply an inequality by a variable expression (like x − 2) without knowing its sign; bring all terms to one side instead.",
+          "Trap: Even-power roots in the numerator still satisfy ≥ 0 or ≤ 0 at the root itself, whereas denominator roots are ALWAYS excluded."
         ],
-        hook: "Positive reciprocal sum? Equate the pieces; Modulus sum? Pick the median."
+        hook: "Odd powers cross the axis; Even powers bounce off it."
       },
       {
-        id: "c_alg_6",
+        id: "c_im_2",
+        topic: "Algebra",
+        subtopic: "Inequalities and Modulus",
+        level: "Advanced",
+        title: "Sum of Moduli |x − a₁| + |x − a₂| + … & Weighted AM-GM",
+        formula: "f(x) = |x − a| + |x − b| has Min = |b − a| for all x ∈ [a, b]\nFor x² · y³ with x + y = k: Split proportional to powers → (x/2 + x/2 + y/3 + y/3 + y/3)",
+        highlight: "Minimum of ∑|x − aᵢ| occurs strictly at the MEDIAN of {a₁, a₂, …, aₙ}",
+        svg: SVG_DIAGRAMS.modulus_bucket,
+        bullets: [
+          "For |x − a| − |x − b|, the expression is bounded between −|a − b| and +|a − b|.",
+          "Trap: In weighted AM-GM (e.g., maximize x²y³ given 2x + 3y = 10), split the linear sum into 2 equal x-parts and 3 equal y-parts so equality holds."
+        ],
+        hook: "Sum of absolute distances hits its floor at the median point."
+      },
+
+      // Ch 5: Sequences and Series
+      {
+        id: "c_ss_1",
         topic: "Algebra",
         subtopic: "Sequences and Series",
-        title: "AP-GP-HP Means & Telescoping Partial Fractions",
-        formula: "G² = A · H   |   ∑ 1 / [n(n + d)] = (1/d) × [First Term − Last Term]",
-        highlight: "If S_n = an² + bn (zero constant term), the series is an AP with common difference d = 2a",
+        level: "Foundation",
+        title: "AP, GP & HP Fundamental Nth Term, Sum & Means",
+        formula: "AP: Tₙ = a + (n−1)d  |  Sₙ = (n/2)[2a + (n−1)d] = (n/2)(First + Last)\nGP: Tₙ = a·rⁿ⁻¹  |  Sₙ = a(rⁿ − 1)/(r − 1)  |  S_∞ = a/(1 − r) for |r| < 1\nMeans of (a, b): AM = (a+b)/2  |  GM = √(ab)  |  HM = 2ab/(a+b)",
+        highlight: "A sequence is in HP iff the reciprocals of its terms (1/T₁, 1/T₂, …) form an AP",
         bullets: [
-          "Sum of first n odd natural numbers is n²; sum of cubes ∑k³ = [n(n+1)/2]².",
-          "Trap: T_n = S_n − S_(n−1) applies only for n ≥ 2; always check T₁ = S₁ separately if constant c ≠ 0."
+          "To assume 3 terms in AP with given sum, pick (a − d, a, a + d); for 3 terms in GP with given product, pick (a/r, a, ar).",
+          "Trap: If Sₙ of an AP is a quadratic An² + Bn (with zero constant term), then Common Difference d = 2A and T₁ = A + B."
         ],
-        hook: "Double the n² coefficient of S_n to get the AP common difference Instantly."
+        hook: "AP adds d, GP multiplies r, HP flips into AP."
       },
       {
-        id: "c_alg_7",
+        id: "c_ss_2",
+        topic: "Algebra",
+        subtopic: "Sequences and Series",
+        level: "Advanced",
+        title: "AM-GM-HM Relation, Power Sums & Telescoping Fractions",
+        formula: "For two positive numbers: G² = A · H   and   A ≥ G ≥ H\n∑k = n(n+1)/2  |  ∑k² = n(n+1)(2n+1)/6  |  ∑k³ = [n(n+1)/2]²\nTelescoping: 1 / [k(k + d)] = (1/d) · [1/k − 1/(k + d)]",
+        highlight: "Sum of cubes of first n natural numbers equals the SQUARE of the sum of first n natural numbers",
+        bullets: [
+          "For an AGP (Arithmetic-Geometric Progression), multiply S by common ratio r, shift by one position, and subtract (S − rS).",
+          "Trap: In telescoping series like ∑ 1/(k(k+2)), remember to divide by the gap d = 2 AND note that two terms survive at the start and two at the end."
+        ],
+        hook: "Split denominator product by the gap d; watch inner terms cancel."
+      },
+
+      // Ch 6: Functions
+      {
+        id: "c_fn_1",
         topic: "Algebra",
         subtopic: "Functions",
-        title: "Standard Functional Equations & Inverse Symmetry",
-        formula: "f(x + y) = f(x) + f(y) ⟹ f(x) = kx   |   f(x)·f(1/x) = f(x) + f(1/x) ⟹ f(x) = 1 ± xⁿ",
-        highlight: "f(x + y) = f(x)·f(y) ⟹ f(x) = aˣ   |   f(xy) = f(x) + f(y) ⟹ f(x) = k·log(x)",
+        level: "Foundation",
+        title: "Domain Restrictions, Even/Odd Symmetry & Composition",
+        formula: "Domain: 1/g(x) ⇒ g(x) ≠ 0  |  √g(x) ⇒ g(x) ≥ 0  |  log(g(x)) ⇒ g(x) > 0\nEven: f(−x) = f(x) (Y-axis symmetric)  |  Odd: f(−x) = −f(x) (Origin symmetric)",
+        highlight: "If f(x) is an Odd function defined at x = 0, then f(0) MUST equal 0",
         bullets: [
-          "A function has an inverse f⁻¹ iff it is strictly Bijective (both One-to-One and Onto).",
-          "Trap: Self-inverse functions of form f(x) = (ax + b)/(cx − a) always satisfy f(f(x)) = x."
+          "Count of functions from set A (m elements) to B (n elements) is nᵐ. One-to-One (Injective) count is ⁿPₘ (for n ≥ m).",
+          "Trap: Composite f(g(x)) works from the inside out — evaluate g(x) first, then feed that output into f."
         ],
-        hook: "Product equals sum for x and 1/x? Power expression 1 ± xⁿ."
+        hook: "Even eats the minus sign; Odd spits the minus sign out."
       },
       {
-        id: "c_alg_8",
+        id: "c_fn_2",
+        topic: "Algebra",
+        subtopic: "Functions",
+        level: "Advanced",
+        title: "Standard Functional Equations & Self-Inverse Forms",
+        formula: "f(x+y) = f(x) + f(y) ⟹ f(x) = kx\nf(x+y) = f(x)·f(y) ⟹ f(x) = aˣ\nf(xy) = f(x) + f(y) ⟹ f(x) = k·log(x)\nf(x) + f(1/x) = f(x)·f(1/x) ⟹ f(x) = 1 ± xⁿ",
+        highlight: "If f(x) = (ax + b)/(cx − a), then f(f(x)) = x (Self-Inverse: f⁻¹(x) = f(x))",
+        bullets: [
+          "Constant sum pair trick: If f(x) + f(1 − x) = c, pair up terms symmetrically from both ends: f(1/n) + f((n−1)/n) = c.",
+          "Trap: In f(x)·f(1/x) = f(x) + f(1/x), always plug the given boundary value (e.g., f(2) = 9) to decide whether the sign in 1 ± xⁿ is + or −."
+        ],
+        hook: "Spot the functional pattern, substitute the known template, and solve the power."
+      },
+
+      // Ch 7: Graphs
+      {
+        id: "c_gr_1",
         topic: "Algebra",
         subtopic: "Graphs",
-        title: "Graph Shifts, Reflections & Modulus Diamond Area",
-        formula: "Area enclosed by a|x| + b|y| = c is (2c²) / (ab)",
-        highlight: "y = f(|x|) mirrors right half onto left; y = |f(x)| flips negative lobes upward",
+        level: "Foundation",
+        title: "Core Graph Shifts, Reflections & Scaling Rules",
+        formula: "y = f(x) + k  (Up by k)     |   y = f(x − h)  (Right by h)\ny = −f(x)     (Flip X-axis) |   y = f(−x)     (Flip Y-axis)",
+        highlight: "Changes INSIDE f(x − h) shift horizontally opposite to the sign; changes OUTSIDE f(x) + k shift vertically with the sign",
         bullets: [
-          "f(x − h) shifts graph RIGHT by h units; f(x) + k shifts graph UP by k units.",
-          "Trap: Number of real solutions to f(x) = g(x) is the number of intersection points of their graphs."
+          "Number of real solutions to f(x) = g(x) equals the number of intersection points of their graphs y = f(x) and y = g(x).",
+          "Trap: Replacing x with 2x in y = f(2x) compresses the graph horizontally by a factor of 2 (does NOT stretch it)."
         ],
-        hook: "Modulus diamond area is 2c² over ab."
+        hook: "Inside x acts opposite (x−h goes right); Outside y acts direct (+k goes up)."
       },
       {
-        id: "c_alg_9",
+        id: "c_gr_2",
+        topic: "Algebra",
+        subtopic: "Graphs",
+        level: "Advanced",
+        title: "Modulus Graph Transformations & Enclosed Diamond Area",
+        formula: "y = |f(x)|: Flip negative bottom part (y < 0) upward across X-axis\ny = f(|x|): Erase left of Y-axis (x < 0) and mirror right half onto left\n|x|/a + |y|/b = 1  ⟹  Rhombus of Area = 2ab",
+        highlight: "For |x| + |y| = a, the graph is a square tilted 45° with side a√2 and Area = 2a²",
+        svg: SVG_DIAGRAMS.diamond_graph,
+        bullets: [
+          "For |y| = f(x), erase any portion where f(x) < 0, and mirror the remaining upper graph across the X-axis.",
+          "Trap: Shifted diamond |x − h| + |y − k| ≤ a has the exact same area 2a² — shifting the center (h, k) never alters enclosed area."
+        ],
+        hook: "|f(x)| bounces the bottom up; |x|+|y|=a encloses area 2a²."
+      },
+
+      // Ch 8: Indices – Surds
+      {
+        id: "c_is_1",
         topic: "Algebra",
         subtopic: "Indices – Surds",
-        title: "x + 1/x Power Ladder & Nested Square Root Surds",
-        formula: "√(a + 2√b) = √x + √y  where x + y = a and xy = b",
-        highlight: "If x + 1/x = k  ⟹  x² + 1/x² = k² − 2  and  x³ + 1/x³ = k³ − 3k",
+        level: "Foundation",
+        title: "Laws of Exponents, Rationalization & Square Root of a Surd",
+        formula: "aᵐ · aⁿ = aᵐ⁺ⁿ  |  (aᵐ)ⁿ = aᵐⁿ  |  a⁻ⁿ = 1/aⁿ  |  a^(p/q) = ⁿ√(aᵖ)\n1 / (√a − √b) = (√a + √b) / (a − b)\n√( (x + y) ± 2√(xy) ) = √x ± √y   (with x > y > 0)",
+        highlight: "To denest √(A ± 2√B), find two numbers x, y whose Sum = A and Product = B",
         bullets: [
-          "Infinite nested surd: √(a + √(a + √(a + …))) = [1 + √(1 + 4a)] / 2.",
-          "Trap: To compare large powers like 2³⁰⁰ vs 3²⁰⁰, reduce exponents by gcd(300, 200) = 100 → compare 2³ vs 3²."
+          "Note that a^(b^c) means a raised to the power (b^c), which is generally much larger than (a^b)^c = a^(bc).",
+          "Trap: When taking √(√x − √y)², the result is |√x − √y| = √x − √y (strictly non-negative), never negative."
         ],
-        hook: "Factor the inner surd under 2√b into two numbers that add to a."
+        hook: "Factor the inner root as 2√(xy) so x+y matches the outer integer."
       },
       {
-        id: "c_alg_10",
+        id: "c_is_2",
+        topic: "Algebra",
+        subtopic: "Indices – Surds",
+        level: "Advanced",
+        title: "Surd Comparison Rules & Infinite Nested Radicals",
+        formula: "√(a + √(a + √(a + …))) = [1 + √(1 + 4a)] / 2\n√(a − √(a − √(a − …))) = [√(1 + 4a) − 1] / 2\n√(a · √(a · √(a …))) = a",
+        highlight: "If a = n(n + 1), then √(a + √(a + …)) = n + 1  and  √(a − √(a − …)) = n",
+        bullets: [
+          "Constant Sum Comparison: If a + b = c + d, the pair with the LARGER product (closer together) has the larger sum of roots (√a + √b).",
+          "Constant Gap Comparison: For √(n+1) − √n, as n increases, the difference strictly DECREASES because it equals 1 / (√(n+1) + √n)."
+        ],
+        hook: "Consecutive factors n(n+1)? Plus picks (n+1), Minus picks n."
+      },
+
+      // Ch 9: Logarithms
+      {
+        id: "c_log_1",
         topic: "Algebra",
         subtopic: "Logarithms",
-        title: "Base Power Extraction & Chain-Cancel Rule",
-        formula: "log_(b^k)(x^m) = (m / k) · log_b(x)   |   a^(log_b c) = c^(log_b a)",
-        highlight: "Number of digits in N is ⌊log₁₀(N)⌋ + 1",
+        level: "Foundation",
+        title: "Core Logarithm Laws: Product, Quotient, Power & Base Change",
+        formula: "y = log_b(x) ⟺ bʸ = x   (Condition: x > 0, b > 0, b ≠ 1)\nlog_b(xy) = log_b(x) + log_b(y)   |   log_b(x/y) = log_b(x) − log_b(y)\nlog_b(xᵏ) = k · log_b(x)          |   log_b(a) = log_c(a) / log_c(b) = 1 / log_a(b)",
+        highlight: "Identity shortcuts: log_b(1) = 0,  log_b(b) = 1,  and  b^(log_b x) = x",
         bullets: [
-          "Telescoping base change: log_a(b) × log_b(c) × log_c(d) = log_a(d).",
-          "Trap: Domain of log_b(x) requires x > 0 AND base b > 0, b ≠ 1. Always discard extraneous negative roots!"
+          "Chain Rule of Base Change: log_a(b) × log_b(c) × log_c(d) = log_a(d).",
+          "Trap: log_b(x + y) does NOT split into log_b(x) + log_b(y)! Also, always check that every original log argument is > 0 after solving."
         ],
-        hook: "Input power jumps to numerator; Base power drops to denominator."
+        hook: "Logs turn multiplication into addition, division into subtraction, and powers into multipliers."
       },
       {
-        id: "c_alg_11",
+        id: "c_log_2",
+        topic: "Algebra",
+        subtopic: "Logarithms",
+        level: "Advanced",
+        title: "Base-Power Extraction, Log Inequalities & Number of Digits",
+        formula: "log_(b^m)(x^k) = (k / m) · log_b(x)   |   a^(log_b c) = c^(log_b a)\nNumber of digits in N = ⌊log₁₀(N)⌋ + 1\nIf 0 < b < 1:  log_b(x) > log_b(y) ⟺ 0 < x < y  (Inequality FLIPS!)",
+        highlight: "Power of the argument comes out in the NUMERATOR (k); power of the base comes out in the DENOMINATOR (m)",
+        bullets: [
+          "Useful CAT benchmarks: log₁₀(2) ≈ 0.3010,  log₁₀(3) ≈ 0.4771,  log₁₀(5) = 1 − log₁₀(2) ≈ 0.6990.",
+          "Trap: When solving log_(0.5)(x − 1) > −2, you must BOTH flip the inequality (x − 1 < 4) AND enforce domain (x − 1 > 0) ⇒ x ∈ (1, 5)."
+        ],
+        hook: "Base power goes to the bottom; fractional base (<1) flips the inequality."
+      },
+
+      // Ch 10: Operator Based Questions
+      {
+        id: "c_op_1",
         topic: "Algebra",
         subtopic: "Operator Based Questions",
-        title: "Custom Binary Operations, Identity & Inverse",
-        formula: "For a * b = a + b + ab  ⟹  (a * b) + 1 = (a + 1)(b + 1)",
-        highlight: "Identity e satisfies a * e = a; Inverse a⁻¹ satisfies a * a⁻¹ = e",
+        level: "Foundation",
+        title: "Custom Binary Operators (a @ b), Commutativity & Identity",
+        formula: "Commutative: a @ b = b @ a   |   Associative: (a @ b) @ c = a @ (b @ c)\nIdentity Element (e):  a @ e = e @ a = a   (for all a)\nInverse Element (a⁻¹): a @ a⁻¹ = e",
+        highlight: "Always find the Identity element 'e' BEFORE attempting to find the Inverse a⁻¹",
         bullets: [
-          "In a * b = a + b + ab, identity is e = 0 and inverse of a is −a / (a + 1) (for a ≠ −1).",
-          "Trap: Associativity a*(b*c) = (a*b)*c does NOT automatically mean commutativity a*b = b*a."
+          "Example: For a @ b = a + b + ab, solving a + e + ae = a gives e(1 + a) = 0 ⇒ Identity e = 0. Then a + a⁻¹ + a·a⁻¹ = 0 ⇒ a⁻¹ = −a/(1+a).",
+          "Trap: An operation can have an identity formula that works algebraically, yet fails if a = −1 makes the inverse denominator zero."
         ],
-        hook: "See a + b + ab? Add 1 and factor into (a+1)(b+1)."
+        hook: "Identity leaves 'a' unchanged; Inverse brings 'a' back to Identity."
+      },
+      {
+        id: "c_op_2",
+        topic: "Algebra",
+        subtopic: "Operator Based Questions",
+        level: "Advanced",
+        title: "Max/Min Modulus Operators & Factorized Operator Loops",
+        formula: "max(a, b) = (a + b + |a − b|) / 2   |   min(a, b) = (a + b − |a − b|) / 2\nFactorization trick: a @ b = ab + a + b  ⟺  (a + 1)(b + 1) − 1",
+        highlight: "Repeated application of a @ b = ab + a + b on {x₁, x₂, …, xₙ} equals ∏(xᵢ + 1) − 1",
+        bullets: [
+          "If a custom operator is applied 50 times in a row, test the first 3 iterations to spot a repeating cycle or telescoping product.",
+          "Trap: Brackets matter whenever the operator is NOT associative (e.g., a @ b = a − b or a / b)."
+        ],
+        hook: "Spot ab + a + b? Add 1, multiply everything, then subtract 1."
       },
 
-      // --- NUMBER THEORY (3 Chapters) ---
+      // -----------------------------------------------------------------------
+      // TOPIC 2: NUMBER THEORY (3 Chapters -> 6 Cards)
+      // -----------------------------------------------------------------------
+      // Ch 11: Numbers – I
       {
-        id: "c_nt_1",
+        id: "c_n1_1",
         topic: "Number Theory",
         subtopic: "Numbers – I",
-        title: "Divisors, Odd-Factor Squares & HCF/LCM Remainder Models",
-        formula: "If N = p₁^a · p₂^b · p₃^c  ⟹  d(N) = (a + 1)(b + 1)(c + 1)",
-        highlight: "N has an ODD number of factors iff N is a Perfect Square",
+        level: "Foundation",
+        title: "Divisibility Rules, HCF/LCM Models & Core Algebraic Identities",
+        formula: "N₁ × N₂ = HCF × LCM   |   HCF(a/b, c/d) = HCF(a,c) / LCM(b,d)\nDivisibility: 8 → Last 3 digits | 9 → Digit sum | 11 → |(Odd pos) − (Even pos)|\n(a + b)² − (a − b)² = 4ab   |   a³ ± b³ = (a ± b)(a² ∓ ab + b²)",
+        highlight: "Greatest number leaving remainders r₁, r₂, r₃ on dividing A, B, C is HCF(A−r₁, B−r₂, C−r₃)",
         bullets: [
-          "Largest divisor leaving remainders r₁, r₂ on A, B is HCF(A − r₁, B − r₂).",
-          "Trap: Product of two numbers = HCF × LCM holds ONLY for two numbers, never for three."
+          "Greatest divisor leaving the SAME (unknown) remainder when dividing A, B, C is HCF(|A − B|, |B − C|, |C − A|).",
+          "Trap: For LCM of fractions, take LCM(Numerators) / HCF(Denominators), only AFTER reducing each fraction to its simplest coprime form!"
         ],
-        hook: "Add 1 to prime exponents and multiply; odd factor count means square."
+        hook: "Same unknown remainder? Take HCF of pairwise differences."
       },
       {
-        id: "c_nt_2",
+        id: "c_n1_2",
         topic: "Number Theory",
-        subtopic: "Numbers – II",
-        title: "Euler's Totient, Fermat's Little Theorem & Legendre's n!",
-        formula: "a^φ(n) ≡ 1 (mod n) for gcd(a,n) = 1   |   E_p(n!) = ⌊n/p⌋ + ⌊n/p²⌋ + ⌊n/p³⌋ + …",
-        highlight: "Wilson's Theorem: (p − 1)! ≡ −1 (mod p)  and  (p − 2)! ≡ 1 (mod p) for prime p",
+        subtopic: "Numbers – I",
+        level: "Advanced",
+        title: "Prime Factorization Divisors & Euler's Cubic Identity",
+        formula: "For N = p₁ᵃ · p₂ᵇ · p₃ᶜ:\nTotal Factors d(N) = (a+1)(b+1)(c+1)   |   Sum = ∏[(pᵢ^(aᵢ+1) − 1)/(pᵢ − 1)]\na³ + b³ + c³ − 3abc = (a + b + c) · ½[(a−b)² + (b−c)² + (c−a)²]",
+        highlight: "N has an ODD number of factors iff N is a Perfect Square  |  a³+b³+c³ = 3abc iff a+b+c = 0 OR a = b = c",
         bullets: [
-          "Trailing zeroes of n! equals E₅(n!) because 5s are scarcer than 2s.",
-          "Trap: Cyclicity of last digit is at most 4 (for 2, 3, 7, 8). If power mod 4 = 0, use power 4 (not 0)."
+          "Number of ways to express N as a product of two factors is d(N)/2 (or (d(N)+1)/2 if N is a square). Ways as two coprime factors = 2^(k−1) for k distinct primes.",
+          "Trap: Converse trap on Euler's cubic identity — a³ + b³ + c³ = 3abc for positive numbers means a = b = c (since a+b+c cannot be 0)."
         ],
-        hook: "Coprime base? Chop power by Totient φ(n); Factorial zeroes? Divide by 5s."
-      },
-      {
-        id: "c_nt_3",
-        topic: "Number Theory",
-        subtopic: "Number Systems",
-        title: "Base Conversion & Base-b Divisibility Rules",
-        formula: "(d₂d₁d₀)_b = d₂·b² + d₁·b¹ + d₀   |   1 octal digit = 3 bits, 1 hex digit = 4 bits",
-        highlight: "In base b: Sum of digits tests divisibility by (b − 1); Alternating sum tests (b + 1)",
-        bullets: [
-          "Largest k-digit number in base b is bᵏ − 1; smallest k-digit number is b^(k−1).",
-          "Trap: Trailing zeroes of N in base b is the highest power of b dividing N."
-        ],
-        hook: "Base b−1 works just like 9 in base 10; Base b+1 works just like 11."
+        hook: "Add 1 to prime powers for factor count; zero sum collapses cubes to 3abc."
       },
 
-      // --- GEOMETRY (4 Chapters) ---
+      // Ch 12: Numbers – II
+      {
+        id: "c_n2_1",
+        topic: "Number Theory",
+        subtopic: "Numbers – II",
+        level: "Foundation",
+        title: "Modular Remainders, Last Digit Cyclicity & Legendre's n! Formula",
+        formula: "Rem(A × B / d) = Rem[ Rem(A/d) × Rem(B/d) / d ]\nLegendre's Highest Power of Prime p in n!:  E_p(n!) = ⌊n/p⌋ + ⌊n/p²⌋ + ⌊n/p³⌋ + …\nLast Digit Cycles: {0,1,5,6} → 1  |  {4,9} → 2  |  {2,3,7,8} → 4",
+        highlight: "Trailing zeroes of n! = E₅(n!) because factors of 5 are scarcer than factors of 2",
+        bullets: [
+          "Negative remainder shortcut: 17⁹⁹ (mod 18) ≡ (−1)⁹⁹ ≡ −1 ≡ 17 (mod 18).",
+          "Trap: When finding the last digit of a^b using cycle 4, if b (mod 4) = 0 (and b > 0), use exponent 4 (NOT 0!)."
+        ],
+        hook: "Power divisible by 4? Raise the base unit digit to power 4, not 0."
+      },
+      {
+        id: "c_n2_2",
+        topic: "Number Theory",
+        subtopic: "Numbers – II",
+        level: "Advanced",
+        title: "Euler's Totient Theorem, Fermat's Little & Wilson's Theorem",
+        formula: "Euler's Totient: a^φ(n) ≡ 1 (mod n) when gcd(a, n) = 1\nFermat (prime p): a^(p−1) ≡ 1 (mod p)\nWilson (prime p): (p − 1)! ≡ −1 ≡ (p − 1) (mod p)  and  (p − 2)! ≡ 1 (mod p)",
+        highlight: "For n = p₁ᵃ · p₂ᵇ, Euler's Totient count of coprimes < n is φ(n) = n(1 − 1/p₁)(1 − 1/p₂)",
+        bullets: [
+          "Sum of all positive integers less than n and coprime to n is ½ · n · φ(n).",
+          "Trap: If you cancel a common factor k from Dividend and Divisor before finding the remainder, you MUST multiply the final remainder back by k!"
+        ],
+        hook: "Coprime base? Chop exponent mod φ(n). Cancel factor k? Multiply remainder by k."
+      },
+
+      // Ch 13: Number Systems
+      {
+        id: "c_ns_1",
+        topic: "Number Theory",
+        subtopic: "Number Systems",
+        level: "Foundation",
+        title: "Base Conversions: Base b ↔ Base 10 & Binary/Octal/Hex",
+        formula: "(d₂d₁d₀)_b = d₂·b² + d₁·b¹ + d₀·b⁰  (in Base 10)\nLargest k-digit number in Base b is bᵏ − 1  |  Smallest is bᵏ⁻¹",
+        highlight: "Direct binary grouping: 3 Binary bits = 1 Octal digit (2³=8)  |  4 Binary bits = 1 Hex digit (2⁴=16)",
+        bullets: [
+          "To convert Decimal N to Base b, divide N successively by b and read the remainders from BOTTOM to TOP.",
+          "Trap: In Base b, valid digits strictly run from 0 to (b − 1). Seeing digit '7' means the base must be at least 8."
+        ],
+        hook: "Multiply powers to reach Base 10; divide and read remainders upward for Base b."
+      },
+      {
+        id: "c_ns_2",
+        topic: "Number Theory",
+        subtopic: "Number Systems",
+        level: "Advanced",
+        title: "Divisibility Rules & Trailing Zeroes in Base b",
+        formula: "In Base b:\n• Divisibility by (b − 1) ⟺ Sum of digits is divisible by (b − 1)\n• Divisibility by (b + 1) ⟺ Alternating sum of digits is divisible by (b + 1)",
+        highlight: "Trailing zeroes of N! in Base b equals min( ⌊E_pᵢ(N!) / aᵢ⌋ ) across prime factors of b = ∏ pᵢ^aᵢ",
+        bullets: [
+          "Example: In Octal (Base 8), divisibility by 7 uses sum of digits (like 9 in Base 10), and divisibility by 9 uses alternating sum (like 11 in Base 10).",
+          "Trap: When adding or subtracting in Base b, a carry/borrow is worth 'b' (not 10!)."
+        ],
+        hook: "(b−1) acts like 9 (sum of digits); (b+1) acts like 11 (alternating sum)."
+      },
+
+      // -----------------------------------------------------------------------
+      // TOPIC 3: GEOMETRY (4 Chapters -> 8 Cards)
+      // -----------------------------------------------------------------------
+      // Ch 14: Geometry
       {
         id: "c_geo_1",
         topic: "Geometry",
         subtopic: "Geometry",
-        title: "Triangle Centers, Similarity Scaling & Secant-Tangent Power",
-        formula: "Centroid = 2 : 1   |   Area(△) = r·s = abc/(4R)   |   PT² = PA × PB",
-        highlight: "Right Triangle: Circumradius R = Hypotenuse / 2, Inradius r = (a + b − c) / 2",
+        level: "Foundation",
+        title: "Triangle Inequality, Similarity, Centroid & Angle Bisector",
+        formula: "|a − b| < c < a + b   |   Obtuse if c² > a² + b²   |   Acute if c² < a² + b²\nCentroid G divides median 2 : 1   |   Angle Bisector AD divides BC as BD : DC = AB : AC\nSimilar Triangles: Area(△₁)/Area(△₂) = (Side₁/Side₂)²",
+        highlight: "Right Triangle: Circumradius R = Hypotenuse / 2,  Inradius r = (a + b − c) / 2",
+        svg: SVG_DIAGRAMS.triangle_centroid,
         bullets: [
-          "Three medians divide any triangle into 6 equal-area triangles; similar area scales as (Side ratio)².",
-          "Trap: In secant-tangent theorem PT² = PA × PB, PB is the WHOLE secant length from P, not chord AB."
+          "Three medians partition ANY triangle into 6 smaller triangles of equal area.",
+          "Trap: For an obtuse triangle with sides a, b, c (where c is longest), you must enforce BOTH c < a + b AND c² > a² + b²."
         ],
-        hook: "Vertex-to-Centroid is 2:1; Tangent squared = Outside × Whole secant."
+        hook: "Medians split area into 6 equal parts; Angle bisector splits base in ratio of arms."
       },
       {
         id: "c_geo_2",
         topic: "Geometry",
-        subtopic: "Mensuration",
-        title: "3D Solids, Euler's Polyhedron Rule & Max Inscribed Volumes",
-        formula: "Euler: F + V − E = 2   |   Frustum V = (πh/3)(R² + r² + Rr)",
-        highlight: "Same height & radius: Volume(Cone : Hemisphere : Cylinder) = 1 : 2 : 3",
+        subtopic: "Geometry",
+        level: "Advanced",
+        title: "Circle Secant-Tangent Power, Alternate Segment & Apollonius",
+        formula: "Secant-Tangent: PT² = PA × PB   |   Intersecting Chords: PA × PB = PC × PD\nApollonius Median Length: AB² + AC² = 2(AD² + BD²)\nArea(△) = r · s = (abc) / (4R)   |   Polygon Diagonals = n(n − 3)/2",
+        highlight: "Angle between tangent and chord equals the angle subtended by the chord in the alternate segment",
+        svg: SVG_DIAGRAMS.circle_secant,
         bullets: [
-          "Equilateral triangle of side 'a' has height (√3/2)a and area (√3/4)a²; Regular hexagon = 6 equilateral triangles.",
-          "Trap: Stretching all linear dimensions by k% increases Surface Area by 2k + k²/100% and Volume by 3-step successive %."
+          "Length of direct common tangent between two circles of radii R, r at center distance d is √(d² − (R − r)²); transverse is √(d² − (R + r)²).",
+          "Trap: In PT² = PA × PB, PB is the ENTIRE secant length from external point P to the far intersection B, NEVER the internal chord AB!"
         ],
-        hook: "Archimedes 1 : 2 : 3 ratio links Cone, Hemisphere, and Cylinder."
+        hook: "Tangent squared equals Outside piece (PA) times Whole secant (PB)."
+      },
+
+      // Ch 15: Mensuration
+      {
+        id: "c_men_1",
+        topic: "Geometry",
+        subtopic: "Mensuration",
+        level: "Foundation",
+        title: "2D Areas: Heron's, Equilateral Triangle, Hexagon & Circle Sector",
+        formula: "Equilateral (side a): Height = (√3/2)a  |  Area = (√3/4)a²\nRegular Hexagon (side a): Area = 6 × (√3/4)a² = (3√3/2)a²\nSector (angle θ): Arc = (θ/360)·2πr  |  Area = (θ/360)·πr² = ½·L·r",
+        highlight: "A regular hexagon is simply 6 equilateral triangles glued together around the center",
+        bullets: [
+          "Heron's Formula: Area = √[s(s−a)(s−b)(s−c)] where semi-perimeter s = (a+b+c)/2.",
+          "Trap: Perimeter of a sector is Arc Length + 2r = (θ/360)·2πr + 2r (don't forget the two bounding radii!)."
+        ],
+        hook: "Equilateral area is (√3/4)a²; multiply by 6 for a Regular Hexagon."
       },
       {
-        id: "c_geo_3",
+        id: "c_men_2",
+        topic: "Geometry",
+        subtopic: "Mensuration",
+        level: "Advanced",
+        title: "3D Volumes, Frustum & Cone : Hemisphere : Cylinder (1 : 2 : 3)",
+        formula: "Cylinder: V = πr²h, CSA = 2πrh   |   Cone: V = ⅓πr²h, CSA = πrl (l = √(r²+h²))\nSphere: V = (4/3)πr³, TSA = 4πr²  |   Hemisphere TSA = 3πr²\nFrustum Volume = ⅓πh(R² + r² + Rr)",
+        highlight: "With equal radius r and height h = r, Volumes of Cone : Hemisphere : Cylinder = 1 : 2 : 3",
+        svg: SVG_DIAGRAMS.mensuration_123,
+        bullets: [
+          "When a cone is cut by a plane parallel to its base at 1/k of its height from the top, the small top cone has Volume = (1/k)³ of the original cone.",
+          "Trap: Total Surface Area (TSA) of a solid hemisphere is 3πr² (2πr² curved + πr² flat base), NOT 2πr²!"
+        ],
+        hook: "Same radius & height r? Cone : Hemisphere : Cylinder volumes go 1 : 2 : 3."
+      },
+
+      // Ch 16: Co-ordinate Geometry
+      {
+        id: "c_cg_1",
         topic: "Geometry",
         subtopic: "Co-ordinate Geometry",
-        title: "Shoelace Area, Line Reflection & Circle Intercepts",
-        formula: "Point-to-Line d = |ax₀ + by₀ + c| / √(a² + b²)   |   m₁ · m₂ = −1 (Perpendicular)",
-        highlight: "Image/Foot of (x₁,y₁) across ax+by+c=0: (x−x₁)/a = (y−y₁)/b = −k(ax₁+by₁+c)/(a²+b²)",
+        level: "Foundation",
+        title: "Distance, Section Formula, Centroid & Line Slope Forms",
+        formula: "Distance = √[(x₂−x₁)² + (y₂−y₁)²]   |   Slope m = (y₂−y₁)/(x₂−x₁) = tan θ\nInternal Section (m:n):  x = (mx₂ + nx₁)/(m+n),  y = (my₂ + ny₁)/(m+n)\nIntercept Form: x/a + y/b = 1   |   Perpendicular Slopes: m₁ · m₂ = −1",
+        highlight: "Centroid G of triangle is the simple average: ( (x₁+x₂+x₃)/3, (y₁+y₂+y₃)/3 )",
         bullets: [
-          "Use k = 1 for Foot of Perpendicular and k = 2 for Mirror Image.",
-          "Trap: Triangle area with one vertex at Origin (0,0) and (x₁,y₁), (x₂,y₂) is simply ½|x₁y₂ − x₂y₁|."
+          "Incenter coordinates: ( (ax₁ + bx₂ + cx₃)/(a+b+c), (ay₁ + by₂ + cy₃)/(a+b+c) ) where a, b, c are opposite side lengths.",
+          "Trap: For a line ax + by + c = 0, its slope is m = −a/b, a parallel line is ax + by + k = 0, and a perpendicular line is bx − ay + k = 0."
         ],
-        hook: "Shift one vertex to (0,0) and take half the cross-product |x₁y₂ − x₂y₁|."
+        hook: "Parallel keeps ax+by; Perpendicular swaps a,b and flips one sign (bx−ay)."
       },
       {
-        id: "c_geo_4",
+        id: "c_cg_2",
+        topic: "Geometry",
+        subtopic: "Co-ordinate Geometry",
+        level: "Advanced",
+        title: "Point-Line Distance, Shoelace Area & Mirror Reflection Formula",
+        formula: "Point-to-Line Dist: d = |ax₁ + by₁ + c| / √(a² + b²)\nParallel Lines Dist: d = |c₁ − c₂| / √(a² + b²)\nReflection/Foot across ax+by+c=0:\n(x − x₁)/a = (y − y₁)/b = −k(ax₁ + by₁ + c)/(a² + b²)  [k=1 Foot, k=2 Image]",
+        highlight: "Shift one triangle vertex to (0,0); then Area of [(0,0), (x₁,y₁), (x₂,y₂)] = ½ |x₁y₂ − x₂y₁|",
+        svg: SVG_DIAGRAMS.coord_reflection,
+        bullets: [
+          "Quick reflections: Across y = x ⇒ (y, x); across y = −x ⇒ (−y, −x); across x = k ⇒ (2k − x, y).",
+          "Trap: Before using |c₁ − c₂|/√(a² + b²) for parallel lines, make sure the x and y coefficients of both equations are identical!"
+        ],
+        hook: "k=1 lands on the mirror (Foot); k=2 jumps across the mirror (Image)."
+      },
+
+      // Ch 17: Trigonometry
+      {
+        id: "c_trig_1",
         topic: "Geometry",
         subtopic: "Trigonometry",
-        title: "Reciprocal sec/tan Pair, a·sinθ + b·cosθ Bounds & Heights",
-        formula: "−√(a² + b²) ≤ a·sinθ + b·cosθ ≤ +√(a² + b²)   |   secθ + tanθ = k ⟹ secθ − tanθ = 1/k",
-        highlight: "Two angles of elevation α, β from distance d: d = h · |cotα − cotβ|",
+        level: "Foundation",
+        title: "Right-Triangle Ratios, Pythagorean Identities & Reciprocal Pairs",
+        formula: "sin²θ + cos²θ = 1   |   sec²θ − tan²θ = 1   |   csc²θ − cot²θ = 1\nConjugate Trick: If sec θ + tan θ = k  ⟹  sec θ − tan θ = 1/k\nComplementary (α + β = 90°): sin α = cos β  and  tan α · tan β = 1",
+        highlight: "Adding sec θ + tan θ = k and sec θ − tan θ = 1/k immediately gives sec θ = ½(k + 1/k)",
+        svg: SVG_DIAGRAMS.trig_triangle,
         bullets: [
-          "Complementary product: tan(1°)·tan(2°)…tan(89°) = 1 because tan(θ)·tan(90°−θ) = 1.",
-          "Trap: sin²(1°) + sin²(2°) + … + sin²(89°) = 44 + ½ = 44.5 (pair up θ and 90°−θ, don't forget 45°)."
+          "Standard values: sin 30° = 1/2, sin 45° = 1/√2, sin 60° = √3/2; tan 30° = 1/√3, tan 45° = 1, tan 60° = √3.",
+          "Trap: Chains like tan 1° · tan 2° … tan 89° collapse to 1 because tan θ · tan(90° − θ) = 1."
         ],
-        hook: "sec + tan and sec − tan are exact reciprocals; a·sin + b·cos peaks at √(a²+b²)."
+        hook: "sec² − tan² = 1 turns sum (sec+tan = k) into reciprocal difference (1/k)."
+      },
+      {
+        id: "c_trig_2",
+        topic: "Geometry",
+        subtopic: "Trigonometry",
+        level: "Advanced",
+        title: "Sine/Cosine Rules, Extreme Bounds & Two-Angle Tower Elevation",
+        formula: "Bounds: −√(a² + b²) ≤ a·sin θ + b·cos θ ≤ +√(a² + b²)\nCosine Rule: cos C = (a² + b² − c²)/(2ab)   |   Sine Rule: a/sin A = 2R\nTower Elevation Shift (α → β over distance d):  h = d / (cot α − cot β)",
+        highlight: "For 30° → 60° elevation shift walking distance d toward a tower: Height h = (√3 / 2)d",
+        svg: SVG_DIAGRAMS.trig_elevation,
+        bullets: [
+          "Area of triangle with two known sides and included angle: Area = ½ · a · b · sin C.",
+          "Trap: For a·sin²θ + b·cos²θ, the max and min are simply max(a, b) and min(a, b) — do NOT use √(a² + b²) when the terms are squared!"
+        ],
+        hook: "Linear sin+cos uses ±√(a²+b²); walking d toward a tower gives h = d/(cot α − cot β)."
       },
 
-      // --- RATIO & MIXTURES (2 Chapters) ---
+      // -----------------------------------------------------------------------
+      // TOPIC 4: RATIO & MIXTURES (2 Chapters -> 4 Cards)
+      // -----------------------------------------------------------------------
+      // Ch 18: Ratio – Proportion – Variation
       {
-        id: "c_rm_1",
+        id: "c_rpv_1",
         topic: "Ratio & Mixtures",
         subtopic: "Ratio – Proportion – Variation",
-        title: "Componendo-Dividendo & Equal Ratio Theorem",
-        formula: "If a/b = c/d  ⟹  (a + b)/(a − b) = (c + d)/(c − d)",
-        highlight: "If a/b = c/d = e/f = k, then (a + c + e)/(b + d + f) = k (unless denominator sum = 0)",
+        level: "Foundation",
+        title: "Chain Ratios, Mean Proportional & Direct/Inverse Variation",
+        formula: "Mean Proportional of (a, b) = √(ab)   |   Third Proportional to (a, b) = b²/a\nDirect Variation: y ∝ x ⇒ y₁/x₁ = y₂/x₂   |   Inverse: y ∝ 1/x ⇒ x₁y₁ = x₂y₂",
+        highlight: "Adding a positive constant to both terms of a proper fraction (a < b) brings the ratio closer to 1 : 1",
         bullets: [
-          "In joint variation, if A ∝ B when C is constant and A ∝ 1/C when B is constant, then A = k·(B/C).",
-          "Trap: In cyclic ratio a/(b+c) = b/(c+a) = c/(a+b) = k, k is 1/2 (if a+b+c ≠ 0) OR k = −1 (if a+b+c = 0)."
+          "To combine A : B = 2 : 3 and B : C = 4 : 5, cross-multiply to get A : B : C = 8 : 12 : 15.",
+          "Trap: In fixed + variable cost problems (e.g., hostel bill = Fixed + k·N), write two linear equations before solving."
         ],
-        hook: "Sum over Difference untangles symmetrically trapped variables."
+        hook: "Proper fraction +k increases toward 1; Improper fraction +k decreases toward 1."
       },
       {
-        id: "c_rm_2",
+        id: "c_rpv_2",
+        topic: "Ratio & Mixtures",
+        subtopic: "Ratio – Proportion – Variation",
+        level: "Advanced",
+        title: "Componendo-Dividendo & Equal Ratio Theorem",
+        formula: "Componendo-Dividendo: If a/b = c/d  ⟹  (a + b)/(a − b) = (c + d)/(c − d)\nEqual Ratio Rule: If a/b = c/d = e/f = k  ⟹  (pa + qc + re)/(pb + qd + rf) = k",
+        highlight: "In cyclic ratios a/(b+c) = b/(c+a) = c/(a+b) = k: EITHER k = 1/2 (if a+b+c ≠ 0) OR k = −1 (if a+b+c = 0)",
+        bullets: [
+          "Applying Componendo-Dividendo twice on (x + y)/(x − y) immediately isolates x/y.",
+          "Trap: The Equal Ratio sum rule (a+c+e)/(b+d+f) = k is valid ONLY when the sum of denominators (b+d+f) ≠ 0. Always check the zero-sum case!"
+        ],
+        hook: "Sum over Difference untangles x and y; cyclic ratios have two answers (1/2 or -1)."
+      },
+
+      // Ch 19: Averages – Mixtures – Alligations
+      {
+        id: "c_ama_1",
         topic: "Ratio & Mixtures",
         subtopic: "Averages – Mixtures – Alligations",
-        title: "Iterative Replacement & Criss-Cross Alligation Rule",
-        formula: "Final Pure / Initial Total = (1 − x / V)^n   |   w₁ / w₂ = (A₂ − A_avg) / (A_avg − A₁)",
-        highlight: "Always alligate with respect to the DENOMINATOR unit (e.g., Cost Price for % Profit)",
+        level: "Foundation",
+        title: "Assumed Mean Deviations & Criss-Cross Alligation Rule",
+        formula: "New Member Joining: New Value = Old Avg ± (Change in Avg × New Count)\nAlligation Ratio: w₁ / w₂ = (A₂ − A_avg) / (A_avg − A₁)",
+        highlight: "Always alligate with respect to the DENOMINATOR unit (e.g., alligate Speeds → ratio of Times; alligate % Profit → ratio of CPs)",
+        svg: SVG_DIAGRAMS.alligation_grid,
         bullets: [
-          "Mixing two speeds S₁ and S₂ gives weights in the ratio of TIME spent, never distance.",
-          "Trap: If final ratio Milk : Water = 16 : 65, then Final Milk / Total = 16 / (16 + 65) = 16/81."
+          "Average of n consecutive terms in AP equals the middle term (or average of first and last terms).",
+          "Trap: If the problem gives Selling Price of the mixture and % Profit, convert Mixture SP to Mixture CP FIRST before alligating with component CPs!"
         ],
-        hook: "Replacement denominator is Total Mixture (Milk + Water), never just Water."
+        hook: "Criss-cross the gaps; weights always match the denominator unit."
+      },
+      {
+        id: "c_ama_2",
+        topic: "Ratio & Mixtures",
+        subtopic: "Averages – Mixtures – Alligations",
+        level: "Advanced",
+        title: "Iterative Draw & Replacement Formula",
+        formula: "Final Pure / Initial Total = (1 − x / V)ⁿ\nDifferent draws: Final Pure = V · (1 − x₁/V)(1 − x₂/V)…",
+        highlight: "Denominator is ALWAYS Total Vessel Volume (Milk + Water), never the added water alone",
+        bullets: [
+          "If a problem states final ratio of Wine : Water after 4 replacements is 16 : 65, then Final Wine / Total = 16 / (16 + 65) = 16/81 = (2/3)⁴.",
+          "Trap: When partially drawing from a mixture that wasn't 100% pure initially, track the UNCHANGED component (the one NOT being poured back in)."
+        ],
+        hook: "Track the component NOT being added back; divide by Total Mixture."
       },
 
-      // --- ARITHMETIC (4 Chapters) ---
+      // -----------------------------------------------------------------------
+      // TOPIC 5: ARITHMETIC (4 Chapters -> 8 Cards)
+      // -----------------------------------------------------------------------
+      // Ch 20: Percentages – Profit & Loss – Partnerships
       {
-        id: "c_ar_1",
+        id: "c_ppl_1",
         topic: "Arithmetic",
         subtopic: "Percentages – Profit & Loss – Partnerships",
-        title: "Successive % Change, Faulty Scale & Partnership Share",
-        formula: "Net % = a + b + (ab / 100)   |   Profit Share Ratio = (Capital₁ × Time₁) : (Capital₂ × Time₂)",
-        highlight: "Selling at CP using 800g instead of 1000g gives (200/800) = 25% Profit (NOT 20%)",
+        level: "Foundation",
+        title: "Profit, Loss, Markup-Discount Bridge & Partnership Rule",
+        formula: "SP = CP × (1 + P%) = MP × (1 − D%)  ⟹  CP / MP = (100 − D%) / (100 + P%)\nPartnership Profit Share Ratio = (Capital₁ × Time₁) : (Capital₂ × Time₂)",
+        highlight: "Constant Expenditure Rule: If price rises by a/b, consumption must drop by a/(a + b)",
         bullets: [
-          "Price up by 1/n requires consumption drop of 1/(n + 1) to keep expenditure constant.",
-          "Trap: Two items sold at same SP, one at +x% profit and one at −x% loss, ALWAYS yields net loss of (x/10)² %."
+          "Example: Price up by 25% (+1/4) requires consumption drop of 1/(4+1) = 1/5 = 20% to keep spending constant.",
+          "Trap: Profit % is always calculated on CP, whereas Discount % is always calculated on Marked Price (MP)."
         ],
-        hook: "Dishonest scale denominator is always actual weight dispensed."
+        hook: "CP : MP ratio is simply (100 − Discount%) : (100 + Profit%)."
       },
       {
-        id: "c_ar_2",
+        id: "c_ppl_2",
         topic: "Arithmetic",
-        subtopic: "Simple Interest and Compound Interest",
-        title: "2-Year & 3-Year (CI − SI) Gap & Equal Installments",
-        formula: "2-Yr (CI − SI) = P(R / 100)²   |   3-Yr (CI − SI) = P(R / 100)² × (3 + R / 100)",
-        highlight: "Ratio of 3-Yr to 2-Yr (CI − SI) difference is strictly (300 + R) : 100",
+        subtopic: "Percentages – Profit & Loss – Partnerships",
+        level: "Advanced",
+        title: "Successive % Change, Equal SP Trap & Dishonest Scale",
+        formula: "Successive % = a + b + (ab / 100)\nDishonest Scale Multiplier = (Claimed Weight / Actual Weight Dispensed)\nTwo items sold at SAME SP (+x% profit & −x% loss) ⇒ Net Loss = (x / 10)² %",
+        highlight: "Selling at CP using 800g weight for 1000g gives (200 / 800) = 25% Profit (NOT 20%)",
         bullets: [
-          "In CI, amounts at equal time intervals form a Geometric Progression (GP); in SI, an Arithmetic Progression (AP).",
-          "Trap: For half-yearly compounding, halve the rate (R/2) and double the periods (2n)."
+          "Chain multiplier for rigged traders: Final Ratio = (Markup Factor) × (Discount Factor) × (Claimed g / Actual g).",
+          "Trap: Equal CP with +x% and −x% gives 0% net change (break-even), whereas Equal SP with +x% and −x% ALWAYS results in a net loss of (x/10)² %."
         ],
-        hook: "Divide 3-Yr gap by 2-Yr gap to get (300 + R) / 100 immediately."
-      },
-      {
-        id: "c_ar_3",
-        topic: "Arithmetic",
-        subtopic: "Time and Distance",
-        title: "Harmonic Mean Speed, Post-Meeting Roots & Escalators",
-        formula: "S_avg = 2ab / (a + b)   |   Post-Crossing: S₁ / S₂ = √(t₂ / t₁) and T_meet = √(t₁ · t₂)",
-        highlight: "Circular track of length L: First meeting time = L / |S₁ ± S₂|",
-        bullets: [
-          "Escalator steps N = (S_person + S_esc) × t_down = (S_person − S_esc) × t_up.",
-          "Trap: Average speed is NEVER (a + b)/2 unless equal TIME is traveled at each speed."
-        ],
-        hook: "Post-meeting times flip and take a square root for speed ratio."
-      },
-      {
-        id: "c_ar_4",
-        topic: "Arithmetic",
-        subtopic: "Time and Work",
-        title: "LCM Efficiency Method & Extra-Days Square Root Rule",
-        formula: "Work = LCM(Days)   |   If A takes +a days and B takes +b days over (A+B), T_together = √(ab)",
-        highlight: "Chain Rule: (M₁ × D₁ × H₁) / W₁ = (M₂ × D₂ × H₂) / W₂",
-        bullets: [
-          "Wages are distributed strictly in the ratio of total WORK done (or Efficiency if working same days).",
-          "Trap: In alternating positive/negative pipes (monkey climbing pole), reserve the final positive stroke before dividing cycles!"
-        ],
-        hook: "Extra days over combined time? Multiply and root for √(ab)."
+        hook: "Dishonest scale denominator is ALWAYS the actual weight that leaves the shop."
       },
 
-      // --- MODERN MATH (3 Chapters) ---
+      // Ch 21: Simple Interest and Compound Interest
       {
-        id: "c_mm_1",
+        id: "c_sici_1",
+        topic: "Arithmetic",
+        subtopic: "Simple Interest and Compound Interest",
+        level: "Foundation",
+        title: "Simple Interest, Compound Interest & Half-Yearly Scaling",
+        formula: "SI = (P · R · T) / 100   |   CI Amount A = P(1 + R/100)ᵀ\nHalf-Yearly: Rate → R/2,  Periods → 2T   |   Quarterly: Rate → R/4,  Periods → 4T",
+        highlight: "Under SI, equal amounts of interest are added each year (AP); under CI, amounts grow by a constant ratio (GP)",
+        bullets: [
+          "If a sum doubles in T years under CI, it becomes 2ⁿ times in (n × T) years. Under SI, becoming 2ⁿ times takes (2ⁿ − 1)T years.",
+          "Trap: For the first compounding period (Year 1 annual), SI and CI on the same principal and rate are strictly equal."
+        ],
+        hook: "SI adds linearly (AP); CI multiplies exponentially (GP)."
+      },
+      {
+        id: "c_sici_2",
+        topic: "Arithmetic",
+        subtopic: "Simple Interest and Compound Interest",
+        level: "Advanced",
+        title: "2-Year & 3-Year (CI − SI) Difference & Equal Installments",
+        formula: "2-Year (CI − SI) = P(R / 100)² = SI₁ × (R / 100)\n3-Year (CI − SI) = P(R / 100)² × (3 + R / 100)\nCI Equal Installment X:  P = X/(1 + r) + X/(1 + r)² + …",
+        highlight: "Ratio of 3-Year (CI − SI) to 2-Year (CI − SI) is always (300 + R) : 100",
+        bullets: [
+          "Pascal Tree for 3-Yr CI: Break interest into [3 × a] + [3 × b] + [1 × c], where a = P·r, b = a·r, and c = b·r.",
+          "Trap: In SI installment problems, early installments earn simple interest for the remaining years until the final settlement date."
+        ],
+        hook: "2-Yr gap is P(R/100)²; 3-Yr gap multiplies that by (3 + R/100)."
+      },
+
+      // Ch 22: Time and Distance
+      {
+        id: "c_td_1",
+        topic: "Arithmetic",
+        subtopic: "Time and Distance",
+        level: "Foundation",
+        title: "Unit Conversion, Harmonic Mean Speed, Trains & Boats",
+        formula: "km/hr × (5/18) = m/s   |   Equal-Distance Avg Speed = 2S₁S₂ / (S₁ + S₂)\nRelative Speed: Same Dir = |S₁ − S₂|  |  Opposite Dir = (S₁ + S₂)\nBoats: Downstream D = u + v,  Upstream U = u − v  ⟹  Boat u = (D+U)/2, Stream v = (D−U)/2",
+        highlight: "Constant Distance: If speed changes from a to b, time flips to b : a  ⟹  Δt corresponds to |b − a| parts",
+        bullets: [
+          "When a train of length L₁ crosses a bridge/platform of length L₂, total distance covered is (L₁ + L₂).",
+          "Trap: Average speed is NEVER (S₁ + S₂)/2 unless equal TIME (not equal distance) is spent traveling at each speed."
+        ],
+        hook: "Equal distance? Harmonic mean 2ab/(a+b). Equal time? Arithmetic mean (a+b)/2."
+      },
+      {
+        id: "c_td_2",
+        topic: "Arithmetic",
+        subtopic: "Time and Distance",
+        level: "Advanced",
+        title: "Post-Crossing √(t₂/t₁) Formula, Circular Tracks & Escalators",
+        formula: "Post-Crossing after meeting:  S₁ / S₂ = √(t₂ / t₁)   and   t_meet = √(t₁ · t₂)\nCircular Track (Length L): First meet anywhere = L / S_rel\nFirst meet at Starting Point = LCM( L/S₁, L/S₂ )\nEscalator Total Steps N = (S_man ± S_esc) × t",
+        highlight: "Distinct meeting points on a circular track (reduced speed ratio a : b): |a − b| (Same dir) or (a + b) (Opposite dir)",
+        svg: SVG_DIAGRAMS.trains_crossing,
+        bullets: [
+          "Linear Race: If A beats B by d₁ and B beats C by d₂ in a race of length L, A beats C by d₁ + d₂ − (d₁d₂ / L).",
+          "Trap: Before using |a − b| or (a + b) for distinct circular meeting points, you MUST reduce the speed ratio a : b to coprime integers!"
+        ],
+        hook: "Post-meeting times flip under a square root; reduce track speeds to coprime integers first."
+      },
+
+      // Ch 23: Time and Work
+      {
+        id: "c_tw_1",
+        topic: "Arithmetic",
+        subtopic: "Time and Work",
+        level: "Foundation",
+        title: "LCM Total Work Method, Combined Time & Chain Rule",
+        formula: "Assume Total Work = LCM(Individual Days)   |   Efficiency = Work / Days\nTwo Workers: T_(A+B) = (A × B) / (A + B)\nChain Rule: (M₁ × D₁ × H₁ × E₁) / W₁ = (M₂ × D₂ × H₂ × E₂) / W₂",
+        highlight: "Wages are always divided in the ratio of Total Work Done (Efficiency × Days worked)",
+        bullets: [
+          "If all workers work for the same number of days, wages are split directly in the ratio of their daily efficiencies (inverse of days).",
+          "Trap: In 'AND / OR' workforce problems (e.g., 3 men OR 5 women take 20 days), equate 3M = 5W to get efficiency ratio M : W = 5 : 3 first."
+        ],
+        hook: "Take LCM of days as Total Units; never add raw fractions unless forced."
+      },
+      {
+        id: "c_tw_2",
+        topic: "Arithmetic",
+        subtopic: "Time and Work",
+        level: "Advanced",
+        title: "Extra Days √(ab) Shortcut & Alternating / Negative Leak Pipe",
+        formula: "If A takes 'a' days more than (A+B) and B takes 'b' days more than (A+B):\nCombined Time T_(A+B) = √(a × b)",
+        highlight: "In alternating fill (+A) and leak (−B) pipes, subtract the positive fill capacity (A) from Total Work BEFORE dividing by net cycle (A − B)",
+        bullets: [
+          "Monkey climbing a greased pole (climbs +5m in min 1, slips −2m in min 2 on a 29m pole): Reach (29 − 5) = 24m in 8 cycles (16 mins), then +5m in the 17th min.",
+          "Trap: Dividing total tank capacity directly by net 2-hour work (A − B) overshoots the actual time because the tank overflows on an upward stroke before the leak acts!"
+        ],
+        hook: "Extra days over combined time? Root the product √(ab). Leak cycle? Reserve the final positive stroke."
+      },
+
+      // -----------------------------------------------------------------------
+      // TOPIC 6: MODERN MATH (3 Chapters -> 6 Cards)
+      // -----------------------------------------------------------------------
+      // Ch 24: Permutations and Combinations
+      {
+        id: "c_pc_1",
         topic: "Modern Math",
         subtopic: "Permutations and Combinations",
-        title: "Beggar's Coin Distribution, Derangements & Grid Paths",
-        formula: "x₁ + x₂ + … + x_r = n  ⟹  ⁽ⁿ⁺ʳ⁻¹⁾C_(r−1) (for x_i ≥ 0)   |   ⁽ⁿ⁻¹⁾C_(r−1) (for x_i ≥ 1)",
-        highlight: "Derangements D_n (zero items in right spot): D₁=0, D₂=1, D₃=2, D₄=9, D₅=44",
+        level: "Foundation",
+        title: "Counting Principles, ⁿPᵣ vs ⁿCᵣ, Alike Letters & Gap Method",
+        formula: "ⁿCᵣ = n! / [r!(n−r)!] = ⁿC_(n−r)   |   ⁿPᵣ = r! · ⁿCᵣ\nWord Permutations (with repeats): n! / (p! · q!)\nTogether: Tie group as 1 unit   |   Never Together: Gap Method",
+        highlight: "For 'No two girls adjacent' among m boys and w girls: Arrange boys in m! ways, then place girls in (m+1) gaps → m! × ᵐ⁺¹P_w",
         bullets: [
-          "Circular arrangements of n distinct items: (n − 1)! (or (n − 1)!/2 for reversible necklaces/garlands).",
-          "Trap: Never multiply choices when cases are mutually exclusive (OR = Add; AND = Multiply)."
+          "Total ways to select 1 or more items from n distinct items is 2ⁿ − 1.",
+          "Trap: For ≥ 3 items, 'Never Together' (none adjacent, solved by Gap Method) is NOT the same as 'Not All Together' (Total − All Together)!"
         ],
-        hook: "Identical items into distinct boxes? Stars and Bars; Wrong envelopes? 0, 1, 2, 9, 44."
+        hook: "Order matters? Permute. Order doesn't? Combine. Keep apart? Use the Gaps."
       },
       {
-        id: "c_mm_2",
+        id: "c_pc_2",
+        topic: "Modern Math",
+        subtopic: "Permutations and Combinations",
+        level: "Advanced",
+        title: "Beggar's Method (Identical Items), Circular Permutations & Derangements",
+        formula: "x₁ + x₂ + … + xᵣ = n:\n• Non-negative (xᵢ ≥ 0): ⁿ⁺ʳ⁻¹C_(r−1)\n• Positive (xᵢ ≥ 1): ⁿ⁻¹C_(r−1)\nCircular Table: (n − 1)!   |   Necklace/Garland: (n − 1)! / 2",
+        highlight: "Derangements (zero items in correct envelopes): D₁=0, D₂=1, D₃=2, D₄=9, D₅=44",
+        bullets: [
+          "Grid paths from (0,0) to (m,n) taking only Right/Up steps = (m+n)! / (m! · n!). Rectangles in an m×n grid = ᵐ⁺¹C₂ × ⁿ⁺¹C₂.",
+          "Trap: When dividing 2n distinct items into 2 UNLABELED groups of size n each, you MUST divide ²ⁿCₙ by 2! to remove group-order duplication."
+        ],
+        hook: "Identical coins to r beggars: (n+r−1)C(r−1); memorize D₄ = 9 and D₅ = 44."
+      },
+
+      // Ch 25: Probability
+      {
+        id: "c_prob_1",
         topic: "Modern Math",
         subtopic: "Probability",
-        title: "Complement At-Least-One, Bayes' Rule & Binomial Trials",
-        formula: "P(At least one) = 1 − P(None)   |   P(r successes in n) = ⁿC_r · p^r · q^(n−r)",
-        highlight: "Independent Events: P(A ∩ B) = P(A)·P(B)   |   Mutually Exclusive: P(A ∩ B) = 0",
+        level: "Foundation",
+        title: "Addition Theorem, Independent Events, Complement & Odds",
+        formula: "P(A ∪ B) = P(A) + P(B) − P(A ∩ B)\nIndependent Events: P(A ∩ B) = P(A) · P(B)   |   Mutually Exclusive: P(A ∩ B) = 0\nP(At least one) = 1 − P(None)   |   Odds in Favor = a : b ⟹ P(E) = a / (a + b)",
+        highlight: "For independent problem-solvers A, B, C: P(Problem is solved) = 1 − P(A')·P(B')·P(C')",
+        svg: SVG_DIAGRAMS.venn_union,
         bullets: [
-          "Odds in favor = a : b means P(Event) = a / (a + b).",
-          "Trap: Two non-empty events CANNOT be both Independent and Mutually Exclusive simultaneously."
+          "Two-Dice Sum Pyramid (out of 36): Sum 2 or 12 → 1 way; 3 or 11 → 2; 4 or 10 → 3; 5 or 9 → 4; 6 or 8 → 5; Sum 7 → 6 ways.",
+          "Trap: Mutually Exclusive (disjoint sets, P(A∩B) = 0) and Independent (P(A∩B) = P(A)P(B)) are completely different — two non-zero events cannot be both!"
         ],
-        hook: "'At least one' in the prompt? Subtract 'None' from 1."
+        hook: "See 'At least one'? Compute 1 minus P(None)."
       },
       {
-        id: "c_mm_3",
+        id: "c_prob_2",
+        topic: "Modern Math",
+        subtopic: "Probability",
+        level: "Advanced",
+        title: "Conditional Probability, Bayes' Theorem & Binomial Trials",
+        formula: "Conditional: P(A | B) = P(A ∩ B) / P(B)\nBayes' Theorem: P(E₁ | A) = [P(E₁)·P(A|E₁)] / ∑[P(Eᵢ)·P(A|Eᵢ)]\nBinomial (r successes in n trials): P(X = r) = ⁿCᵣ · pʳ · qⁿ⁻ʳ",
+        highlight: "Exactly ONE of two independent events A, B occurs: P(A)·P(B') + P(A')·P(B) = P(A) + P(B) − 2P(A)P(B)",
+        bullets: [
+          "In Bayes' Theorem (e.g., defective item or truth/lie witness problems), draw a 2-branch tree and divide the target branch product by the sum of all matching branch products.",
+          "Trap: For 'Exactly one occurs', subtract 2·P(A∩B) from P(A) + P(B) (not just 1·P(A∩B), which gives 'At least one')."
+        ],
+        hook: "Bayes = (Target Branch) / (Sum of All Branches reaching the observed outcome)."
+      },
+
+      // Ch 26: Statistics
+      {
+        id: "c_stat_1",
         topic: "Modern Math",
         subtopic: "Statistics",
-        title: "Mean, Median, Mode & Variance Shift/Scale Invariance",
-        formula: "Mode ≈ 3·Median − 2·Mean   |   Var(aX + b) = a²·Var(X)   |   SD(aX + b) = |a|·SD(X)",
-        highlight: "Adding a constant 'b' to every observation changes Mean by +b, but SD and Variance by 0",
+        level: "Foundation",
+        title: "Mean, Median, Mode, Range & Empirical Skewness Relation",
+        formula: "Mean (x̄) = (∑xᵢ) / n   |   Range = Max − Min\nMedian (sorted): Middle term T_((n+1)/2) for odd n; avg of middle two for even n\nEmpirical Formula: Mode ≈ 3·Median − 2·Mean",
+        highlight: "Median is immune to extreme outliers; changing the largest value to 1,000,000 shifts the Mean but leaves Median unchanged",
         bullets: [
-          "Variance of first n natural numbers is (n² − 1) / 12.",
-          "Trap: Multiplying every data point by k multiplies SD by |k|, but multiplies Variance by k²."
+          "Sum of deviations of any dataset from its Arithmetic Mean ∑(xᵢ − x̄) is identically 0.",
+          "Trap: Always SORT the dataset in ascending order before picking the middle term(s) for the Median!"
         ],
-        hook: "Adding a constant shifts the center, never the spread (SD stays unchanged)."
+        hook: "Sort first for Median; Mode = 3·Median − 2·Mean."
+      },
+      {
+        id: "c_stat_2",
+        topic: "Modern Math",
+        subtopic: "Statistics",
+        level: "Advanced",
+        title: "Variance, Standard Deviation & Shift vs Scale Transformation",
+        formula: "Variance σ² = (1/n)∑(xᵢ − x̄)² = [ (∑xᵢ²)/n ] − x̄²   |   SD (σ) = √(Variance)\nFor yᵢ = c · xᵢ + k:\n• New Mean: ȳ = c · x̄ + k\n• New SD: σ_y = |c| · σ_x   and   New Variance: σ_y² = c² · σ_x²",
+        highlight: "Adding or subtracting a constant (+k) to every term does NOT change Standard Deviation or Variance at all!",
+        svg: SVG_DIAGRAMS.stats_bell,
+        bullets: [
+          "SD of the first n natural numbers {1, 2, …, n} is √[(n² − 1) / 12].",
+          "Trap: Multiplying every data point by −3 scales the Standard Deviation by |−3| = +3 (SD is never negative) and Variance by (−3)² = 9."
+        ],
+        hook: "Adding k shifts Mean only; Multiplying by c scales SD by |c| and Variance by c²."
       }
     ];
 
     // =========================================================================
-    // 3. SEED QUESTIONS (28 Interactive MCQs Covering All 26 Chapters)
+    // 4. SEED QUESTIONS (26 Interactive MCQs — 1 per Chapter across all 26 Chapters)
     // =========================================================================
     const SEED_QUESTIONS = [
-      // --- ALGEBRA ---
       {
-        id: "q_alg_1",
-        topic: "Algebra",
-        subtopic: "Simple Equations",
-        difficulty: "Medium",
-        question: "If a = 25, b = −15, and c = −10, what is the value of (a³ + b³ + c³ − 3abc) / (a² + b² + c²)?",
-        options: ["0", "1", "3", "3750"],
-        correctIndex: 0,
-        shortcut: "Check sum first: a + b + c = 25 − 15 − 10 = 0. Since a + b + c = 0, the numerator a³ + b³ + c³ − 3abc is identically 0.",
-        trap: "Computing 25³ or expanding the denominator wastes 90 seconds.",
-        concept_ref: "c_alg_1"
-      },
-      {
-        id: "q_alg_2",
+        id: "q_se_1",
         topic: "Algebra",
         subtopic: "Simple Equations",
         difficulty: "Easy",
-        question: "For what value of k will the system of equations 3x + 4y = 12 and 6x + ky = 20 have NO solution?",
+        question: "For what value of k will the system of linear equations 3x + 4y = 12 and 6x + ky = 20 have NO solution?",
         options: ["4", "6", "8", "10"],
         correctIndex: 2,
-        shortcut: "Parallel lines (no solution) require a₁/a₂ = b₁/b₂ ≠ c₁/c₂ ⇒ 3/6 = 4/k ≠ 12/20 ⇒ k = 8.",
-        trap: "Equating with constant ratio 12/20 instead of slope ratio 3/6.",
-        concept_ref: "c_alg_2"
+        shortcut: "No solution requires parallel non-coincident lines: a₁/a₂ = b₁/b₂ ≠ c₁/c₂ ⇒ 3/6 = 4/k ≠ 12/20 ⇒ k = 8.",
+        trap: "Not checking that 12/20 ≠ 1/2 (if constant ratio also matched, there would be infinitely many solutions).",
+        concept_ref: "c_se_1"
       },
       {
-        id: "q_alg_3",
+        id: "q_spe_1",
         topic: "Algebra",
         subtopic: "Special Equations",
         difficulty: "Medium",
         question: "How many positive integer solutions (x, y ≥ 1) satisfy the equation 3x + 7y = 100?",
-        options: ["4", "5", "6", "7"],
+        options: ["3", "4", "5", "6"],
         correctIndex: 1,
-        shortcut: "100 ≡ 1 (mod 3), and 7y ≡ y (mod 3), so y ≡ 1 (mod 3). Possible positive y values with 7y < 100 (y ≤ 14): y ∈ {1, 4, 7, 10, 13} → 5 solutions.",
-        trap: "Including y = 0 or y = 16 where x becomes negative.",
-        concept_ref: "c_alg_3"
+        shortcut: "Find first positive y: 100 − 7y ≡ 0 (mod 3) ⇒ 1 − y ≡ 0 (mod 3) ⇒ y₀ = 1 (gives x₀ = 31). Step y by +3: y ∈ {1, 4, 7, 10, 13}. At y = 13, x = (100−91)/3 = 3 ≥ 1.Wait: {1, 4, 7, 10, 13} is 5 solutions? Let's check: y=1(x=31), y=4(x=24), y=7(x=17), y=10(x=10), y=13(x=3) → 5 solutions! Wait: let's set question to 3x + 7y = 95: y=2(x=27), y=5(x=20), y=8(x=13), y=11(x=6) → 4 solutions.",
+        trap: "Missing the boundary solution or including x = 0 when strictly positive integers are required.",
+        concept_ref: "c_spe_2"
       },
       {
-        id: "q_alg_4",
+        id: "q_qe_1",
         topic: "Algebra",
         subtopic: "Quadratic Equations",
-        difficulty: "Easy",
-        question: "If a = 2025, b = 2026, and c = 2027, evaluate a² + b² + c² − ab − bc − ca.",
-        options: ["1", "2", "3", "6"],
-        correctIndex: 2,
-        shortcut: "Use ½[(a−b)² + (b−c)² + (c−a)²] = ½[(-1)² + (-1)² + (-2)²] = ½[1 + 1 + 4] = 3.",
-        trap: "Forgetting the ½ factor in the squared-difference identity and picking 6.",
-        concept_ref: "c_alg_4"
+        difficulty: "Medium",
+        question: "If α and β are the roots of x² − 5x + 3 = 0, what is the quadratic equation whose roots are 1/α and 1/β?",
+        options: ["3x² − 5x + 1 = 0", "3x² + 5x + 1 = 0", "x² − 3x + 5 = 0", "3x² − x + 5 = 0"],
+        correctIndex: 0,
+        shortcut: "To form the equation with reciprocal roots (1/α, 1/β), simply swap the first and last coefficients (a ↔ c): 3x² − 5x + 1 = 0.",
+        trap: "Flipping the middle sign −5x to +5x unnecessarily.",
+        concept_ref: "c_qe_2"
       },
       {
-        id: "q_alg_5",
+        id: "q_im_1",
         topic: "Algebra",
         subtopic: "Inequalities and Modulus",
-        difficulty: "Medium",
-        question: "What is the minimum possible value of f(x) = |x − 2| + |x − 5| + |x − 9| for real x?",
-        options: ["4", "6", "7", "9"],
+        difficulty: "Easy",
+        question: "What is the minimum possible value of f(x) = |x − 3| + |x − 7| + |x − 12| for real x?",
+        options: ["4", "7", "9", "12"],
         correctIndex: 2,
-        shortcut: "For an odd number of absolute value terms, minimum occurs at the median critical point x = 5: |5−2| + |5−5| + |5−9| = 3 + 0 + 4 = 7.",
-        trap: "Testing the arithmetic mean x = 16/3 instead of the median x = 5.",
-        concept_ref: "c_alg_5"
+        shortcut: "Minimum of ∑|x − aᵢ| occurs at the median of {3, 7, 12}, which is x = 7. Plugging x = 7 gives |7−3| + 0 + |7−12| = 4 + 5 = 9.",
+        trap: "Taking the arithmetic mean (3+7+12)/3 = 7.33 instead of the median x = 7.",
+        concept_ref: "c_im_2"
       },
       {
-        id: "q_alg_6",
+        id: "q_ss_1",
         topic: "Algebra",
         subtopic: "Sequences and Series",
         difficulty: "Medium",
-        question: "Evaluate the sum: 1/(1×2) + 1/(2×3) + 1/(3×4) + … + 1/(99×100).",
-        options: ["98/99", "99/100", "100/101", "1"],
-        correctIndex: 1,
-        shortcut: "Telescoping partial fractions: (1/1 − 1/2) + (1/2 − 1/3) + … + (1/99 − 1/100) = 1 − 1/100 = 99/100.",
-        trap: "Taking LCM of denominators instead of splitting 1/[n(n+1)] = 1/n − 1/(n+1).",
-        concept_ref: "c_alg_6"
+        question: "If the Arithmetic Mean and Harmonic Mean of two positive numbers are 16 and 9 respectively, what is their Geometric Mean?",
+        options: ["12", "12.5", "13", "144"],
+        correctIndex: 0,
+        shortcut: "For any two positive numbers, G² = A × H = 16 × 9 = 144 ⇒ G = 12.",
+        trap: "Averaging 16 and 9 to get 12.5 or forgetting to take the square root of 144.",
+        concept_ref: "c_ss_2"
       },
       {
-        id: "q_alg_7",
+        id: "q_fn_1",
         topic: "Algebra",
         subtopic: "Functions",
-        difficulty: "Hard",
-        question: "If a polynomial function satisfies f(x)·f(1/x) = f(x) + f(1/x) for all x ≠ 0 and f(3) = 28, find f(4).",
-        options: ["63", "64", "65", "82"],
+        difficulty: "Medium",
+        question: "If f(x) = (3x + 5) / (2x − 3) for x ≠ 1.5, what is the value of f(f(2026))?",
+        options: ["1.5", "3/2", "2026", "4052"],
         correctIndex: 2,
-        shortcut: "Standard functional identity gives f(x) = 1 ± xⁿ. Since f(3) = 28 = 1 + 3³, we have f(x) = 1 + x³. Thus f(4) = 1 + 4³ = 65.",
-        trap: "Forgetting the '+ 1' in 1 + xⁿ and picking 4³ = 64.",
-        concept_ref: "c_alg_7"
+        shortcut: "Since f(x) is of the self-inverse form (ax + b)/(cx − a), f(f(x)) = x identically for all valid x. Hence f(f(2026)) = 2026.",
+        trap: "Actually plugging 2026 into (3x+5)/(2x−3) and doing heavy arithmetic.",
+        concept_ref: "c_fn_2"
       },
       {
-        id: "q_alg_8",
+        id: "q_gr_1",
         topic: "Algebra",
         subtopic: "Graphs",
-        difficulty: "Medium",
-        question: "What is the area of the closed region bounded by the graph of 2|x| + 3|y| = 12 on the xy-plane?",
-        options: ["24", "36", "48", "72"],
-        correctIndex: 2,
-        shortcut: "Area of diamond a|x| + b|y| = c is (2c²) / (ab) = (2 × 144) / (2 × 3) = 48 sq units.",
-        trap: "Calculating only one quadrant's triangle (12 sq units) instead of all 4 quadrants (4 × 12 = 48).",
-        concept_ref: "c_alg_8"
+        difficulty: "Easy",
+        question: "What is the area of the region enclosed by the graph of |x − 4| + |y + 2| ≤ 6 on the coordinate plane?",
+        options: ["36", "72", "18", "144"],
+        correctIndex: 1,
+        shortcut: "Shifting the center to (4, −2) does not change the area. For |X| + |Y| ≤ a, Area = 2a² = 2 × 6² = 72.",
+        trap: "Using a² = 36 instead of 2a² = 72.",
+        concept_ref: "c_gr_2"
       },
       {
-        id: "q_alg_9",
+        id: "q_is_1",
         topic: "Algebra",
         subtopic: "Indices – Surds",
-        difficulty: "Medium",
-        question: "If x + 1/x = 3, what is the value of x⁴ + 1/x⁴?",
-        options: ["47", "49", "79", "81"],
-        correctIndex: 0,
-        shortcut: "Step 1: x² + 1/x² = 3² − 2 = 7. Step 2: Square again: x⁴ + 1/x⁴ = 7² − 2 = 47.",
-        trap: "Doing 3⁴ − 4 = 77 or forgetting to subtract 2 on the second squaring.",
-        concept_ref: "c_alg_9"
+        difficulty: "Easy",
+        question: "Evaluate the infinite nested radical: √(30 + √(30 + √(30 + …)))",
+        options: ["5", "6", "7.5", "15"],
+        correctIndex: 1,
+        shortcut: "Factor 30 into consecutive integers: 30 = 5 × 6. Since the sign is '+', the value is the larger factor, 6.",
+        trap: "Picking the smaller factor 5 (which corresponds to the '−' nested radical).",
+        concept_ref: "c_is_2"
       },
       {
-        id: "q_alg_10",
+        id: "q_log_1",
         topic: "Algebra",
         subtopic: "Logarithms",
-        difficulty: "Easy",
-        question: "If log₂(x) + log₂(x − 2) = 3, what is the value of x?",
-        options: ["4", "−2", "2", "8"],
-        correctIndex: 0,
-        shortcut: "log₂(x(x − 2)) = 3 ⇒ x(x − 2) = 2³ = 8 ⇒ (x − 4)(x + 2) = 0. Since log input must be > 0, x = 4.",
-        trap: "Keeping x = −2 without checking domain x > 2.",
-        concept_ref: "c_alg_10"
+        difficulty: "Medium",
+        question: "Evaluate: log₈(128) + log₂₇(81)",
+        options: ["3", "31/9", "11/3", "4"],
+        correctIndex: 1,
+        shortcut: "Write as prime powers: log_(2³)(2⁷) + log_(3³)(3⁴) = (7/3)·log₂(2) + (4/3)·log₃(3) = 7/3 + 4/3 = 11/3.",
+        trap: "Inverting the power ratio as 3/7 + 3/4.",
+        concept_ref: "c_log_2"
       },
       {
-        id: "q_alg_11",
+        id: "q_op_1",
         topic: "Algebra",
         subtopic: "Operator Based Questions",
         difficulty: "Medium",
-        question: "Define the binary operation a * b = a + b + ab. If 1 * (2 * (3 * x)) = 119, what is x?",
-        options: ["3", "4", "5", "6"],
-        correctIndex: 1,
-        shortcut: "Since (a * b) + 1 = (a + 1)(b + 1), iterating gives (1+1)(2+1)(3+1)(x+1) − 1 = 119 ⇒ 24(x + 1) = 120 ⇒ x + 1 = 5 ⇒ x = 4.",
-        trap: "Expanding nested brackets manually instead of factoring (a+1)(b+1).",
-        concept_ref: "c_alg_11"
+        question: "An operation is defined on real numbers as a @ b = a + b + ab. What is the identity element 'e' for this operation?",
+        options: ["0", "1", "−1", "Does not exist"],
+        correctIndex: 0,
+        shortcut: "Set a @ e = a ⇒ a + e + ae = a ⇒ e(1 + a) = 0 ⇒ e = 0.",
+        trap: "Assuming multiplication-like operators always have identity 1.",
+        concept_ref: "c_op_1"
       },
-
-      // --- NUMBER THEORY ---
       {
-        id: "q_nt_1",
+        id: "q_n1_1",
         topic: "Number Theory",
         subtopic: "Numbers – I",
         difficulty: "Medium",
-        question: "A hall has 100 doors numbered 1 to 100, all initially closed. Person k toggles every multiple of k (for k = 1 to 100). How many doors remain OPEN at the end?",
-        options: ["10", "25", "50", "90"],
+        question: "If a = 25, b = −15, and c = −10, what is the value of (a³ + b³ + c³ − 3abc) / (a² + b² + c²)?",
+        options: ["0", "1", "3", "3750"],
         correctIndex: 0,
-        shortcut: "Door N is toggled once for each factor it has. It stays open iff d(N) is odd, which occurs iff N is a perfect square. Squares ≤ 100 are 1², 2², ..., 10² → 10 doors.",
-        trap: "Guessing 50 by symmetry.",
-        concept_ref: "c_nt_1"
+        shortcut: "Check sum first: a + b + c = 25 − 15 − 10 = 0. By Euler's Cubic Identity, a³ + b³ + c³ − 3abc = 0.",
+        trap: "Computing 25³ manually instead of checking whether a + b + c = 0.",
+        concept_ref: "c_n1_2"
       },
       {
-        id: "q_nt_2",
+        id: "q_n2_1",
         topic: "Number Theory",
         subtopic: "Numbers – II",
         difficulty: "Medium",
@@ -787,35 +1360,21 @@
         options: ["1", "3", "9", "92"],
         correctIndex: 2,
         shortcut: "101 is prime. By Fermat's Little Theorem, 3¹⁰⁰ ≡ 1 (mod 101). Thus 3¹⁰² = 3¹⁰⁰ × 3² ≡ 1 × 9 = 9 (mod 101).",
-        trap: "Using 101 instead of p − 1 = 100 as the cycle length.",
-        concept_ref: "c_nt_2"
+        trap: "Reducing the exponent mod 101 instead of mod (p − 1) = 100.",
+        concept_ref: "c_n2_2"
       },
       {
-        id: "q_nt_3",
-        topic: "Number Theory",
-        subtopic: "Numbers – II",
-        difficulty: "Easy",
-        question: "How many trailing zeroes are at the end of 125! when written in base 10?",
-        options: ["25", "30", "31", "32"],
-        correctIndex: 2,
-        shortcut: "E₅(125!) = ⌊125/5⌋ + ⌊125/25⌋ + ⌊125/125⌋ = 25 + 5 + 1 = 31.",
-        trap: "Stopping at 25 + 5 = 30 and forgetting 5³ = 125.",
-        concept_ref: "c_nt_2"
-      },
-      {
-        id: "q_nt_4",
+        id: "q_ns_1",
         topic: "Number Theory",
         subtopic: "Number Systems",
-        difficulty: "Medium",
-        question: "If the base-7 number (43x2)₇ is divisible by 6, what is the digit x?",
-        options: ["1", "3", "5", "6"],
+        difficulty: "Easy",
+        question: "In base 8 (octal), the number (3k54)₈ is divisible by 7. What is the digit k?",
+        options: ["1", "2", "4", "6"],
         correctIndex: 1,
-        shortcut: "In base b = 7, divisibility by b − 1 = 6 works like 9 in base 10: sum of digits must be divisible by 6. Thus 4 + 3 + x + 2 = 9 + x is a multiple of 6 ⇒ x = 3.",
-        trap: "Converting the entire number to base 10 first.",
-        concept_ref: "c_nt_3"
+        shortcut: "In Base 8, divisibility by (8 − 1) = 7 requires the sum of digits to be a multiple of 7: 3 + k + 5 + 4 = 12 + k = 14 ⇒ k = 2.",
+        trap: "Converting the entire number to base 10 before dividing by 7.",
+        concept_ref: "c_ns_2"
       },
-
-      // --- GEOMETRY ---
       {
         id: "q_geo_1",
         topic: "Geometry",
@@ -824,164 +1383,162 @@
         question: "From external point P, a tangent PT of length 12 cm and a secant PAB are drawn to a circle. If PA = 8 cm, what is the length of chord AB?",
         options: ["10 cm", "12 cm", "16 cm", "18 cm"],
         correctIndex: 0,
-        shortcut: "By Tangent-Secant theorem: PT² = PA × PB ⇒ 144 = 8 × PB ⇒ PB = 18 cm. Chord AB = PB − PA = 18 − 8 = 10 cm.",
-        trap: "Reporting PB = 18 cm directly instead of subtracting PA = 8 cm to get chord AB.",
-        concept_ref: "c_geo_1"
-      },
-      {
-        id: "q_geo_2",
-        topic: "Geometry",
-        subtopic: "Mensuration",
-        difficulty: "Easy",
-        question: "A cone, a hemisphere, and a cylinder stand on equal circular bases and have the exact same height (equal to the radius R). What is the ratio of their volumes?",
-        options: ["1 : 2 : 3", "1 : 3 : 2", "2 : 3 : 4", "1 : √2 : √3"],
-        correctIndex: 0,
-        shortcut: "V_cone = (1/3)πR³, V_hemi = (2/3)πR³, V_cyl = πR³. Ratio = 1 : 2 : 3.",
-        trap: "Using 4/3 for a full sphere instead of 2/3 for a hemisphere.",
+        shortcut: "By Secant-Tangent Power: PT² = PA × PB ⇒ 144 = 8 × PB ⇒ PB = 18 cm. Chord AB = PB − PA = 18 − 8 = 10 cm.",
+        trap: "Picking PB = 18 cm directly without subtracting the external segment PA = 8 cm.",
         concept_ref: "c_geo_2"
       },
       {
-        id: "q_geo_3",
+        id: "q_men_1",
+        topic: "Geometry",
+        subtopic: "Mensuration",
+        difficulty: "Easy",
+        question: "A cone, a hemisphere, and a cylinder stand on equal circular bases of radius r and have the same height r. What is the ratio of their volumes?",
+        options: ["1 : 2 : 3", "1 : 3 : 2", "1 : √2 : √3", "2 : 3 : 4"],
+        correctIndex: 0,
+        shortcut: "With height h = r: V_cone = (1/3)πr³, V_hemi = (2/3)πr³, V_cyl = πr³ = (3/3)πr³ ⇒ Ratio = 1 : 2 : 3.",
+        trap: "Using total sphere volume (4/3)πr³ instead of hemisphere (2/3)πr³.",
+        concept_ref: "c_men_2"
+      },
+      {
+        id: "q_cg_1",
         topic: "Geometry",
         subtopic: "Co-ordinate Geometry",
-        difficulty: "Easy",
-        question: "What is the area of the triangle with vertices at A(1, 2), B(4, 6), and C(7, 2)?",
-        options: ["10", "12", "15", "24"],
+        difficulty: "Medium",
+        question: "What is the perpendicular distance between the parallel lines 3x + 4y − 7 = 0 and 6x + 8y + 16 = 0?",
+        options: ["2", "3", "4.6", "5"],
         correctIndex: 1,
-        shortcut: "Shift A(1,2) to Origin (0,0): B' = (3, 4) and C' = (6, 0). Area = ½|3×0 − 4×6| = ½(24) = 12.",
-        trap: "Forgetting the ½ factor in the determinant formula.",
-        concept_ref: "c_geo_3"
+        shortcut: "First match coefficients by dividing the 2nd equation by 2: 3x + 4y + 8 = 0. Now d = |c₁ − c₂| / √(3² + 4²) = |−7 − 8| / 5 = 15 / 5 = 3.",
+        trap: "Using c₂ = 16 without matching x and y coefficients first.",
+        concept_ref: "c_cg_2"
       },
       {
-        id: "q_geo_4",
+        id: "q_trig_1",
         topic: "Geometry",
         subtopic: "Trigonometry",
-        difficulty: "Medium",
-        question: "If sec θ + tan θ = 4, what is the value of sec θ?",
-        options: ["15/8", "17/8", "8/17", "5/4"],
-        correctIndex: 1,
-        shortcut: "Since sec²θ − tan²θ = 1, we have sec θ − tan θ = 1/4. Adding the two equations gives 2·sec θ = 4 + 1/4 = 17/4 ⇒ sec θ = 17/8.",
-        trap: "Forgetting to divide by 2 when solving for sec θ.",
-        concept_ref: "c_geo_4"
+        difficulty: "Easy",
+        question: "What is the maximum possible value of 5 sin θ − 12 cos θ for any real angle θ?",
+        options: ["7", "12", "13", "17"],
+        correctIndex: 2,
+        shortcut: "Max of a·sin θ + b·cos θ is √(a² + b²) = √(5² + (−12)²) = √169 = 13.",
+        trap: "Adding the absolute coefficients 5 + 12 = 17.",
+        concept_ref: "c_trig_2"
       },
-
-      // --- RATIO & MIXTURES ---
       {
-        id: "q_rm_1",
+        id: "q_rpv_1",
         topic: "Ratio & Mixtures",
         subtopic: "Ratio – Proportion – Variation",
         difficulty: "Medium",
         question: "If (3x + 5y) / (3x − 5y) = 7 / 3, what is the ratio x : y?",
         options: ["25 : 6", "5 : 2", "15 : 7", "6 : 25"],
         correctIndex: 0,
-        shortcut: "Apply Componendo-Dividendo: (3x) / (5y) = (7 + 3) / (7 − 3) = 10 / 4 = 5 / 2. Thus x / y = (5/2) × (5/3) = 25 / 6.",
-        trap: "Stopping at 3x / 5y = 5 / 2 without cross-multiplying the coefficients 3 and 5.",
-        concept_ref: "c_rm_1"
+        shortcut: "By Componendo-Dividendo: (3x)/(5y) = (7 + 3)/(7 − 3) = 10/4 = 5/2 ⇒ x/y = (5/2) × (5/3) = 25/6.",
+        trap: "Stopping at 3x/5y = 5/2 without multiplying by 5/3.",
+        concept_ref: "c_rpv_2"
       },
       {
-        id: "q_rm_2",
+        id: "q_ama_1",
         topic: "Ratio & Mixtures",
         subtopic: "Averages – Mixtures – Alligations",
         difficulty: "Medium",
-        question: "From a cask full of pure wine, 8 liters are drawn and replaced with water. This operation is performed 3 more times (4 times total). The ratio of wine to water left is 16 : 65. Find the original capacity of the cask.",
+        question: "From a cask full of pure wine, 8 liters are drawn and replaced with water 4 times in total. The final ratio of wine to water is 16 : 65. Find the capacity of the cask.",
         options: ["24 L", "32 L", "40 L", "48 L"],
         correctIndex: 0,
-        shortcut: "Wine / Total = 16 / (16 + 65) = 16 / 81 = (2/3)⁴. Thus (1 − 8/V)⁴ = (2/3)⁴ ⇒ 1 − 8/V = 2/3 ⇒ 8/V = 1/3 ⇒ V = 24 L.",
-        trap: "Using 16/65 instead of 16/(16 + 65) = 16/81 in the denominator.",
-        concept_ref: "c_rm_2"
+        shortcut: "Wine / Total = 16 / (16 + 65) = 16/81 = (2/3)⁴. Thus 1 − 8/V = 2/3 ⇒ 8/V = 1/3 ⇒ V = 24 L.",
+        trap: "Using 16/65 instead of 16/(16+65) = 16/81.",
+        concept_ref: "c_ama_2"
       },
-
-      // --- ARITHMETIC ---
       {
-        id: "q_ar_1",
+        id: "q_ppl_1",
         topic: "Arithmetic",
         subtopic: "Percentages – Profit & Loss – Partnerships",
         difficulty: "Medium",
-        question: "A dishonest dealer professes to sell goods at cost price but uses a false weight of 800 grams for a 1 kg weight. What is his actual gain percentage?",
+        question: "A dishonest dealer claims to sell goods at cost price but uses a false weight of 800g for 1 kg. What is his actual profit percentage?",
         options: ["20%", "22.5%", "25%", "80%"],
         correctIndex: 2,
-        shortcut: "He charges for 1000g while parting with only 800g. Profit % = (200 / 800) × 100 = 25%.",
-        trap: "Dividing by 1000g instead of actual cost (800g) and picking 20%.",
-        concept_ref: "c_ar_1"
+        shortcut: "He charges for 1000g while dispensing only 800g. Profit % = (200 / 800) × 100 = 25%.",
+        trap: "Dividing by 1000g instead of actual cost weight (800g) and picking 20%.",
+        concept_ref: "c_ppl_2"
       },
       {
-        id: "q_ar_2",
+        id: "q_sici_1",
         topic: "Arithmetic",
         subtopic: "Simple Interest and Compound Interest",
         difficulty: "Easy",
-        question: "The difference between Compound Interest and Simple Interest on a certain sum at 10% per annum for 2 years is ₹65. What is the principal sum?",
+        question: "The difference between Compound Interest and Simple Interest on a certain sum at 10% per annum for 2 years is ₹65. Find the principal.",
         options: ["₹6,500", "₹5,000", "₹6,000", "₹13,000"],
         correctIndex: 0,
-        shortcut: "2-Yr (CI − SI) = P(R/100)² ⇒ 65 = P(10/100)² = P / 100 ⇒ P = ₹6,500.",
+        shortcut: "2-Yr (CI − SI) = P(R/100)² ⇒ 65 = P(10/100)² = P/100 ⇒ P = ₹6,500.",
         trap: "Using R/100 instead of (R/100)².",
-        concept_ref: "c_ar_2"
+        concept_ref: "c_sici_2"
       },
       {
-        id: "q_ar_3",
+        id: "q_td_1",
         topic: "Arithmetic",
         subtopic: "Time and Distance",
         difficulty: "Medium",
-        question: "Trains A and B start simultaneously from stations X and Y toward each other. After passing each other, A takes 9 hours to reach Y and B takes 4 hours to reach X. If A's speed is 40 km/hr, what is B's speed?",
+        question: "Trains A and B start simultaneously from X and Y toward each other. After passing each other, A takes 9 hours to reach Y and B takes 4 hours to reach X. If A's speed is 40 km/hr, find B's speed.",
         options: ["50 km/hr", "60 km/hr", "80 km/hr", "90 km/hr"],
         correctIndex: 1,
-        shortcut: "S_A / S_B = √(t_B / t_A) = √(4 / 9) = 2 / 3. Given S_A = 40, we get S_B = 40 × (3/2) = 60 km/hr.",
-        trap: "Using linear ratio 9:4 or forgetting the square root.",
-        concept_ref: "c_ar_3"
+        shortcut: "S_A / S_B = √(t_B / t_A) = √(4 / 9) = 2 / 3. Since S_A = 40, S_B = 40 × (3/2) = 60 km/hr.",
+        trap: "Using the direct ratio 9 : 4 without taking the square root.",
+        concept_ref: "c_td_2"
       },
       {
-        id: "q_ar_4",
+        id: "q_tw_1",
         topic: "Arithmetic",
         subtopic: "Time and Work",
         difficulty: "Medium",
-        question: "A alone takes 16 days more than (A + B) together to complete a job, while B alone takes 9 days more than (A + B) together. In how many days can (A + B) finish the job together?",
+        question: "A alone takes 16 days more than (A + B) together to complete a job, while B alone takes 9 days more than (A + B) together. How many days do (A + B) take together?",
         options: ["10 days", "12 days", "12.5 days", "14 days"],
         correctIndex: 1,
-        shortcut: "Combined time T = √(a × b) = √(16 × 9) = 4 × 3 = 12 days.",
+        shortcut: "Combined time T_(A+B) = √(a × b) = √(16 × 9) = 12 days.",
         trap: "Taking the arithmetic average (16 + 9)/2 = 12.5 days.",
-        concept_ref: "c_ar_4"
+        concept_ref: "c_tw_2"
       },
-
-      // --- MODERN MATH ---
       {
-        id: "q_mm_1",
+        id: "q_pc_1",
         topic: "Modern Math",
         subtopic: "Permutations and Combinations",
         difficulty: "Medium",
-        question: "In how many ways can 5 boys and 4 girls sit around a circular table such that no two girls sit adjacent to each other?",
-        options: ["2,880", "14,400", "576", "1,152"],
+        question: "In how many ways can 10 identical chocolates be distributed among 4 children such that every child gets at least 1 chocolate?",
+        options: ["84", "120", "210", "286"],
         correctIndex: 0,
-        shortcut: "Seat 5 boys around a circle in (5 − 1)! = 24 ways. This creates 5 gaps between boys. Seat 4 girls in 5 gaps in ⁵P₄ = 120 ways. Total = 24 × 120 = 2,880.",
-        trap: "Using 5! = 120 instead of (5 − 1)! = 24 for the first circular arrangement.",
-        concept_ref: "c_mm_1"
+        shortcut: "Positive integral solutions (xᵢ ≥ 1) to x₁ + x₂ + x₃ + x₄ = 10 is ⁿ⁻¹C_(r−1) = ⁹C₃ = (9 × 8 × 7) / (3 × 2 × 1) = 84.",
+        trap: "Using ⁿ⁺ʳ⁻¹C_(r−1) = ¹³C₃ = 286 (which allows children to receive 0 chocolates).",
+        concept_ref: "c_pc_2"
       },
       {
-        id: "q_mm_2",
+        id: "q_prob_1",
         topic: "Modern Math",
         subtopic: "Probability",
         difficulty: "Easy",
-        question: "Three students A, B, and C independently attempt to solve a problem with probabilities of success 1/2, 1/3, and 1/4 respectively. What is the probability that the problem is solved?",
-        options: ["1/4", "3/4", "23/24", "1/24"],
+        question: "Three students A, B, and C can independently solve a problem with probabilities 1/2, 1/3, and 1/4 respectively. What is the probability that the problem will be solved?",
+        options: ["1/4", "3/4", "13/24", "23/24"],
         correctIndex: 1,
-        shortcut: "P(Solved) = 1 − P(None solve) = 1 − (1 − 1/2)(1 − 1/3)(1 − 1/4) = 1 − (1/2)(2/3)(3/4) = 1 − 1/4 = 3/4.",
-        trap: "Adding 1/2 + 1/3 + 1/4 directly as if mutually exclusive.",
-        concept_ref: "c_mm_2"
+        shortcut: "P(Solved) = 1 − P(None) = 1 − (1 − 1/2)(1 − 1/3)(1 − 1/4) = 1 − (1/2)(2/3)(3/4) = 1 − 1/4 = 3/4.",
+        trap: "Adding 1/2 + 1/3 + 1/4 directly.",
+        concept_ref: "c_prob_1"
       },
       {
-        id: "q_mm_3",
+        id: "q_stat_1",
         topic: "Modern Math",
         subtopic: "Statistics",
         difficulty: "Easy",
-        question: "The standard deviation of 15 observations is 6. If each observation is multiplied by 3 and then increased by 10, what is the new standard deviation?",
-        options: ["6", "16", "18", "28"],
-        correctIndex: 2,
-        shortcut: "SD(aX + b) = |a|·SD(X). Adding 10 has zero effect on spread; multiplying by 3 scales SD to 3 × 6 = 18.",
-        trap: "Adding 10 to get 18 + 10 = 28.",
-        concept_ref: "c_mm_3"
+        question: "The standard deviation of 15 observations is 6. If each observation is multiplied by 2 and then increased by 10, what is the new standard deviation?",
+        options: ["6", "12", "22", "24"],
+        correctIndex: 1,
+        shortcut: "Adding +10 has zero effect on Standard Deviation. Multiplying by 2 scales SD by |2|: New SD = 2 × 6 = 12.",
+        trap: "Adding 10 to get 2 × 6 + 10 = 22.",
+        concept_ref: "c_stat_2"
       }
     ];
 
+    // Fix q_spe_1 question text so 4 is the exact count for 3x + 7y = 95
+    SEED_QUESTIONS[1].question = "How many positive integer solutions (x, y ≥ 1) satisfy the equation 3x + 7y = 95?";
+    SEED_QUESTIONS[1].shortcut = "Find first positive y: 95 − 7y ≡ 0 (mod 3) ⇒ 2 − y ≡ 0 (mod 3) ⇒ y₀ = 2 (gives x₀ = 27). Step y by +3: y ∈ {2, 5, 8, 11}, giving x ∈ {27, 20, 13, 6} → 4 positive integer solutions.";
+
     // =========================================================================
-    // 4. STATE MANAGEMENT & LOCALSTORAGE (quantbyprof_v2_state)
+    // 5. STATE MANAGEMENT & STRICT FILTER SYNC (quantbyprof_v2_state)
     // =========================================================================
     const STORAGE_KEY = "quantbyprof_v2_state";
 
@@ -990,7 +1547,7 @@
       reviseQueue: [],
       masteredConcepts: [],
       savedQuestions: [],
-      questionStatus: {}, // { q_id: 'correct' | 'retry' }
+      questionStatus: {},
       customConcepts: [],
       arcade: {
         xp: 0,
@@ -1003,12 +1560,13 @@
     class QuantApp {
       constructor() {
         this.state = this.loadState();
-        this.section = "revise"; // 'revise' | 'questions' | 'arcade'
-        this.topic = "All"; // 'All' | 6 Parent Topics
-        this.subtopic = "All"; // 'All' | Any of the 26 Chapters
-        this.reviseSub = "all"; // 'all' | 'saved' | 'queue' | 'mastered'
-        this.questionSub = "all"; // 'all' | 'unattempted' | 'retry' | 'saved' | 'correct'
-        this.arcadeGame = "blitz"; // 'blitz' | 'survival' | 'traphunter'
+        this.section = "revise";     // 'revise' | 'questions' | 'arcade'
+        this.topic = "All";          // Parent Topic pill
+        this.subtopic = "All";       // Scoped Chapter pill
+        this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
+        this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
+        this.questionSub = "all";    // 'all' | 'unattempted' | 'retry' | 'saved' | 'correct'
+        this.arcadeGame = "blitz";   // 'blitz' | 'survival' | 'traphunter'
 
         this.selectedAnswers = {};
         this.openShortcuts = {};
@@ -1018,7 +1576,7 @@
         this.survivalState = { active: false, hearts: 3, timeLeft: 60, score: 0, streak: 0, qIndex: 0, deck: [], answered: null };
         this.trapState = { active: false, index: 0, deck: [], revealed: false, timeLeft: 10, nailedCount: 0 };
 
-        this.populateAddSubtopics();
+        this.populateModalSubtopics();
         this.renderAll();
       }
 
@@ -1045,25 +1603,40 @@
         return [...SEED_CONCEPTS, ...(this.state.customConcepts || [])];
       }
 
+      // Scoped chapters strictly belonging to current parent topic
       getAvailableSubtopics() {
-        if (this.topic === "All") return ALL_26_CHAPTERS;
-        return TOPIC_CHAPTERS[this.topic] || ALL_26_CHAPTERS;
+        if (this.topic === "All") {
+          return Object.values(TOPIC_CHAPTER_MAP).flat();
+        }
+        return TOPIC_CHAPTER_MAP[this.topic] || [];
       }
 
-      getFilteredConcepts() {
+      // Concepts scoped by Topic + Subtopic (before status/level sub-filters)
+      getTopicScopedConcepts() {
         let list = this.getAllConcepts();
         if (this.topic !== "All") list = list.filter(c => c.topic === this.topic);
         if (this.subtopic !== "All") list = list.filter(c => c.subtopic === this.subtopic);
+        return list;
+      }
+
+      getFilteredConcepts() {
+        let list = this.getTopicScopedConcepts();
+        if (this.levelFilter !== "All") list = list.filter(c => (c.level || "Foundation") === this.levelFilter);
         if (this.reviseSub === "saved") list = list.filter(c => this.state.savedConcepts.includes(c.id));
         if (this.reviseSub === "queue") list = list.filter(c => this.state.reviseQueue.includes(c.id));
         if (this.reviseSub === "mastered") list = list.filter(c => this.state.masteredConcepts.includes(c.id));
         return list;
       }
 
-      getFilteredQuestions() {
+      getTopicScopedQuestions() {
         let list = [...SEED_QUESTIONS];
         if (this.topic !== "All") list = list.filter(q => q.topic === this.topic);
         if (this.subtopic !== "All") list = list.filter(q => q.subtopic === this.subtopic);
+        return list;
+      }
+
+      getFilteredQuestions() {
+        let list = this.getTopicScopedQuestions();
         if (this.questionSub === "unattempted") list = list.filter(q => !this.state.questionStatus[q.id]);
         if (this.questionSub === "retry") list = list.filter(q => this.state.questionStatus[q.id] === "retry");
         if (this.questionSub === "saved") list = list.filter(q => this.state.savedQuestions.includes(q.id));
@@ -1079,7 +1652,7 @@
       }
 
       // =======================================================================
-      // NAVIGATION, TOPIC & 26-CHAPTER SUBTOPIC SWITCHING
+      // NAVIGATION, STRICT FILTER SYNC & THEME SWITCHING
       // =======================================================================
       setSection(sec) {
         this.clearTimers();
@@ -1108,25 +1681,22 @@
 
       setTopic(t) {
         this.topic = t;
-        // Reset subtopic if it doesn't belong to the newly chosen topic
-        if (t !== "All" && this.subtopic !== "All") {
-          const validSubs = TOPIC_CHAPTERS[t] || [];
-          if (!validSubs.includes(this.subtopic)) {
-            this.subtopic = "All";
-          }
+        // Strict sync: Reset subtopic if it does not belong to the newly selected parent topic
+        const validSubs = this.getAvailableSubtopics();
+        if (this.subtopic !== "All" && !validSubs.includes(this.subtopic)) {
+          this.subtopic = "All";
         }
         this.renderAll();
       }
 
       setSubtopic(sub) {
         this.subtopic = sub;
-        // If a specific chapter is chosen while topic is mismatched, sync topic
-        if (sub !== "All" && this.topic !== "All") {
-          const parentTopic = SUBTOPIC_TO_TOPIC[sub];
-          if (parentTopic && parentTopic !== this.topic) {
-            this.topic = parentTopic;
-          }
-        }
+        // If user picks a specific chapter while parent Topic is "All", keep or highlight naturally
+        this.renderAll();
+      }
+
+      setLevelFilter(lvl) {
+        this.levelFilter = lvl;
         this.renderAll();
       }
 
@@ -1150,7 +1720,7 @@
       }
 
       // =======================================================================
-      // STATE MUTATIONS
+      // STATE MUTATIONS (BOOKMARKS, QUEUE, MASTERY, MCQ ANSWERS)
       // =======================================================================
       toggleArrayItem(arr, id) {
         const idx = arr.indexOf(id);
@@ -1190,12 +1760,26 @@
       openConceptModal(conceptId, badgeLabel = "🛡️ Concept Shield") {
         const c = this.getAllConcepts().find(item => item.id === conceptId);
         if (!c) return;
-        document.getElementById("modal-concept-badge").textContent = `${badgeLabel} • ${c.topic} • ${c.subtopic}`;
+        document.getElementById("modal-concept-badge").textContent = `${badgeLabel} • ${c.topic} › ${c.subtopic}`;
+        const lvlEl = document.getElementById("modal-concept-level");
+        const isAdv = c.level === "Advanced";
+        lvlEl.textContent = isAdv ? "🚀 Advanced" : "🌱 Foundation";
+        lvlEl.className = `text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full border ${
+          isAdv ? "bg-rose-500/20 text-rose-200 border-rose-400/40" : "bg-emerald-500/20 text-emerald-200 border-emerald-400/40"
+        }`;
         document.getElementById("modal-concept-title").textContent = c.title;
+        const svgContainer = document.getElementById("modal-concept-svg");
+        if (c.svg) {
+          svgContainer.innerHTML = c.svg;
+          svgContainer.classList.remove("hidden");
+        } else {
+          svgContainer.innerHTML = "";
+          svgContainer.classList.add("hidden");
+        }
         document.getElementById("modal-concept-formula").textContent = c.formula;
-        document.getElementById("modal-concept-highlight").textContent = c.highlight;
+        document.getElementById("modal-concept-highlight").textContent = `★ ${c.highlight}`;
         document.getElementById("modal-concept-bullets").innerHTML = c.bullets.map(b => `<li>${b}</li>`).join("");
-        document.getElementById("modal-concept-hook").textContent = `💡 Hook: ${c.hook}`;
+        document.getElementById("modal-concept-hook").textContent = `🧠 ${c.hook}`;
         document.getElementById("concept-modal").classList.remove("hidden");
       }
 
@@ -1204,22 +1788,8 @@
       }
 
       // =======================================================================
-      // MINIGAME 1: FORMULA BLITZ
+      // MINIGAME 1: FORMULA BLITZ (60s Procedural Matcher)
       // =======================================================================
-      getArcadeConceptPool() {
-        let pool = this.getAllConcepts();
-        if (this.topic !== "All") pool = pool.filter(c => c.topic === this.topic);
-        if (this.subtopic !== "All") pool = pool.filter(c => c.subtopic === this.subtopic);
-        return pool.length > 0 ? pool : this.getAllConcepts();
-      }
-
-      getArcadeQuestionPool() {
-        let pool = [...SEED_QUESTIONS];
-        if (this.topic !== "All") pool = pool.filter(q => q.topic === this.topic);
-        if (this.subtopic !== "All") pool = pool.filter(q => q.subtopic === this.subtopic);
-        return pool.length > 0 ? pool : [...SEED_QUESTIONS];
-      }
-
       startBlitz() {
         this.clearTimers();
         this.blitzState = {
@@ -1246,19 +1816,20 @@
       }
 
       generateBlitzRound() {
-        const pool = this.getArcadeConceptPool();
+        const scoped = this.getTopicScopedConcepts();
         const fullPool = this.getAllConcepts();
+        const pool = scoped.length > 0 ? scoped : fullPool;
         const target = pool[Math.floor(Math.random() * pool.length)] || fullPool[0];
         const distractors = fullPool
           .filter(c => c.id !== target.id)
           .sort(() => Math.random() - 0.5)
           .slice(0, 3);
-        const useHighlight = Math.random() > 0.5;
+        const useHighlight = Math.random() > 0.45;
         const options = [target, ...distractors]
           .sort(() => Math.random() - 0.5)
           .map(c => ({
             id: c.id,
-            text: useHighlight ? c.highlight : c.formula
+            text: useHighlight ? c.highlight : c.formula.split("\n")[0]
           }));
         return {
           target,
@@ -1293,11 +1864,12 @@
       }
 
       // =======================================================================
-      // MINIGAME 2: SURVIVAL ARENA
+      // MINIGAME 2: SURVIVAL ARENA (3 Hearts + Concept Shield)
       // =======================================================================
       startSurvival() {
         this.clearTimers();
-        const basePool = this.getArcadeQuestionPool();
+        const scoped = this.getTopicScopedQuestions();
+        const basePool = scoped.length > 0 ? scoped : [...SEED_QUESTIONS];
 
         const prioritized = basePool.sort((a, b) => {
           const sa = this.state.questionStatus[a.id];
@@ -1379,11 +1951,12 @@
       }
 
       // =======================================================================
-      // MINIGAME 3: TRAP-HUNTER
+      // MINIGAME 3: TRAP-HUNTER (Timed Active-Recall Flip Deck)
       // =======================================================================
       startTrapHunter() {
         this.clearTimers();
-        const pool = this.getArcadeConceptPool();
+        const scoped = this.getTopicScopedConcepts();
+        const pool = scoped.length > 0 ? scoped : this.getAllConcepts();
 
         const weighted = [...pool].sort((a, b) => {
           const wa = (this.state.reviseQueue.includes(a.id) ? -2 : 0) + (this.state.savedConcepts.includes(a.id) ? -1 : 0);
@@ -1457,16 +2030,16 @@
       // =======================================================================
       // MODALS (+ ADD & SYNC)
       // =======================================================================
-      populateAddSubtopics() {
+      populateModalSubtopics() {
         const topicEl = document.getElementById("add-topic");
         const subEl = document.getElementById("add-subtopic");
         if (!topicEl || !subEl) return;
-        const subs = TOPIC_CHAPTERS[topicEl.value] || ALL_26_CHAPTERS;
-        subEl.innerHTML = subs.map(s => `<option value="${s}">${s}</option>`).join("");
+        const chapters = TOPIC_CHAPTER_MAP[topicEl.value] || [];
+        subEl.innerHTML = chapters.map(ch => `<option value="${ch}">${ch}</option>`).join("");
       }
 
       openAddModal() {
-        this.populateAddSubtopics();
+        this.populateModalSubtopics();
         document.getElementById("add-modal").classList.remove("hidden");
       }
       closeAddModal() {
@@ -1478,6 +2051,7 @@
           id: "c_custom_" + Date.now(),
           topic: document.getElementById("add-topic").value,
           subtopic: document.getElementById("add-subtopic").value,
+          level: document.getElementById("add-level").value,
           title: document.getElementById("add-title").value.trim(),
           formula: document.getElementById("add-formula").value.trim(),
           highlight: document.getElementById("add-highlight").value.trim(),
@@ -1543,60 +2117,45 @@
         const container = document.getElementById("topic-bar");
         container.innerHTML = TOPICS.map(t => {
           const active = this.topic === t;
-          return `<button onclick="window.app.setTopic('${t}')" class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+          const chCount = t === "All" ? 26 : (TOPIC_CHAPTER_MAP[t] || []).length;
+          return `<button onclick="window.app.setTopic('${t}')" class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition flex items-center space-x-1 ${
             active ? "bg-amber-400 text-slate-950 shadow font-bold" : "bg-white/10 text-white/80 hover:bg-white/20"
-          }">${t}</button>`;
+          }"><span>${t}</span><span class="text-[10px] opacity-75">(${chCount})</span></button>`;
         }).join("");
       }
 
       renderSubtopicBar() {
-        const selectEl = document.getElementById("subtopic-select");
-        const pillsEl = document.getElementById("subtopic-pills");
+        const container = document.getElementById("subtopic-bar");
+        const chapters = this.getAvailableSubtopics();
+        const allLabel = this.topic === "All" ? `All 26 Chapters` : `All ${this.topic} (${chapters.length})`;
+        const pills = ["All", ...chapters];
 
-        // 1. Populate Dropdown Menu (Grouped by Topic when 'All' is active)
-        if (this.topic === "All") {
-          let html = `<option value="All" class="bg-slate-900 text-white">All 26 Chapters</option>`;
-          Object.entries(TOPIC_CHAPTERS).forEach(([tName, chList]) => {
-            html += `<optgroup label="── ${tName} ──" class="bg-slate-900 text-amber-300">`;
-            chList.forEach(ch => {
-              const sel = this.subtopic === ch ? "selected" : "";
-              html += `<option value="${ch}" ${sel} class="bg-slate-900 text-white">${ch}</option>`;
-            });
-            html += `</optgroup>`;
-          });
-          selectEl.innerHTML = html;
-        } else {
-          const chList = TOPIC_CHAPTERS[this.topic] || [];
-          let html = `<option value="All" class="bg-slate-900 text-white">All ${this.topic} (${chList.length} Ch)</option>`;
-          chList.forEach(ch => {
-            const sel = this.subtopic === ch ? "selected" : "";
-            html += `<option value="${ch}" ${sel} class="bg-slate-900 text-white">${ch}</option>`;
-          });
-          selectEl.innerHTML = html;
-        }
-
-        // 2. Populate Quick-Tap Subtopic Pills alongside the dropdown
-        const quickList = this.getAvailableSubtopics();
-        pillsEl.innerHTML = ["All", ...quickList].map(ch => {
+        container.innerHTML = pills.map(ch => {
           const active = this.subtopic === ch;
-          const label = ch === "All" ? "All Ch" : ch;
-          return `<button onclick="window.app.setSubtopic('${ch}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition border ${
+          const label = ch === "All" ? allLabel : ch;
+          return `<button onclick="window.app.setSubtopic('${ch.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition ${
             active
-              ? "bg-white text-slate-950 border-white font-bold shadow-sm"
-              : "bg-white/5 text-white/75 border-white/10 hover:bg-white/15"
+              ? "bg-indigo-400/30 text-amber-300 border border-amber-400/50 font-bold"
+              : "bg-white/5 text-white/70 hover:bg-white/15 border border-transparent"
           }">${label}</button>`;
         }).join("");
       }
 
       renderSubfilters() {
         const bar = document.getElementById("subfilter-bar");
+        const levelBar = document.getElementById("level-bar");
+
         if (this.section === "revise") {
-          const allConcepts = this.getAllConcepts();
+          const scoped = this.getTopicScopedConcepts();
+          const savedCnt = scoped.filter(c => this.state.savedConcepts.includes(c.id)).length;
+          const queueCnt = scoped.filter(c => this.state.reviseQueue.includes(c.id)).length;
+          const mastCnt = scoped.filter(c => this.state.masteredConcepts.includes(c.id)).length;
+
           const items = [
-            { id: "all", label: `All Concepts (${allConcepts.length})` },
-            { id: "saved", label: `🔖 Saved (${this.state.savedConcepts.length})` },
-            { id: "queue", label: `⚡ Revise Queue (${this.state.reviseQueue.length})` },
-            { id: "mastered", label: `✅ Mastered (${this.state.masteredConcepts.length})` }
+            { id: "all", label: `All Concepts (${scoped.length})` },
+            { id: "saved", label: `🔖 Saved (${savedCnt})` },
+            { id: "queue", label: `⚡ Revise Queue (${queueCnt})` },
+            { id: "mastered", label: `✅ Mastered (${mastCnt})` }
           ];
           bar.innerHTML = items.map(i => `
             <button onclick="window.app.setReviseSub('${i.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition ${
@@ -1605,15 +2164,36 @@
                 : "bg-white text-slate-700 border-indigo-100 hover:border-indigo-300"
             }">${i.label}</button>
           `).join("");
+
+          // Level Ladder Filter (All Levels | 🌱 Foundations | 🚀 Advanced)
+          const fndCnt = scoped.filter(c => (c.level || "Foundation") === "Foundation").length;
+          const advCnt = scoped.filter(c => c.level === "Advanced").length;
+          const levels = [
+            { id: "All", label: `All Levels (${scoped.length})` },
+            { id: "Foundation", label: `🌱 Foundations (${fndCnt})` },
+            { id: "Advanced", label: `🚀 Advanced (${advCnt})` }
+          ];
+          levelBar.classList.remove("hidden");
+          levelBar.innerHTML = levels.map(l => `
+            <button onclick="window.app.setLevelFilter('${l.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap border transition ${
+              this.levelFilter === l.id
+                ? "bg-amber-400 text-slate-950 border-amber-400 shadow-sm"
+                : "bg-indigo-50 text-indigo-900 border-indigo-200 hover:bg-indigo-100"
+            }">${l.label}</button>
+          `).join("");
         } else if (this.section === "questions") {
-          const unattempted = SEED_QUESTIONS.filter(q => !this.state.questionStatus[q.id]).length;
-          const retry = SEED_QUESTIONS.filter(q => this.state.questionStatus[q.id] === "retry").length;
-          const correct = SEED_QUESTIONS.filter(q => this.state.questionStatus[q.id] === "correct").length;
+          levelBar.classList.add("hidden");
+          const scopedQ = this.getTopicScopedQuestions();
+          const unattempted = scopedQ.filter(q => !this.state.questionStatus[q.id]).length;
+          const retry = scopedQ.filter(q => this.state.questionStatus[q.id] === "retry").length;
+          const saved = scopedQ.filter(q => this.state.savedQuestions.includes(q.id)).length;
+          const correct = scopedQ.filter(q => this.state.questionStatus[q.id] === "correct").length;
+
           const items = [
-            { id: "all", label: `All Questions (${SEED_QUESTIONS.length})` },
+            { id: "all", label: `All Questions (${scopedQ.length})` },
             { id: "unattempted", label: `❓ Unattempted (${unattempted})` },
             { id: "retry", label: `❌ Needs Retry (${retry})` },
-            { id: "saved", label: `🔖 Saved (${this.state.savedQuestions.length})` },
+            { id: "saved", label: `🔖 Saved (${saved})` },
             { id: "correct", label: `✅ Correct (${correct})` }
           ];
           bar.innerHTML = items.map(i => `
@@ -1624,6 +2204,7 @@
             }">${i.label}</button>
           `).join("");
         } else {
+          levelBar.classList.add("hidden");
           const games = [
             { id: "blitz", label: "⚡ 1. Formula Blitz (60s)" },
             { id: "survival", label: "🛡️ 2. Survival Arena (3❤️)" },
@@ -1651,35 +2232,42 @@
       }
 
       // -----------------------------------------------------------------------
-      // REVISE VIEW
+      // REVISE VIEW (With Foundation -> Advanced Badges & Inline SVG Diagrams)
       // -----------------------------------------------------------------------
       renderReviseSection() {
         const list = this.getFilteredConcepts();
         if (list.length === 0) {
-          return `<div class="p-8 text-center bg-white rounded-2xl border border-indigo-100 text-slate-500 text-sm">
-            No concept cards match <strong>${this.topic}</strong> → <strong>${this.subtopic}</strong> in this filter.
-            <div class="mt-3"><button onclick="window.app.setSubtopic('All')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold">Reset Subtopic Filter</button></div>
-          </div>`;
+          return `<div class="p-8 text-center bg-white rounded-2xl border border-indigo-100 text-slate-500 text-sm">No concept cards match this filter selection.</div>`;
         }
         return `<div class="space-y-4">${list.map(c => {
           const isSaved = this.state.savedConcepts.includes(c.id);
           const inQueue = this.state.reviseQueue.includes(c.id);
           const isMastered = this.state.masteredConcepts.includes(c.id);
+          const isAdv = c.level === "Advanced";
+          const levelBadge = isAdv
+            ? `<span class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-200 border border-rose-400/40 font-semibold">🚀 Advanced</span>`
+            : `<span class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-200 border border-emerald-400/40 font-semibold">🌱 Foundation</span>`;
+
           return `
             <article class="revise-card-gradient text-white rounded-2xl p-5 shadow-lg border border-indigo-400/20">
-              <div class="flex justify-between items-center mb-2 gap-2">
+              <div class="flex flex-wrap justify-between items-center gap-2 mb-2.5">
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="text-[10px] font-mono-code uppercase px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">${c.topic}</span>
-                  <button onclick="window.app.setSubtopic('${c.subtopic}')" class="text-[11px] text-amber-300 hover:underline font-semibold">📑 ${c.subtopic}</button>
+                  <span class="text-xs text-amber-300 font-semibold">› ${c.subtopic}</span>
+                  ${levelBadge}
                 </div>
-                <div class="flex space-x-1.5 shrink-0">
-                  <button onclick="window.app.toggleArrayItem(window.app.state.savedConcepts, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${isSaved ? 'bg-amber-400 text-slate-950 border-amber-300 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">🔖</button>
-                  <button onclick="window.app.toggleArrayItem(window.app.state.reviseQueue, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${inQueue ? 'bg-rose-500 text-white border-rose-400 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">⚡</button>
-                  <button onclick="window.app.toggleArrayItem(window.app.state.masteredConcepts, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${isMastered ? 'bg-emerald-400 text-slate-950 border-emerald-300 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">✅</button>
+                <div class="flex space-x-1.5">
+                  <button title="Save Bookmark" onclick="window.app.toggleArrayItem(window.app.state.savedConcepts, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${isSaved ? 'bg-amber-400 text-slate-950 border-amber-300 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">🔖</button>
+                  <button title="Revise Queue" onclick="window.app.toggleArrayItem(window.app.state.reviseQueue, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${inQueue ? 'bg-rose-500 text-white border-rose-400 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">⚡</button>
+                  <button title="Mark Mastered" onclick="window.app.toggleArrayItem(window.app.state.masteredConcepts, '${c.id}')" class="px-2 py-1 rounded-lg text-xs border ${isMastered ? 'bg-emerald-400 text-slate-950 border-emerald-300 font-bold' : 'bg-white/10 text-white/70 border-white/10'}">✅</button>
                 </div>
               </div>
-              <h2 class="text-base font-bold text-white mb-3">${c.title}</h2>
-              <div class="p-3 rounded-xl bg-black/30 border border-indigo-300/20 font-mono-code text-xs text-indigo-100 mb-2.5 overflow-x-auto">${c.formula}</div>
+
+              <h2 class="text-base font-bold text-white mb-2.5">${c.title}</h2>
+
+              ${c.svg ? `<div class="mb-2.5">${c.svg}</div>` : ""}
+
+              <div class="p-3 rounded-xl bg-black/35 border border-indigo-300/20 font-mono-code text-xs text-indigo-100 mb-2.5 overflow-x-auto whitespace-pre-line leading-relaxed">${c.formula}</div>
               <div class="p-2.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs font-semibold mb-3">★ ${c.highlight}</div>
               <ul class="space-y-1.5 text-xs text-indigo-100/90 mb-3 pl-4 list-disc">
                 ${c.bullets.map(b => `<li>${b}</li>`).join("")}
@@ -1698,10 +2286,7 @@
       renderQuestionsSection() {
         const list = this.getFilteredQuestions();
         if (list.length === 0) {
-          return `<div class="p-8 text-center bg-white rounded-2xl border border-teal-200 text-teal-900/60 text-sm">
-            No questions match <strong>${this.topic}</strong> → <strong>${this.subtopic}</strong> in this filter.
-            <div class="mt-3"><button onclick="window.app.setSubtopic('All')" class="px-3 py-1.5 rounded-lg bg-teal-800 text-white text-xs font-bold">Reset Subtopic Filter</button></div>
-          </div>`;
+          return `<div class="p-8 text-center bg-white rounded-2xl border border-teal-200 text-teal-900/60 text-sm">No questions match this chapter/sub-filter selection.</div>`;
         }
         return `<div class="space-y-4">${list.map((q, idx) => {
           const picked = this.selectedAnswers[q.id];
@@ -1716,14 +2301,14 @@
 
           return `
             <article class="bg-white rounded-2xl p-5 shadow-md border border-teal-200 text-slate-900">
-              <div class="flex justify-between items-center mb-2.5 gap-2">
+              <div class="flex flex-wrap justify-between items-center gap-2 mb-2.5">
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded bg-teal-900 text-teal-100 font-semibold">${q.topic}</span>
-                  <button onclick="window.app.setSubtopic('${q.subtopic}')" class="text-[11px] font-semibold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200 hover:bg-teal-100">📑 ${q.subtopic}</button>
+                  <span class="text-xs font-semibold text-teal-800">› ${q.subtopic}</span>
                   <span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${diffColor}">${q.difficulty}</span>
                   ${status === "correct" ? `<span class="text-xs font-bold text-emerald-600">✅ Solved</span>` : status === "retry" ? `<span class="text-xs font-bold text-rose-600">❌ Needs Retry</span>` : ""}
                 </div>
-                <button onclick="window.app.toggleArrayItem(window.app.state.savedQuestions, '${q.id}')" class="px-2.5 py-1 rounded-lg text-xs border shrink-0 ${isSaved ? 'bg-amber-400 border-amber-500 font-bold text-slate-950' : 'bg-slate-100 border-slate-200 text-slate-600'}">🔖</button>
+                <button onclick="window.app.toggleArrayItem(window.app.state.savedQuestions, '${q.id}')" class="px-2.5 py-1 rounded-lg text-xs border ${isSaved ? 'bg-amber-400 border-amber-500 font-bold text-slate-950' : 'bg-slate-100 border-slate-200 text-slate-600'}">🔖</button>
               </div>
               <p class="text-sm font-semibold text-slate-900 mb-4 leading-relaxed">Q${idx + 1}. ${q.question}</p>
               <div class="space-y-2 mb-3">
@@ -1801,11 +2386,8 @@
             <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
               <div class="text-3xl mb-2">⚡</div>
               <h2 class="text-lg font-black text-white mb-1">Formula Blitz (60-Second Sprint)</h2>
-              <p class="text-xs text-slate-300 max-w-md mx-auto mb-2">
-                Active Filter: <strong class="text-amber-300">${this.topic} → ${this.subtopic}</strong>
-              </p>
-              <p class="text-xs text-slate-400 max-w-md mx-auto mb-4">
-                Match the 1-line memory hook or concept title to its exact formula or highlight before the clock runs out.
+              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
+                Match the memory hook or concept title to its exact formula or highlight across all 52 Foundation & Advanced cards (or filter by Topic/Chapter above). Missed concepts auto-sync to your <strong>⚡ Revise Queue</strong>.
               </p>
               ${this.blitzState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold">Last Run Score: ${this.blitzState.score} pts</div>` : ""}
               <button onclick="window.app.startBlitz()" class="w-full max-w-xs py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
@@ -1828,7 +2410,7 @@
             </div>
 
             <div class="mb-4">
-              <div class="text-[10px] font-mono-code uppercase text-amber-400 mb-1">${current.target.topic} • ${current.target.subtopic}</div>
+              <div class="text-[10px] font-mono-code uppercase text-amber-400 mb-1">${current.target.topic} › ${current.target.subtopic} (${current.target.level})</div>
               <div class="p-4 rounded-xl bg-slate-900 border border-slate-700 text-sm font-bold text-white leading-snug">
                 ${promptText}
               </div>
@@ -1856,11 +2438,8 @@
             <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
               <div class="text-3xl mb-2">🛡️</div>
               <h2 class="text-lg font-black text-white mb-1">Survival Arena (3-Lives Gauntlet)</h2>
-              <p class="text-xs text-slate-300 max-w-md mx-auto mb-2">
-                Active Filter: <strong class="text-emerald-300">${this.topic} → ${this.subtopic}</strong>
-              </p>
-              <p class="text-xs text-slate-400 max-w-md mx-auto mb-4">
-                Enter with <strong>3 Hearts (❤️❤️❤️)</strong> and a 60s shot clock per question. Losing a heart triggers the <strong>Concept Shield</strong> popup!
+              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
+                Enter with <strong>3 Hearts (❤️❤️❤️)</strong> and a 60s shot clock per question. Losing a heart triggers the <strong>Concept Shield</strong> popup with SVG diagrams and formulas; 3 correct in a row restores 1 heart!
               </p>
               ${this.survivalState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-xs font-bold">Last Run Survived: ${this.survivalState.score} Questions</div>` : ""}
               <button onclick="window.app.startSurvival()" class="w-full max-w-xs py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
@@ -1882,7 +2461,7 @@
               <span class="font-mono-code text-xs font-bold text-emerald-400">🔥 Streak: ${streak} | Cleared: ${score}</span>
             </div>
 
-            <div class="text-[10px] font-mono-code uppercase text-emerald-400 mb-1">${q.topic} • ${q.subtopic} • ${q.difficulty}</div>
+            <div class="text-[10px] font-mono-code uppercase text-emerald-400 mb-1">${q.topic} › ${q.subtopic} • ${q.difficulty}</div>
             <p class="text-sm font-semibold text-white mb-4 leading-relaxed">${q.question}</p>
 
             <div class="space-y-2 mb-4">
@@ -1923,15 +2502,12 @@
             <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
               <div class="text-3xl mb-2">🃏</div>
               <h2 class="text-lg font-black text-white mb-1">Trap-Hunter (10-Card Active Recall)</h2>
-              <p class="text-xs text-slate-300 max-w-md mx-auto mb-2">
-                Active Filter: <strong class="text-indigo-300">${this.topic} → ${this.subtopic}</strong>
-              </p>
-              <p class="text-xs text-slate-400 max-w-md mx-auto mb-4">
-                Deals up to 10 cards weighted toward your <strong>⚡ Revise Queue</strong> and <strong>🔖 Saved</strong> cards with a 10s recall bar.
+              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
+                Deals 10 cards weighted toward your <strong>⚡ Revise Queue</strong> and <strong>🔖 Saved</strong> cards with a 10s recall bar. Mentally recall the blurred formula before tapping to reveal!
               </p>
               ${this.trapState.deck.length > 0 ? `<div class="mb-4 p-3 rounded-xl bg-indigo-400/10 border border-indigo-400/30 text-indigo-300 text-xs font-bold">Last Hand Nailed: ${this.trapState.nailedCount} / ${this.trapState.deck.length} Cards</div>` : ""}
               <button onclick="window.app.startTrapHunter()" class="w-full max-w-xs py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/20 transition">
-                Deal Recall Hand →
+                Deal 10-Card Recall Hand →
               </button>
             </div>
           `;
@@ -1952,7 +2528,7 @@
               <div class="h-full bg-amber-400 transition-all duration-500" style="width: ${pct}%"></div>
             </div>
 
-            <div class="text-[10px] font-mono-code uppercase text-indigo-400 mb-1">${card.topic} • ${card.subtopic}</div>
+            <div class="text-[10px] font-mono-code uppercase text-indigo-400 mb-1">${card.topic} › ${card.subtopic} (${card.level})</div>
             <h3 class="text-base font-bold text-white mb-3">${card.title}</h3>
 
             <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 mb-3">
@@ -1964,7 +2540,7 @@
               onclick="window.app.revealTrapCard()"
               class="cursor-pointer p-4 rounded-xl bg-indigo-950/60 border border-indigo-500/30 transition-all ${revealed ? '' : 'blur-md select-none'}"
             >
-              <div class="font-mono-code text-xs text-indigo-100 mb-2">${card.formula}</div>
+              <div class="font-mono-code text-xs text-indigo-100 mb-2 whitespace-pre-line">${card.formula}</div>
               <div class="text-xs font-semibold text-amber-300 mb-1">★ ${card.highlight}</div>
               <div class="text-[11px] italic text-indigo-200">🧠 ${card.hook}</div>
             </div>
