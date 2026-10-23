@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v2.4 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf v3.1 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -41,6 +41,86 @@
     /* Hide scrollbars for horizontal pill bars */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+    /* v3.1: lightweight, self-contained game UI */
+    .game-panel {
+      background: linear-gradient(145deg, rgba(15,23,42,.97), rgba(2,6,23,.98));
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: 0 20px 50px rgba(0,0,0,.22);
+    }
+    .game-option {
+      min-height: 66px;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .game-option:not(:disabled):active { transform: scale(.985); }
+    .game-option:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+    .afterimage-glow { animation: afterimageGlow 2.2s ease-in-out infinite alternate; }
+    @keyframes afterimageGlow {
+      from { box-shadow: 0 0 10px rgba(129,140,248,.12); opacity: .88; }
+      to { box-shadow: 0 0 30px rgba(129,140,248,.35); opacity: 1; }
+    }
+    .redline-track {
+      position: relative;
+      height: 42px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #111827, #170d18);
+      border: 1px solid rgba(251,113,133,.25);
+      isolation: isolate;
+    }
+    .redline-track::before {
+      content: "";
+      position: absolute;
+      inset: -20% -25%;
+      background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(251,113,133,.12) 22px 25px, transparent 25px 50px, rgba(251,191,36,.18) 50px 53px, transparent 53px 82px);
+      animation: redlineSweep var(--track-duration, 2.4s) linear infinite;
+      z-index: -1;
+    }
+    .redline-track::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; top: 50%; height: 2px;
+      background: linear-gradient(90deg, transparent, #fb7185, #fbbf24, transparent);
+      box-shadow: 0 0 10px rgba(251,113,133,.55);
+    }
+    @keyframes redlineSweep { from { transform: translateX(-15%); } to { transform: translateX(15%); } }
+    .game-progress { transition: width .12s linear; }
+
+    /* v3.1: larger navigation targets while games are active */
+    body.theme-arcade #subtopic-select {
+      font-size: 12.65px !important;
+      padding-top: .29rem !important;
+      padding-bottom: .29rem !important;
+      padding-left: .72rem !important;
+      padding-right: .72rem !important;
+      max-width: min(48vw, 270px) !important;
+      min-height: 34px;
+    }
+    body.theme-arcade #subtopic-bar button {
+      font-size: 12.65px !important;
+      padding: .29rem .72rem !important;
+      min-height: 32px;
+    }
+    .game-mode-button { min-height: 54px; animation: gameButtonPop .36s cubic-bezier(.2,.85,.25,1.2) both; }
+    .game-mode-button:nth-child(2) { animation-delay: .06s; }
+    @keyframes gameButtonPop {
+      from { opacity: .5; transform: translateY(5px) scale(.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    body.theme-arcade #subfilter-bar { gap: .55rem; }
+    .game-answer-copy { overflow-wrap: anywhere; white-space: pre-line; }
+    @media (max-width: 640px) {
+      body.theme-arcade #subtopic-select { max-width: 42vw !important; }
+      body.theme-arcade #subtopic-bar button { padding-left: .62rem !important; padding-right: .62rem !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .afterimage-glow, .redline-track::before { animation-duration: 8s !important; }
+      .game-option, .game-progress { transition: none !important; }
+    }
+
   </style>
 </head>
 <body class="theme-revise min-h-screen flex flex-col pb-20">
@@ -50,7 +130,7 @@
     <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="font-black text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.4 Verified</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v3.1</span>
       </div>
       <div class="flex items-center space-x-2">
         <button onclick="window.app.openAddModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">+ Add</button>
@@ -1222,7 +1302,11 @@
         xp: 0,
         blitzHigh: 0,
         survivalBest: 0,
-        trapSessions: 0
+        trapSessions: 0,
+        afterimageBest: 0,
+        redlineBest: 0,
+        afterimageRuns: 0,
+        redlineRuns: 0
       }
     });
 
@@ -1234,12 +1318,11 @@
         this.subtopic = "All";       // Scoped Chapter selection
         this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
         this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
-        this.arcadeGame = "blitz";   // 'blitz' | 'survival' | 'traphunter'
+        this.arcadeGame = "afterimage"; // 'afterimage' | 'redline'
 
         this.activeTimer = null;
-        this.blitzState = { active: false, timeLeft: 60, score: 0, streak: 0, current: null, feedback: null };
-        this.survivalState = { active: false, hearts: 3, timeLeft: 60, score: 0, streak: 0, round: null, answered: null };
-        this.trapState = { active: false, index: 0, deck: [], revealed: false, timeLeft: 10, nailedCount: 0 };
+        this.afterimageState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, lastRunScore: 0 };
+        this.redlineState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, lastRunScore: 0, animationSpeed: 1 };
 
         this.populateModalSubtopics();
         this.renderAll();
@@ -1313,9 +1396,7 @@
       // =======================================================================
       setSection(sec) {
         this.clearTimers();
-        this.blitzState.active = false;
-        this.survivalState.active = false;
-        this.trapState.active = false;
+        this.stopArcadeRuns();
         this.section = sec;
 
         const body = document.body;
@@ -1393,17 +1474,36 @@
       }
 
       setArcadeGame(game) {
-        this.clearTimers();
-        this.blitzState.active = false;
-        this.survivalState.active = false;
-        this.trapState.active = false;
+        this.stopArcadeRuns();
         this.arcadeGame = game;
         this.renderAll();
+      }
+
+      stopArcadeRuns() {
+        this.clearTimers();
+        for (const key of ["afterimageState", "redlineState"]) {
+          const game = this[key];
+          if (game && game.active) {
+            game.lastRunScore = game.score || 0;
+            game.active = false;
+            if (game.phase !== "complete") game.phase = "idle";
+          }
+        }
       }
 
       // =======================================================================
       // STATE MUTATIONS (BOOKMARKS, QUEUE, MASTERY)
       // =======================================================================
+      goToReviseQueue() {
+        this.stopArcadeRuns();
+        this.section = "revise";
+        this.topic = "All";
+        this.subtopic = "All";
+        this.levelFilter = "All";
+        this.reviseSub = "queue";
+        this.renderAll();
+      }
+
       toggleArrayItem(arr, id) {
         const idx = arr.indexOf(id);
         if (idx === -1) arr.push(id);
@@ -1443,284 +1543,472 @@
       }
 
       // =======================================================================
-      // MINIGAME 1: FORMULA BLITZ (60s Procedural Matcher)
+      // v3.1 MINIGAMES: AFTERIMAGE + REDLINE
       // =======================================================================
-      startBlitz() {
-        this.clearTimers();
-        this.blitzState = {
-          active: true,
-          timeLeft: 60,
-          score: 0,
-          streak: 0,
-          current: this.generateBlitzRound(),
-          feedback: null
+      escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, ch => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[ch]));
+      }
+
+      shuffleList(items) {
+        const out = [...items];
+        for (let i = out.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [out[i], out[j]] = [out[j], out[i]];
+        }
+        return out;
+      }
+
+      getFormulaParts(concept) {
+        if (!concept || !concept.formula) return [];
+        const out = [];
+        const seen = new Set();
+        const lines = String(concept.formula).split(/\r?\n/)
+          .map(line => line.trim().replace(/^[•\-*]\s*/, ""))
+          .filter(Boolean);
+        lines.forEach((line, lineIndex) => {
+          const parts = line.split(/\s+\|\s+|;\s+/).map(part => part.trim()).filter(Boolean);
+          parts.forEach((part, partIndex) => {
+            if (!/[=≠≤≥<>⟹⟺↔≈]/.test(part) || part.length < 6 || part.length > 240) return;
+            const normalized = this.normalizeFact(part);
+            if (seen.has(normalized)) return;
+            seen.add(normalized);
+            const prefix = part.includes(":") ? part.split(":", 1)[0].trim() : "";
+            const label = prefix && prefix.length <= 36 && !/[=<>≤≥]/.test(prefix) ? prefix : "Formula";
+            const score = (part.includes("=") ? 5 : 0) + (part.length <= 100 ? 3 : part.length <= 155 ? 1 : -2) - partIndex * 0.4 - lineIndex * 0.15;
+            out.push({ text: part, label, lineIndex, partIndex, score });
+          });
+        });
+        return out.sort((a, b) => b.score - a.score);
+      }
+
+      normalizeFact(value) {
+        return String(value ?? "").toLowerCase().replace(/\s+/g, " ").replace(/[–—]/g, "-").trim();
+      }
+
+      getFormulaSnippet(concept) {
+        const parts = this.getFormulaParts(concept);
+        return parts.length ? parts[0].text : "";
+      }
+
+      getFormulaItems(pool) {
+        const items = [];
+        const seen = new Set();
+        (pool || []).forEach(concept => {
+          this.getFormulaParts(concept).forEach((part, index) => {
+            const norm = this.normalizeFact(part.text);
+            const key = `${concept.id}::formula::${norm}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+            items.push({
+              key, concept, kind: "formula", value: part.text, label: part.label,
+              sourceIndex: index
+            });
+          });
+        });
+        return items;
+      }
+
+      getRedlineFactItems(pool) {
+        const items = [];
+        const seenByConcept = new Set();
+        const add = (concept, kind, value, suffix = "") => {
+          const text = String(value ?? "").trim();
+          if (!text) return;
+          const normalized = this.normalizeFact(text);
+          const unique = `${concept.id}::${normalized}`;
+          if (seenByConcept.has(unique)) return;
+          seenByConcept.add(unique);
+          items.push({ key: `${concept.id}::${kind}::${normalized}${suffix}`, concept, kind, value: text });
         };
-        this.activeTimer = setInterval(() => {
-          this.blitzState.timeLeft -= 1;
-          if (this.blitzState.timeLeft <= 0) {
-            this.clearTimers();
-            this.blitzState.active = false;
-            if (this.blitzState.score > this.state.arcade.blitzHigh) {
-              this.state.arcade.blitzHigh = this.blitzState.score;
-              this.saveState();
+        (pool || []).forEach(concept => {
+          const formulaParts = this.getFormulaParts(concept);
+          const formula = formulaParts.length ? formulaParts[0].text : "";
+          if (formula) {
+            add(concept, "formula", formula);
+            const formulaItem = items[items.length - 1];
+            if (formulaItem && formulaItem.concept.id === concept.id && formulaItem.kind === "formula") formulaItem.label = formulaParts[0].label || "Formula";
+          }
+          if (concept.highlight) add(concept, "highlight", concept.highlight);
+          (concept.bullets || []).forEach((bullet, i) => {
+            add(concept, /\btrap\s*:/i.test(bullet) ? "trap" : "bullet", bullet, `::${i}`);
+          });
+          if (concept.hook) add(concept, "hook", concept.hook);
+        });
+        return items;
+      }
+
+      getGameScopeTiers() {
+        const all = this.getAllConcepts();
+        const levelScope = pool => this.levelFilter === "All" ? pool : pool.filter(c => (c.level || "Foundation") === this.levelFilter);
+        const tiers = [];
+        const pushTier = (pool, label, ignoreLevel = false) => {
+          const filtered = ignoreLevel ? pool : levelScope(pool);
+          if (filtered.length && !tiers.some(t => t.pool.map(c => c.id).sort().join("|") === filtered.map(c => c.id).sort().join("|"))) {
+            tiers.push({ pool: filtered, label: this.levelFilter === "All" ? label : `${label} · ${this.levelFilter}` });
+          }
+        };
+        if (this.subtopic !== "All") {
+          pushTier(all.filter(c => c.subtopic === this.subtopic && (this.topic === "All" || c.topic === this.topic)), `Chapter · ${this.subtopic}`);
+          if (this.topic !== "All") pushTier(all.filter(c => c.topic === this.topic), `Expanded to ${this.topic}`);
+          pushTier(all, "Expanded to all topics");
+        } else if (this.topic !== "All") {
+          pushTier(all.filter(c => c.topic === this.topic), `Topic · ${this.topic}`);
+          pushTier(all, "Expanded to all topics");
+        } else {
+          pushTier(all, "All 26 chapters");
+        }
+        // If the current level alone still cannot provide a full run, explicitly permit both levels.
+        if (this.levelFilter !== "All") pushTier(all, "Expanded to all topics · both levels", true);
+        if (!tiers.length) tiers.push({ pool: all, label: "All concept cards" });
+        return tiers;
+      }
+
+      chooseGameScope(itemBuilder, minItems = 10) {
+        const tiers = this.getGameScopeTiers();
+        let best = null;
+        for (const tier of tiers) {
+          const items = itemBuilder(tier.pool);
+          const candidate = { ...tier, items };
+          if (!best || items.length > best.items.length) best = candidate;
+          if (items.length >= minItems) return candidate;
+        }
+        return best || { pool: this.getAllConcepts(), label: "All concept cards", items: itemBuilder(this.getAllConcepts()) };
+      }
+
+      buildUniqueDeck(items, count = 10) {
+        const shuffled = this.shuffleList(items || []);
+        const out = [];
+        const used = new Set();
+        for (const item of shuffled) {
+          if (used.has(item.key)) continue;
+          used.add(item.key);
+          out.push(item);
+          if (out.length >= count) break;
+        }
+        return out;
+      }
+
+      getOptionPools(concept, difficulty = 1) {
+        const all = this.getAllConcepts();
+        const parent = all.filter(c => c.topic === concept.topic);
+        const chapter = all.filter(c => c.topic === concept.topic && c.subtopic === concept.subtopic);
+        const siblingChapters = parent.filter(c => c.subtopic !== concept.subtopic);
+        if (difficulty <= 0) return [chapter, parent, all];
+        if (difficulty === 1) return [chapter, siblingChapters, parent, all];
+        // Hard rounds draw first from same-level sibling chapters to make distractors more plausible.
+        const sameLevelSiblings = siblingChapters.filter(c => (c.level || "Foundation") === (concept.level || "Foundation"));
+        return [sameLevelSiblings, siblingChapters, chapter, parent, all];
+      }
+
+      getShortConceptTitle(title) {
+        const raw = String(title ?? "").trim();
+        if (raw.length <= 44) return raw;
+        const firstClause = raw.split(/\s+[—–]\s+|,|\s+&\s+|\s+and\s+|\s*\(/i)[0].trim();
+        if (firstClause.length >= 8 && firstClause.length <= 44) return firstClause;
+        const words = raw.split(/\s+/).slice(0, 6).join(" ");
+        return words.length < raw.length ? `${words}…` : raw;
+      }
+
+      makeOptions(correctText, targetConcept, kind, difficulty, isFormula = false) {
+        const correctNorm = this.normalizeFact(correctText);
+        const wrong = [];
+        const seen = new Set([correctNorm]);
+        const pools = this.getOptionPools(targetConcept, difficulty);
+        for (const pool of pools) {
+          const items = (isFormula || kind === "formula")
+            ? this.getFormulaItems(pool)
+            : this.getRedlineFactItems(pool).filter(item => item.kind === kind);
+          for (const item of this.shuffleList(items)) {
+            if (item.concept.id === targetConcept.id) continue;
+            const value = item.value;
+            const normalized = this.normalizeFact(value);
+            if (!normalized || seen.has(normalized)) continue;
+            seen.add(normalized);
+            wrong.push(value);
+            if (wrong.length >= 3) break;
+          }
+          if (wrong.length >= 3) break;
+        }
+        // For sparse trap categories, use other concise notes as distractors rather than inventing facts.
+        if (wrong.length < 3 && !isFormula && kind === "trap") {
+          for (const pool of [this.getAllConcepts()]) {
+            const items = this.getRedlineFactItems(pool).filter(item => ["trap", "bullet"].includes(item.kind));
+            for (const item of this.shuffleList(items)) {
+              if (item.concept.id === targetConcept.id) continue;
+              const normalized = this.normalizeFact(item.value);
+              if (!normalized || seen.has(normalized)) continue;
+              seen.add(normalized); wrong.push(item.value);
+              if (wrong.length >= 3) break;
             }
           }
-          this.renderMain();
-        }, 1000);
-        this.renderMain();
+        }
+        if (wrong.length < 3) return null;
+        const options = this.shuffleList([correctText, ...wrong.slice(0, 3)]);
+        const uniqueCount = new Set(options.map(value => this.normalizeFact(value))).size;
+        if (options.length !== 4 || uniqueCount !== 4) return null;
+        return { options, correctIndex: options.findIndex(value => this.normalizeFact(value) === correctNorm) };
       }
 
-      generateBlitzRound() {
-        const scoped = this.getTopicScopedConcepts();
-        const fullPool = this.getAllConcepts();
-        const pool = scoped.length > 0 ? scoped : fullPool;
-        const target = pool[Math.floor(Math.random() * pool.length)] || fullPool[0];
-        const distractors = fullPool
-          .filter(c => c.id !== target.id)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-        const useHighlight = Math.random() > 0.45;
-        const options = [target, ...distractors]
-          .sort(() => Math.random() - 0.5)
-          .map(c => ({
-            id: c.id,
-            text: useHighlight ? c.highlight : c.formula.split("\n")[0]
-          }));
+      createFormulaChallenge(formulaItem, difficulty = 1) {
+        if (!formulaItem || !formulaItem.concept || !formulaItem.value) return null;
+        const correctFormula = formulaItem.value;
+        const optionSet = this.makeOptions(correctFormula, formulaItem.concept, "formula", difficulty, true);
+        if (!optionSet) return null;
+        return { formula: correctFormula, options: optionSet.options, correctIndex: optionSet.correctIndex, formulaLabel: formulaItem.label || "Formula" };
+      }
+
+      createFactChallenge(item, difficulty = 0) {
+        if (!item || !item.concept || !item.value) return null;
+        const optionSet = this.makeOptions(item.value, item.concept, item.kind, difficulty, false);
+        if (!optionSet) return null;
+        const prompts = {
+          formula: "FORMULA MATCH",
+          highlight: "RULE CHECK",
+          trap: "TRAP SPOTTER",
+          bullet: "PATTERN CUE",
+          hook: "MEMORY CUE"
+        };
         return {
-          target,
-          promptType: Math.random() > 0.4 ? "hook" : "title",
-          options
+          target: item.concept, sourceItem: item, answer: item.value,
+          prompt: prompts[item.kind] || "DETAIL MATCH",
+          questionType: item.kind, options: optionSet.options,
+          correctIndex: optionSet.correctIndex, difficulty
         };
       }
 
-      pickBlitzOption(pickedId) {
-        if (!this.blitzState.active) return;
-        const { target } = this.blitzState.current;
-        if (pickedId === target.id) {
-          this.blitzState.streak += 1;
-          const mult = this.blitzState.streak >= 6 ? 4 : this.blitzState.streak >= 3 ? 2 : 1;
-          const pts = 10 * mult;
-          this.blitzState.score += pts;
-          this.state.arcade.xp += 3;
-          this.blitzState.feedback = `✅ +${pts} pts (${mult}x Combo!)`;
-        } else {
-          this.blitzState.streak = 0;
-          this.blitzState.feedback = `❌ Missed! Added "${target.subtopic}" to ⚡ Revise Queue`;
-          if (!this.state.reviseQueue.includes(target.id)) {
-            this.state.reviseQueue.push(target.id);
-          }
-        }
-        if (this.blitzState.score > this.state.arcade.blitzHigh) {
-          this.state.arcade.blitzHigh = this.blitzState.score;
-        }
-        this.saveState();
-        this.blitzState.current = this.generateBlitzRound();
-        this.renderMain();
+      getGameConceptPool() {
+        // Compatibility helper: use the selected level's preferred tier, expanding only when needed.
+        return this.chooseGameScope(pool => this.getRedlineFactItems(pool), 10).pool;
       }
 
-      // =======================================================================
-      // MINIGAME 2: SURVIVAL ARENA (3 Hearts + Concept-Driven Recall Gauntlet)
-      // =======================================================================
-      startSurvival() {
+      prepareAfterimageRound() {
+        const state = this.afterimageState;
+        const formulaItem = state.deck[state.index];
+        const challenge = formulaItem ? this.createFormulaChallenge(formulaItem, 1) : null;
+        if (!formulaItem || !challenge) {
+          state.active = false;
+          state.phase = "idle";
+          return;
+        }
+        state.current = { target: formulaItem.concept, sourceItem: formulaItem, ...challenge, selectedIndex: null, result: null };
+        state.phase = "preview";
+        state.phaseStartedAt = Date.now();
+        state.previewDurationMs = 2300;
+        state.answerStartedAt = 0;
+      }
+
+      startAfterimage() {
         this.clearTimers();
-        this.survivalState = {
-          active: true,
-          hearts: 3,
-          timeLeft: 60,
-          score: 0,
-          streak: 0,
-          round: this.generateSurvivalRound(),
-          answered: null
+        const scope = this.chooseGameScope(pool => this.getFormulaItems(pool), 10);
+        const deck = this.buildUniqueDeck(scope.items, 10);
+        this.afterimageState = {
+          active: true, phase: "preview", deck, index: 0, current: null,
+          score: 0, streak: 0, speedBonusCount: 0, scopeLabel: scope.label,
+          lastRunScore: this.afterimageState.lastRunScore || 0,
+          phaseStartedAt: Date.now(), previewDurationMs: 2300, answerStartedAt: 0
         };
-        this.startSurvivalShotClock();
+        this.prepareAfterimageRound();
+        if (!this.afterimageState.deck.length || !this.afterimageState.active) {
+          this.afterimageState.active = false;
+          this.afterimageState.phase = "idle";
+        } else {
+          this.startGameTicker();
+        }
         this.renderMain();
       }
 
-      generateSurvivalRound() {
-        const scoped = this.getTopicScopedConcepts();
-        const fullPool = this.getAllConcepts();
-        const pool = scoped.length > 0 ? scoped : fullPool;
-
-        // Prioritize cards in Revise Queue or Saved
-        const weighted = [...pool].sort((a, b) => {
-          const wa = (this.state.reviseQueue.includes(a.id) ? -2 : 0) + (this.state.savedConcepts.includes(a.id) ? -1 : 0);
-          const wb = (this.state.reviseQueue.includes(b.id) ? -2 : 0) + (this.state.savedConcepts.includes(b.id) ? -1 : 0);
-          return wa - wb || Math.random() - 0.5;
-        });
-
-        const target = weighted[0] || fullPool[0];
-        const sameTopicPool = fullPool.filter(c => c.id !== target.id && c.topic === target.topic);
-        const otherPool = fullPool.filter(c => c.id !== target.id && c.topic !== target.topic);
-        const distractors = [
-          ...sameTopicPool.sort(() => Math.random() - 0.5),
-          ...otherPool.sort(() => Math.random() - 0.5)
-        ].slice(0, 3);
-
-        // 3 Concept Challenge Modes: 'formula' | 'highlight' | 'trap'
-        const modes = ["formula", "highlight", "trap"];
-        const mode = modes[Math.floor(Math.random() * modes.length)];
-
-        let promptLabel = "";
-        let cueText = "";
-        const getOptionText = (c) => {
-          if (mode === "formula") return c.formula.split("\n")[0];
-          if (mode === "highlight") return c.highlight;
-          return c.bullets[1] || c.bullets[0];
-        };
-
-        if (mode === "formula") {
-          promptLabel = "Identify the exact Core Formula for this concept:";
-          cueText = `${target.title} — ★ ${target.highlight}`;
-        } else if (mode === "highlight") {
-          promptLabel = "Which Gold Rule / Condition holds true for this concept?";
-          cueText = `${target.title}\n${target.formula.split("\n")[0]}`;
-        } else {
-          promptLabel = "Spot the true Exam Trap / Shortcut for this concept:";
-          cueText = `${target.title} (${target.subtopic})`;
+      getRedlineQuestionDeck(pool, count = 10) {
+        const items = this.getRedlineFactItems(pool);
+        const specs = [
+          ["formula"], ["formula", "hook"], ["hook", "formula"],
+          ["highlight"], ["formula", "highlight"], ["bullet", "hook", "highlight"],
+          ["trap", "bullet"], ["trap", "bullet", "highlight"],
+          ["highlight", "hook", "bullet"], ["trap", "bullet", "hook", "formula"]
+        ];
+        const used = new Set();
+        const deck = [];
+        for (let round = 0; round < count; round++) {
+          const preferred = specs[round] || ["trap", "bullet", "highlight", "hook", "formula"];
+          let candidates = items.filter(item => !used.has(item.key) && preferred.includes(item.kind));
+          if (round >= 6) {
+            const advanced = candidates.filter(item => item.concept.level === "Advanced");
+            if (advanced.length) candidates = advanced;
+          }
+          if (!candidates.length) candidates = items.filter(item => !used.has(item.key));
+          if (!candidates.length) break;
+          const chosen = this.shuffleList(candidates)[0];
+          deck.push(chosen);
+          used.add(chosen.key);
         }
-
-        const shuffledCards = [target, ...distractors].sort(() => Math.random() - 0.5);
-        const correctIndex = shuffledCards.findIndex(c => c.id === target.id);
-
-        return {
-          target,
-          mode,
-          promptLabel,
-          cueText,
-          options: shuffledCards.map(c => getOptionText(c)),
-          correctIndex
-        };
+        return deck;
       }
 
-      startSurvivalShotClock() {
+      prepareRedlineRound() {
+        const state = this.redlineState;
+        const item = state.deck[state.index];
+        if (!item) {
+          state.active = false;
+          state.phase = "idle";
+          return;
+        }
+        const baseDifficulty = state.index < 3 ? 0 : state.index < 6 ? 1 : 2;
+        // Two quick correct answers accelerate the challenge tier; rounds 7–10 are always hard at minimum.
+        const speedBoost = Math.min(2, Math.floor((state.speedBonusCount || 0) / 2));
+        const difficulty = Math.min(2, Math.max(state.index >= 6 ? 2 : 0, baseDifficulty + speedBoost));
+        const challenge = this.createFactChallenge(item, difficulty);
+        if (!challenge) {
+          state.active = false;
+          state.phase = "idle";
+          return;
+        }
+        state.current = { ...challenge, selectedIndex: null, result: null };
+        state.phase = "answer";
+        state.phaseStartedAt = Date.now();
+        state.answerStartedAt = Date.now();
+      }
+
+      startRedline() {
         this.clearTimers();
-        this.survivalState.timeLeft = 60;
-        this.activeTimer = setInterval(() => {
-          if (this.survivalState.answered !== null) return;
-          this.survivalState.timeLeft -= 1;
-          if (this.survivalState.timeLeft <= 0) {
-            this.handleSurvivalAnswer(-1);
-          } else {
-            this.renderMain();
-          }
-        }, 1000);
+        const scope = this.chooseGameScope(pool => this.getRedlineFactItems(pool), 10);
+        const deck = this.getRedlineQuestionDeck(scope.pool, 10);
+        this.redlineState = {
+          active: true, phase: "answer", deck, index: 0, current: null,
+          score: 0, streak: 0, speedBonusCount: 0, scopeLabel: scope.label,
+          lastRunScore: this.redlineState.lastRunScore || 0,
+          animationSpeed: 1, phaseStartedAt: Date.now(), answerStartedAt: Date.now()
+        };
+        this.prepareRedlineRound();
+        if (!this.redlineState.deck.length || !this.redlineState.active) {
+          this.redlineState.active = false;
+          this.redlineState.phase = "idle";
+        } else {
+          this.startGameTicker();
+        }
+        this.renderMain();
       }
 
-      handleSurvivalAnswer(optIdx) {
-        if (this.survivalState.answered !== null) return;
-        this.survivalState.answered = optIdx;
-        const { target, correctIndex } = this.survivalState.round;
+      startGameTicker() {
+        this.clearTimers();
+        this.activeTimer = setInterval(() => this.tickGameTimers(), 100);
+      }
 
-        if (optIdx === correctIndex) {
-          this.survivalState.streak += 1;
-          this.survivalState.score += 1;
-          this.state.arcade.xp += 10;
-          if (this.survivalState.streak % 3 === 0 && this.survivalState.hearts < 3) {
-            this.survivalState.hearts += 1;
+      tickGameTimers() {
+        const now = Date.now();
+        const after = this.afterimageState;
+        const red = this.redlineState;
+        if (after.active) {
+          if (after.phase === "preview") {
+            const remaining = Math.max(0, after.previewDurationMs - (now - after.phaseStartedAt));
+            const label = document.getElementById("after-time-label");
+            const bar = document.getElementById("after-preview-progress");
+            if (label) label.textContent = `Preview ${(remaining / 1000).toFixed(1)}s`;
+            if (bar) bar.style.width = `${(remaining / after.previewDurationMs) * 100}%`;
+            if (remaining <= 0) {
+              after.phase = "answer";
+              after.answerStartedAt = now;
+              this.renderMain();
+            }
+          } else if (after.phase === "answer") {
+            this.updateAnswerClock("after", now - after.answerStartedAt, 15000);
+            if (now - after.answerStartedAt >= 15000) this.resolveFormulaAnswer("afterimage", -1, true);
           }
-          if (this.survivalState.score > this.state.arcade.survivalBest) {
-            this.state.arcade.survivalBest = this.survivalState.score;
+        } else if (red.active && red.phase === "answer") {
+          this.updateAnswerClock("red", now - red.answerStartedAt, 15000);
+          if (now - red.answerStartedAt >= 15000) this.resolveFormulaAnswer("redline", -1, true);
+        }
+      }
+
+      updateAnswerClock(prefix, elapsedMs, limitMs) {
+        const remainingMs = Math.max(0, limitMs - elapsedMs);
+        const label = document.getElementById(`${prefix}-time-label`);
+        const bar = document.getElementById(`${prefix}-answer-progress`);
+        if (label) label.textContent = `${(remainingMs / 1000).toFixed(1)}s`;
+        if (bar) bar.style.width = `${(remainingMs / limitMs) * 100}%`;
+      }
+
+      answerAfterimage(index) {
+        this.resolveFormulaAnswer("afterimage", index, false);
+      }
+
+      answerRedline(index) {
+        this.resolveFormulaAnswer("redline", index, false);
+      }
+
+      resolveFormulaAnswer(gameName, selectedIndex, timedOut = false) {
+        const isAfterimage = gameName === "afterimage";
+        const state = isAfterimage ? this.afterimageState : this.redlineState;
+        if (!state.active || state.phase !== "answer" || !state.current) return;
+        const elapsedMs = Math.max(0, Date.now() - state.answerStartedAt);
+        const elapsedSeconds = elapsedMs / 1000;
+        const correct = !timedOut && selectedIndex === state.current.correctIndex;
+        let bonus = 0;
+        let points = 0;
+        let multiplier = 1;
+        const base = correct ? 100 : 0;
+        if (correct) {
+          state.streak += 1;
+          bonus = elapsedSeconds <= 10 ? Math.max(0, Math.round(100 * (1 - elapsedSeconds / 10))) : 0;
+          if (bonus > 0) state.speedBonusCount = (state.speedBonusCount || 0) + 1;
+          multiplier = Math.min(1.5, 1 + Math.floor(state.streak / 3) * 0.1);
+          points = Math.round((base + bonus) * multiplier);
+          state.score += points;
+          this.state.arcade.xp += Math.max(1, Math.round(points / 10));
+          if (!isAfterimage && elapsedSeconds <= 10) {
+            const boost = elapsedSeconds <= 3 ? 0.24 : elapsedSeconds <= 6 ? 0.15 : 0.08;
+            state.animationSpeed = Math.min(2.5, state.animationSpeed + boost);
           }
         } else {
-          this.survivalState.hearts -= 1;
-          this.survivalState.streak = 0;
-          if (!this.state.reviseQueue.includes(target.id)) {
-            this.state.reviseQueue.push(target.id);
-          }
-          this.openConceptModal(target.id, "🛡️ Shield Recovery");
+          state.streak = 0;
+          if (!this.state.reviseQueue.includes(state.current.target.id)) this.state.reviseQueue.push(state.current.target.id);
+          if (!isAfterimage) state.animationSpeed = Math.max(0.8, state.animationSpeed - 0.2);
         }
+        state.current.selectedIndex = selectedIndex;
+        state.current.result = { correct, timedOut, elapsedSeconds, base, bonus, multiplier, points };
+        state.phase = "feedback";
+        state.lastRunScore = state.score;
+        const bestKey = isAfterimage ? "afterimageBest" : "redlineBest";
+        this.state.arcade[bestKey] = Math.max(this.state.arcade[bestKey] || 0, state.score);
+        this.clearTimers();
         this.saveState();
         this.renderMain();
       }
 
-      nextSurvivalQuestion() {
-        if (this.survivalState.hearts <= 0) {
-          this.clearTimers();
-          this.survivalState.active = false;
+      continueAfterimage() {
+        const state = this.afterimageState;
+        if (!state.active || state.phase !== "feedback") return;
+        if (state.index >= state.deck.length - 1) {
+          state.active = false;
+          state.phase = "complete";
+          state.lastRunScore = state.score;
+          this.state.arcade.afterimageRuns = (this.state.arcade.afterimageRuns || 0) + 1;
+          this.saveState();
           this.renderMain();
           return;
         }
-        this.survivalState.round = this.generateSurvivalRound();
-        this.survivalState.answered = null;
-        this.startSurvivalShotClock();
+        state.index += 1;
+        this.prepareAfterimageRound();
+        this.startGameTicker();
         this.renderMain();
       }
 
-      // =======================================================================
-      // MINIGAME 3: TRAP-HUNTER (Timed Active-Recall Flip Deck)
-      // =======================================================================
-      startTrapHunter() {
-        this.clearTimers();
-        const scoped = this.getTopicScopedConcepts();
-        const pool = scoped.length > 0 ? scoped : this.getAllConcepts();
-
-        const weighted = [...pool].sort((a, b) => {
-          const wa = (this.state.reviseQueue.includes(a.id) ? -2 : 0) + (this.state.savedConcepts.includes(a.id) ? -1 : 0);
-          const wb = (this.state.reviseQueue.includes(b.id) ? -2 : 0) + (this.state.savedConcepts.includes(b.id) ? -1 : 0);
-          return wa - wb || Math.random() - 0.5;
-        }).slice(0, 10);
-
-        this.trapState = {
-          active: true,
-          index: 0,
-          deck: weighted,
-          revealed: false,
-          timeLeft: 10,
-          nailedCount: 0
-        };
-        this.startTrapTimer();
-        this.renderMain();
-      }
-
-      startTrapTimer() {
-        this.clearTimers();
-        this.trapState.timeLeft = 10;
-        this.activeTimer = setInterval(() => {
-          if (this.trapState.revealed) return;
-          this.trapState.timeLeft -= 1;
-          if (this.trapState.timeLeft <= 0) {
-            this.trapState.revealed = true;
-            this.clearTimers();
-          }
-          this.renderMain();
-        }, 1000);
-      }
-
-      revealTrapCard() {
-        this.trapState.revealed = true;
-        this.clearTimers();
-        this.renderMain();
-      }
-
-      gradeTrapCard(nailed) {
-        const card = this.trapState.deck[this.trapState.index];
-        if (nailed) {
-          this.trapState.nailedCount += 1;
-          this.state.arcade.xp += 10;
-          if (!this.state.masteredConcepts.includes(card.id)) {
-            this.state.masteredConcepts.push(card.id);
-          }
-          const qIdx = this.state.reviseQueue.indexOf(card.id);
-          if (qIdx !== -1) this.state.reviseQueue.splice(qIdx, 1);
-        } else {
-          if (!this.state.reviseQueue.includes(card.id)) {
-            this.state.reviseQueue.push(card.id);
-          }
-        }
-        this.saveState();
-
-        if (this.trapState.index >= this.trapState.deck.length - 1) {
-          this.clearTimers();
-          this.trapState.active = false;
-          this.state.arcade.trapSessions += 1;
+      continueRedline() {
+        const state = this.redlineState;
+        if (!state.active || state.phase !== "feedback") return;
+        if (state.index >= state.deck.length - 1) {
+          state.active = false;
+          state.phase = "complete";
+          state.lastRunScore = state.score;
+          this.state.arcade.redlineRuns = (this.state.arcade.redlineRuns || 0) + 1;
           this.saveState();
           this.renderMain();
-        } else {
-          this.trapState.index += 1;
-          this.trapState.revealed = false;
-          this.startTrapTimer();
-          this.renderMain();
+          return;
         }
+        state.index += 1;
+        this.prepareRedlineRound();
+        this.startGameTicker();
+        this.renderMain();
       }
 
       // =======================================================================
@@ -1780,7 +2068,7 @@
       restoreSyncState() {
         try {
           const parsed = JSON.parse(document.getElementById("sync-textarea").value);
-          this.state = { ...defaultState(), ...parsed };
+          this.state = { ...defaultState(), ...parsed, arcade: { ...defaultState().arcade, ...(parsed.arcade || {}) } };
           this.saveState();
           this.closeSyncModal();
           this.renderAll();
@@ -1873,6 +2161,7 @@
         const levelBar = document.getElementById("level-bar");
 
         if (this.section === "revise") {
+          bar.className = "flex space-x-2 overflow-x-auto no-scrollbar pb-0.5";
           const scoped = this.getTopicScopedConcepts();
           const savedCnt = scoped.filter(c => this.state.savedConcepts.includes(c.id)).length;
           const queueCnt = scoped.filter(c => this.state.reviseQueue.includes(c.id)).length;
@@ -1910,17 +2199,17 @@
           `).join("");
         } else {
           levelBar.classList.add("hidden");
+          bar.className = "flex space-x-2 overflow-x-auto no-scrollbar pb-1";
           const games = [
-            { id: "blitz", label: "⚡ 1. Formula Blitz (60s)" },
-            { id: "survival", label: "🛡️ 2. Survival Arena (3❤️)" },
-            { id: "traphunter", label: "🃏 3. Trap-Hunter (Recall)" }
+            { id: "afterimage", label: "✧ Afterimage" },
+            { id: "redline", label: "↗ Redline" }
           ];
-          bar.innerHTML = games.map(g => `
-            <button onclick="window.app.setArcadeGame('${g.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
+          bar.innerHTML = games.map((g, index) => `
+            <button aria-pressed="${this.arcadeGame === g.id}" onclick="window.app.setArcadeGame('${g.id}')" class="game-mode-button flex-1 min-w-[145px] px-5 py-3 rounded-xl text-sm sm:text-base font-black whitespace-nowrap border transition ${
               this.arcadeGame === g.id
-                ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/20"
-                : "bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500"
-            }">${g.label}</button>
+                ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/25 scale-[1.02]"
+                : "bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500 hover:bg-slate-700"
+            }">${g.id === "afterimage" ? "✧ Afterimage" : "↗ Redline"}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.id === "afterimage" ? "Memory trace" : "Speed loop"}</span></button>
           `).join("");
         }
       }
@@ -1984,214 +2273,180 @@
       }
 
       // -----------------------------------------------------------------------
-      // ARCADE VIEW (100% CONCEPT-DRIVEN 3-IN-1 MINIGAME HUB)
+      // ARCADE VIEW: TWO LIGHTWEIGHT FORMULA GAMES
       // -----------------------------------------------------------------------
       renderArcadeSection() {
+        const arcade = this.state.arcade || {};
         const statsBar = `
           <div class="grid grid-cols-3 gap-2 mb-4">
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
               <div class="text-[10px] font-mono-code uppercase text-slate-400">Total XP</div>
-              <div class="text-base font-black text-amber-400">⚡ ${this.state.arcade.xp}</div>
+              <div class="text-base font-black text-amber-400">✦ ${Number(arcade.xp || 0)}</div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
-              <div class="text-[10px] font-mono-code uppercase text-slate-400">Blitz Record</div>
-              <div class="text-base font-black text-emerald-400">🏆 ${this.state.arcade.blitzHigh}</div>
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Afterimage Best</div>
+              <div class="text-base font-black text-violet-300">${Number(arcade.afterimageBest || 0)}</div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
-              <div class="text-[10px] font-mono-code uppercase text-slate-400">Survival Best</div>
-              <div class="text-base font-black text-rose-400">🔥 ${this.state.arcade.survivalBest} Cards</div>
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Redline Best</div>
+              <div class="text-base font-black text-rose-300">${Number(arcade.redlineBest || 0)}</div>
             </div>
           </div>
         `;
-
-        if (this.arcadeGame === "blitz") return statsBar + this.renderBlitzGame();
-        if (this.arcadeGame === "survival") return statsBar + this.renderSurvivalGame();
-        return statsBar + this.renderTrapHunterGame();
+        return statsBar + (this.arcadeGame === "redline" ? this.renderRedlineGame() : this.renderAfterimageGame());
       }
 
-      renderBlitzGame() {
-        if (!this.blitzState.active) {
-          return `
-            <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
-              <div class="text-3xl mb-2">⚡</div>
-              <h2 class="text-lg font-black text-white mb-1">Formula Blitz (60-Second Sprint)</h2>
-              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
-                Match the memory hook or concept title to its exact formula or highlight across all 52 Foundation & Advanced cards (or filter by Topic/Chapter above). Missed concepts auto-sync to your <strong>⚡ Revise Queue</strong>.
-              </p>
-              ${this.blitzState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold">Last Run Score: ${this.blitzState.score} pts</div>` : ""}
-              <button onclick="window.app.startBlitz()" class="w-full max-w-xs py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
-                Launch 60s Blitz →
-              </button>
-            </div>
-          `;
-        }
-
-        const { timeLeft, score, streak, current, feedback } = this.blitzState;
-        const mult = streak >= 6 ? 4 : streak >= 3 ? 2 : 1;
-        const promptText = current.promptType === "hook" ? `🧠 "${current.target.hook}"` : current.target.title;
-
+      renderGameLanding(gameName) {
+        const isAfter = gameName === "afterimage";
+        const state = isAfter ? this.afterimageState : this.redlineState;
+        const complete = state.phase === "complete";
+        const title = isAfter ? "Afterimage" : "Redline";
+        const subtitle = isAfter ? "Watch it. Hold it. Rebuild it." : "Catch the line before it passes.";
+        const description = isAfter
+          ? "A formula flashes, then vanishes. Choose the matching expression before the trace fades."
+          : "A short concept cue, four related options, and a moving track. Quick correct answers raise your score and accelerate the loop.";
+        const missedCount = this.state.reviseQueue.length;
+        const scopePreview = this.subtopic !== "All" ? `Starts in ${this.subtopic}; expands to ${this.topic} or all topics only when needed.` : this.topic !== "All" ? `Starts within ${this.topic}; expands to all topics only when needed.` : "Uses all chapter groups, with question types drawn from the full concept cards.";
+        const startButton = isAfter ? "Start Afterimage" : "Start Redline";
+        const action = isAfter ? "startAfterimage" : "startRedline";
+        const accent = isAfter ? "violet" : "rose";
+        const lastScore = Number(state.lastRunScore || 0);
         return `
-          <div class="arcade-card border border-amber-400/40 rounded-2xl p-5 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
-              <span class="font-mono-code text-xs font-bold px-2.5 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">⏱️ ${timeLeft}s</span>
-              <span class="font-mono-code text-xs font-bold px-2.5 py-1 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">🔥 Streak: ${streak} (${mult}x)</span>
-              <span class="font-mono-code text-xs font-bold text-emerald-400">Score: ${score}</span>
-            </div>
-
-            <div class="mb-4">
-              <div class="text-[10px] font-mono-code uppercase text-amber-400 mb-1">${current.target.topic} › ${current.target.subtopic} (${current.target.level})</div>
-              <div class="p-4 rounded-xl bg-slate-900 border border-slate-700 text-sm font-bold text-white leading-snug">
-                ${promptText}
+          <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
+            <div class="absolute -top-20 -right-16 w-56 h-56 rounded-full blur-3xl opacity-10 ${isAfter ? "bg-violet-400" : "bg-rose-400"}"></div>
+            <div class="relative">
+              <div class="flex items-start justify-between gap-3 mb-5">
+                <div>
+                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isAfter ? "text-violet-300" : "text-rose-300"}">${isAfter ? "MEMORY TRACE" : "SPEED LOOP"}</div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">${title}</h2>
+                  <p class="text-sm text-slate-300 mt-1">${subtitle}</p>
+                </div>
+                <div class="text-3xl sm:text-4xl ${isAfter ? "text-violet-300" : "text-rose-300"}">${isAfter ? "✧" : "↗"}</div>
               </div>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mb-2">${description}</p>
+              <p class="text-xs text-amber-200/80 leading-relaxed max-w-xl mb-5">${this.escapeHTML(scopePreview)}</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-5">
+                <div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Rounds</div><div class="text-sm font-bold text-white">10 per run</div></div>
+                <div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Scoring</div><div class="text-sm font-bold text-white">100 base + speed bonus</div></div>
+                <div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Bonus window</div><div class="text-sm font-bold text-white">First 10 seconds</div></div>
+              </div>
+              ${complete ? `<div class="rounded-xl border ${isAfter ? "border-violet-400/30 bg-violet-400/10" : "border-rose-400/30 bg-rose-400/10"} p-4 mb-4"><div class="text-xs text-slate-300">Last run complete</div><div class="text-2xl font-black text-white mt-1">${lastScore.toLocaleString()} pts</div><div class="text-xs text-slate-400 mt-1">Best: ${Number(this.state.arcade[isAfter ? "afterimageBest" : "redlineBest"] || 0).toLocaleString()} pts</div></div>` : (lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last run: <strong class="text-white">${lastScore.toLocaleString()} pts</strong></div>` : "")}
+              <button onclick="window.app.${action}()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-950 shadow-lg transition hover:brightness-110 ${isAfter ? "bg-violet-300 shadow-violet-500/15" : "bg-rose-300 shadow-rose-500/15"}">${startButton} <span aria-hidden="true">→</span></button>
+              ${missedCount ? `<button onclick="window.app.goToReviseQueue()" class="w-full sm:w-auto sm:ml-2 mt-3 px-5 py-3 rounded-xl border border-rose-400/40 bg-rose-400/10 text-rose-200 text-sm font-bold hover:bg-rose-400/20 transition">Review missed cards (${missedCount}) →</button>` : ""}
+              <p class="text-[10px] text-slate-500 mt-4">Missed concepts are added to the Revise Queue. Question variety comes from formulas, rules, bullets, traps and memory hooks.</p>
             </div>
-
-            <div class="space-y-2.5 mb-3">
-              ${current.options.map(opt => `
-                <button
-                  onclick="window.app.pickBlitzOption('${opt.id}')"
-                  class="w-full text-left p-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-xs font-mono-code text-slate-100 transition active:scale-[0.99]"
-                >
-                  ${opt.text}
-                </button>
-              `).join("")}
-            </div>
-
-            ${feedback ? `<div class="text-center text-xs font-bold text-amber-300 pt-2">${feedback}</div>` : ""}
-          </div>
+          </section>
         `;
       }
 
-      renderSurvivalGame() {
-        if (!this.survivalState.active) {
-          return `
-            <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
-              <div class="text-3xl mb-2">🛡️</div>
-              <h2 class="text-lg font-black text-white mb-1">Survival Arena (3-Lives Concept Gauntlet)</h2>
-              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
-                Enter with <strong>3 Hearts (❤️❤️❤️)</strong> and a 60s shot clock per concept card. Test your recall on formulas, gold rules, and exam traps — losing a heart triggers the <strong>Concept Shield</strong> popup, and 3 in a row restores 1 heart!
-              </p>
-              ${this.survivalState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-xs font-bold">Last Run Survived: ${this.survivalState.score} Concept Cards</div>` : ""}
-              <button onclick="window.app.startSurvival()" class="w-full max-w-xs py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
-                Enter Survival Arena →
-              </button>
-            </div>
-          `;
-        }
-
-        const { hearts, timeLeft, score, streak, round, answered } = this.survivalState;
-        const { target, promptLabel, cueText, options, correctIndex } = round;
-        const heartsDisplay = "❤️".repeat(Math.max(0, hearts)) + "🖤".repeat(Math.max(0, 3 - hearts));
-
+      renderAfterimageGame() {
+        const state = this.afterimageState;
+        if (!state.active || !state.current) return this.renderGameLanding("afterimage");
+        const current = state.current;
+        const target = current.target;
+        const phase = state.phase;
+        const isPreview = phase === "preview";
+        const isAnswer = phase === "answer";
+        const result = current.result;
+        const formula = this.escapeHTML(current.formula);
+        const title = this.escapeHTML(target.title);
+        const roundCount = `${state.index + 1} / ${state.deck.length}`;
+        const topic = this.escapeHTML(`${target.topic} · ${target.subtopic}`);
+        const progress = ((state.index + (isPreview ? 0.25 : isAnswer ? 0.6 : 1)) / state.deck.length) * 100;
+        const optionsHtml = current.options.map((option, idx) => {
+          let cls = "border-violet-400/20 bg-slate-900/90 text-slate-100 hover:border-violet-300/70 hover:bg-violet-950/30";
+          if (phase === "feedback") {
+            if (idx === current.correctIndex) cls = "border-emerald-400/80 bg-emerald-950/60 text-emerald-100";
+            else if (idx === current.selectedIndex) cls = "border-rose-400/80 bg-rose-950/50 text-rose-100";
+            else cls = "border-slate-800 bg-slate-950/50 text-slate-500 opacity-60";
+          }
+          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerAfterimage(${idx})" class="game-option w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls} ${phase === "feedback" ? "cursor-default" : ""}"><span class="text-violet-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.escapeHTML(option)}</button>`;
+        }).join("");
+        const feedback = result ? `
+          <div class="rounded-xl border ${result.correct ? "border-emerald-400/40 bg-emerald-400/10" : "border-rose-400/40 bg-rose-400/10"} p-4 mt-4">
+            <div class="font-bold text-sm ${result.correct ? "text-emerald-200" : "text-rose-200"}">${result.timedOut ? "Trace lost — time expired" : result.correct ? `Locked in · +${result.points} pts` : "Not this pattern · +0 pts"}</div>
+            <div class="text-xs text-slate-300 mt-1">${result.correct ? `Base 100 + speed bonus ${result.bonus}${result.multiplier > 1 ? ` · ${result.multiplier.toFixed(1)}× streak` : ""}` : `Correct pattern: ${formula}`}</div>
+            ${!result.correct ? `<div class="font-mono-code text-xs text-white whitespace-pre-line mt-2">${formula}</div><button onclick="window.app.goToReviseQueue()" class="mt-3 text-xs font-bold text-rose-200 underline underline-offset-2">Review missed cards in Revise Queue →</button>` : ""}
+          </div>
+          <button onclick="window.app.continueAfterimage()" class="w-full mt-3 px-4 py-3 rounded-xl bg-violet-300 hover:bg-violet-200 text-slate-950 text-sm font-black">${state.index >= state.deck.length - 1 ? "Finish run" : "Next trace →"}</button>
+        ` : "";
         return `
-          <div class="arcade-card border border-emerald-400/40 rounded-2xl p-5 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
-              <span class="text-sm tracking-widest">${heartsDisplay}</span>
-              <span class="font-mono-code text-xs font-bold px-2.5 py-1 rounded bg-slate-800 text-amber-300 border border-slate-700">⏱️ ${timeLeft}s</span>
-              <span class="font-mono-code text-xs font-bold text-emerald-400">🔥 Streak: ${streak} | Cleared: ${score}</span>
+          <section class="game-panel rounded-2xl p-4 sm:p-5 overflow-hidden">
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div><div class="text-[10px] uppercase tracking-[.2em] text-violet-300">AFTERIMAGE</div><div class="text-xs text-slate-400 mt-1">${this.escapeHTML(state.scopeLabel || topic)}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">ROUND</div><div class="font-mono-code font-bold text-white">${roundCount}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">SCORE</div><div class="font-mono-code font-black text-violet-200">${state.score.toLocaleString()}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">STREAK</div><div class="font-mono-code font-bold text-amber-300">${state.streak}</div></div>
             </div>
-
-            <div class="text-[10px] font-mono-code uppercase text-emerald-400 mb-1">${target.topic} › ${target.subtopic} • ${target.level}</div>
-            <p class="text-xs text-amber-300 font-semibold mb-1.5">${promptLabel}</p>
-            <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-700 text-sm font-bold text-white mb-4 whitespace-pre-line leading-relaxed">${cueText}</div>
-
-            <div class="space-y-2 mb-4">
-              ${options.map((opt, idx) => {
-                let cls = "bg-slate-800 border-slate-700 text-slate-200 hover:border-emerald-400";
-                if (answered !== null) {
-                  if (idx === correctIndex) cls = "bg-emerald-950 border-emerald-400 text-emerald-200 font-bold";
-                  else if (idx === answered) cls = "bg-rose-950 border-rose-500 text-rose-200 font-semibold";
-                  else cls = "bg-slate-900 border-slate-800 opacity-40";
-                }
-                return `
-                  <button
-                    ${answered !== null ? "disabled" : ""}
-                    onclick="window.app.handleSurvivalAnswer(${idx})"
-                    class="w-full text-left p-3 rounded-xl border text-xs font-mono-code transition ${cls}"
-                  >
-                    <strong class="mr-2">${String.fromCharCode(65 + idx)}.</strong> ${opt}
-                  </button>
-                `;
-              }).join("")}
+            <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mb-4"><div class="game-progress h-full rounded-full bg-violet-400" style="width:${progress}%"></div></div>
+            <div class="rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-950/60 to-slate-950 p-4 sm:p-6 mb-4 min-h-[176px] flex flex-col justify-center items-center text-center">
+              <div class="text-[10px] uppercase tracking-[.22em] text-violet-300 mb-2">${isPreview ? "Hold this trace" : isAnswer ? "Rebuild the pattern" : "Trace resolved"}</div>
+              <h2 class="text-base sm:text-lg font-bold text-white mb-4 max-w-2xl">${title}</h2>
+              ${isPreview ? `<div class="afterimage-glow w-full max-w-2xl rounded-xl border border-violet-300/35 bg-slate-950/80 p-4 sm:p-5"><div class="font-mono-code text-sm sm:text-lg text-violet-100 whitespace-pre-line break-words">${formula}</div></div><div id="after-time-label" class="text-xs text-violet-200 mt-3">Preview 2.3s</div><div class="w-full max-w-xs h-1 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="after-preview-progress" class="h-full bg-violet-300 rounded-full" style="width:100%"></div></div>` : isAnswer ? `<div class="text-sm text-slate-300">Which version matches the trace?</div><div class="mt-3 text-xs text-violet-200">Time left <strong id="after-time-label" class="font-mono-code">15.0s</strong></div><div class="w-full max-w-xs h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="after-answer-progress" class="game-progress h-full bg-violet-300" style="width:100%"></div></div>` : `<div class="text-xs text-slate-300">Response time: ${result.elapsedSeconds.toFixed(2)}s</div>`}
             </div>
-
-            ${answered !== null ? `
-              <div class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 mb-3">
-                <strong class="text-amber-300">🧠 Memory Hook:</strong> ${target.hook}
-              </div>
-              <button onclick="window.app.nextSurvivalQuestion()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-xs uppercase">
-                ${hearts <= 0 ? "View Run Summary" : "Next Concept Challenge →"}
-              </button>
-            ` : ""}
-          </div>
+            ${isAnswer || phase === "feedback" ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optionsHtml}</div>` : ""}
+            ${feedback}
+            <div class="flex items-center justify-between gap-3 mt-4 text-[10px] text-slate-500"><span>Fast correct picks earn a bonus for the first 10 seconds.</span><span>${state.deck.length - state.index - (phase === "feedback" ? 1 : 0)} left</span></div>
+          </section>
         `;
       }
 
-      renderTrapHunterGame() {
-        if (!this.trapState.active) {
-          return `
-            <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
-              <div class="text-3xl mb-2">🃏</div>
-              <h2 class="text-lg font-black text-white mb-1">Trap-Hunter (10-Card Active Recall)</h2>
-              <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
-                Deals 10 cards weighted toward your <strong>⚡ Revise Queue</strong> and <strong>🔖 Saved</strong> cards with a 10s recall bar. Mentally recall the blurred formula before tapping to reveal!
-              </p>
-              ${this.trapState.deck.length > 0 ? `<div class="mb-4 p-3 rounded-xl bg-indigo-400/10 border border-indigo-400/30 text-indigo-300 text-xs font-bold">Last Hand Nailed: ${this.trapState.nailedCount} / ${this.trapState.deck.length} Cards</div>` : ""}
-              <button onclick="window.app.startTrapHunter()" class="w-full max-w-xs py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/20 transition">
-                Deal 10-Card Recall Hand →
-              </button>
-            </div>
-          `;
-        }
-
-        const { index, deck, revealed, timeLeft, nailedCount } = this.trapState;
-        const card = deck[index];
-        const pct = (timeLeft / 10) * 100;
-
+      renderRedlineGame() {
+        const state = this.redlineState;
+        if (!state.active || !state.current) return this.renderGameLanding("redline");
+        const current = state.current;
+        const target = current.target;
+        const phase = state.phase;
+        const isAnswer = phase === "answer";
+        const result = current.result;
+        const cue = this.escapeHTML(this.getShortConceptTitle(target.title));
+        const answer = this.escapeHTML(current.answer || "");
+        const sourceLabel = current.questionType === "formula" && current.sourceItem && current.sourceItem.label && current.sourceItem.label !== "Formula"
+          ? `<div class="text-xs text-rose-200/85 mt-1">${this.escapeHTML(current.sourceItem.label)}</div>` : "";
+        const roundCount = `${state.index + 1} / ${state.deck.length}`;
+        const progress = ((state.index + (isAnswer ? 0.55 : 1)) / state.deck.length) * 100;
+        const duration = Math.max(0.45, 2.4 / Math.max(0.8, state.animationSpeed || 1));
+        const difficultyLabel = ["EASY", "MID", "HARD"][current.difficulty || 0];
+        const optionsHtml = current.options.map((option, idx) => {
+          let cls = "border-rose-400/20 bg-slate-900/90 text-slate-100 hover:border-rose-300/70 hover:bg-rose-950/30";
+          if (phase === "feedback") {
+            if (idx === current.correctIndex) cls = "border-emerald-400/80 bg-emerald-950/60 text-emerald-100";
+            else if (idx === current.selectedIndex) cls = "border-rose-400/80 bg-rose-950/50 text-rose-100";
+            else cls = "border-slate-800 bg-slate-950/50 text-slate-500 opacity-60";
+          }
+          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerRedline(${idx})" class="game-option game-answer-copy w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls}"><span class="text-rose-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.escapeHTML(option)}</button>`;
+        }).join("");
+        const feedback = result ? `
+          <div class="rounded-xl border ${result.correct ? "border-emerald-400/40 bg-emerald-400/10" : "border-rose-400/40 bg-rose-400/10"} p-4 mt-4">
+            <div class="font-bold text-sm ${result.correct ? "text-emerald-200" : "text-rose-200"}">${result.timedOut ? "Checkpoint missed — time expired" : result.correct ? `Clean pass · +${result.points} pts` : "Checkpoint missed · +0 pts"}</div>
+            <div class="text-xs text-slate-300 mt-1">${result.correct ? `Base 100 + speed bonus ${result.bonus}${result.multiplier > 1 ? ` · ${result.multiplier.toFixed(1)}× streak` : ""}` : `Correct detail: ${answer}`}</div>
+            ${!result.correct ? `<div class="text-xs text-rose-200/90 mt-2">Added to the Revise Queue.</div><button onclick="window.app.goToReviseQueue()" class="mt-2 text-xs font-bold text-rose-200 underline underline-offset-2">Review missed cards in Revise Queue →</button>` : ""}
+          </div>
+          <button onclick="window.app.continueRedline()" class="w-full mt-3 px-4 py-3 rounded-xl bg-rose-300 hover:bg-rose-200 text-slate-950 text-sm font-black">${state.index >= state.deck.length - 1 ? "Finish run" : "Next checkpoint →"}</button>
+        ` : "";
         return `
-          <div class="arcade-card border border-indigo-400/40 rounded-2xl p-5 shadow-2xl">
-            <div class="flex justify-between items-center mb-2 text-xs font-mono-code">
-              <span class="text-indigo-300">Card ${index + 1} of ${deck.length}</span>
-              <span class="text-amber-300">⚡ Nailed: ${nailedCount}</span>
+          <section class="game-panel rounded-2xl p-4 sm:p-5 overflow-hidden">
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div><div class="text-[10px] uppercase tracking-[.2em] text-rose-300">REDLINE · ${difficultyLabel}</div><div class="text-xs text-slate-400 mt-1">${this.escapeHTML(state.scopeLabel || `${target.topic} · ${target.subtopic}`)}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">ROUND</div><div class="font-mono-code font-bold text-white">${roundCount}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">SCORE</div><div class="font-mono-code font-black text-rose-200">${state.score.toLocaleString()}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">STREAK</div><div class="font-mono-code font-bold text-amber-300">${state.streak}</div></div>
             </div>
-
-            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-4">
-              <div class="h-full bg-amber-400 transition-all duration-500" style="width: ${pct}%"></div>
+            <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mb-3"><div class="game-progress h-full rounded-full bg-rose-400" style="width:${progress}%"></div></div>
+            <div class="redline-track mb-4" style="--track-duration:${duration.toFixed(2)}s" aria-label="Looping speed track"></div>
+            <div class="rounded-2xl border border-rose-400/25 bg-gradient-to-br from-rose-950/40 to-slate-950 p-4 sm:p-5 mb-4">
+              <div class="text-[10px] uppercase tracking-[.2em] text-rose-300 mb-2">${this.escapeHTML(current.prompt || "DETAIL MATCH")}</div>
+              <h2 class="text-base sm:text-lg font-bold text-white">${cue}</h2>
+              ${sourceLabel}
+              ${isAnswer ? `<div class="flex justify-between items-center mt-4 text-xs text-slate-400"><span>Choose the matching detail</span><span class="font-mono-code font-bold text-rose-200" id="red-time-label">15.0s</span></div><div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="red-answer-progress" class="game-progress h-full bg-rose-400" style="width:100%"></div></div>` : `<div class="text-xs text-slate-300 mt-3">Response time: ${result.elapsedSeconds.toFixed(2)}s</div>`}
             </div>
-
-            <div class="text-[10px] font-mono-code uppercase text-indigo-400 mb-1">${card.topic} › ${card.subtopic} (${card.level})</div>
-            <h3 class="text-base font-bold text-white mb-3">${card.title}</h3>
-
-            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 mb-3">
-              <strong class="text-rose-400 block mb-1">🎯 Exam Trap Cue:</strong>
-              ${card.bullets[1] || card.bullets[0]}
-            </div>
-
-            <div
-              onclick="window.app.revealTrapCard()"
-              class="cursor-pointer p-4 rounded-xl bg-indigo-950/60 border border-indigo-500/30 transition-all ${revealed ? '' : 'blur-md select-none'}"
-            >
-              <div class="font-mono-code text-xs text-indigo-100 mb-2 whitespace-pre-line">${card.formula}</div>
-              <div class="text-xs font-semibold text-amber-300 mb-1">★ ${card.highlight}</div>
-              <div class="text-[11px] italic text-indigo-200">🧠 ${card.hook}</div>
-            </div>
-
-            ${!revealed ? `
-              <button onclick="window.app.revealTrapCard()" class="mt-4 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs border border-slate-700">
-                👁️ Tap to Unblur Formula (${timeLeft}s)
-              </button>
-            ` : `
-              <div class="grid grid-cols-2 gap-2.5 mt-4">
-                <button onclick="window.app.gradeTrapCard(false)" class="py-3 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-200 font-bold text-xs">
-                  🔄 Fumbled (To Queue)
-                </button>
-                <button onclick="window.app.gradeTrapCard(true)" class="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs">
-                  ⚡ Nailed It (+10 XP)
-                </button>
-              </div>
-            `}
-          </div>
+            ${isAnswer || phase === "feedback" ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optionsHtml}</div>` : ""}
+            ${feedback}
+            <div class="flex items-center justify-between gap-3 mt-4 text-[10px] text-slate-500"><span>Fast correct picks speed up the track loop.</span><span>${state.deck.length - state.index - (phase === "feedback" ? 1 : 0)} left</span></div>
+          </section>
         `;
       }
+
     }
 
     window.addEventListener("DOMContentLoaded", () => {
