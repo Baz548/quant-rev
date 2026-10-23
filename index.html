@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v2.3 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf v2.4 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -26,16 +26,7 @@
       background: linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #3730a3 100%);
     }
 
-    /* 2. Questions Theme: Cyber Teal & Crisp Slate Arena */
-    body.theme-questions {
-      background-color: #ecfeff;
-      color: #042f2e;
-    }
-    .questions-header-gradient {
-      background: linear-gradient(135deg, #042f2e 0%, #0d9488 100%);
-    }
-
-    /* 3. Arcade Theme: Electric Amber & Deep Slate */
+    /* 2. Arcade Theme: Electric Amber & Deep Slate */
     body.theme-arcade {
       background-color: #0f172a;
       color: #f8fafc;
@@ -59,7 +50,7 @@
     <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="font-black text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.3 Verified</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v2.4 Verified</span>
       </div>
       <div class="flex items-center space-x-2">
         <button onclick="window.app.openAddModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">+ Add</button>
@@ -67,14 +58,11 @@
       </div>
     </div>
 
-    <!-- PRIMARY MODE SWITCHER (Revise | Questions | Arcade) -->
+    <!-- PRIMARY MODE SWITCHER (Revise | Arcade) -->
     <div class="max-w-4xl mx-auto px-4 pb-2.5">
-      <div class="grid grid-cols-3 gap-1.5 bg-black/25 p-1 rounded-xl">
+      <div class="grid grid-cols-2 gap-1.5 bg-black/25 p-1 rounded-xl">
         <button id="tab-revise" onclick="window.app.setSection('revise')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
           <span>📖 Revise (52)</span>
-        </button>
-        <button id="tab-questions" onclick="window.app.setSection('questions')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
-          <span>🎯 Questions (26)</span>
         </button>
         <button id="tab-arcade" onclick="window.app.setSection('arcade')" class="py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1">
           <span>🎮 Minigames</span>
@@ -87,21 +75,21 @@
       <div id="topic-bar" class="max-w-4xl mx-auto px-4 py-2 flex space-x-2 overflow-x-auto no-scrollbar"></div>
     </div>
 
-    <!-- SCOPED CHAPTER BAR: v2.1 SECTIONAL DROPDOWN ON THE LEFT + HORIZONTAL BUTTONS ON THE RIGHT -->
+    <!-- SCOPED CHAPTER BAR: v2.4 DYNAMIC DROPDOWN ON THE LEFT + SCOPED CHAPTER BUTTONS ON THE RIGHT -->
     <div class="border-t border-white/5 bg-black/25">
       <div class="max-w-4xl mx-auto px-4 py-1.5 flex items-center space-x-2">
-        <!-- Left: Sectional Chapter Dropdown -->
+        <!-- Left: Sectional Chapter Dropdown (Includes "All 26 Chapters" reset + Topic/Chapter options) -->
         <div class="relative shrink-0">
           <select
             id="subtopic-select"
-            aria-label="Select Chapter"
-            onchange="window.app.setSubtopic(this.value)"
-            class="bg-slate-900/90 text-amber-300 border border-amber-400/40 rounded-lg px-2.5 py-1 text-[11px] font-semibold focus:outline-none focus:border-amber-400 max-w-[175px] sm:max-w-[220px] truncate cursor-pointer shadow-sm"
+            aria-label="Select Chapter or Scope"
+            onchange="window.app.handleDropdownChange(this.value)"
+            class="bg-slate-900/90 text-amber-300 border border-amber-400/40 rounded-lg px-2.5 py-1 text-[11px] font-semibold focus:outline-none focus:border-amber-400 max-w-[180px] sm:max-w-[230px] truncate cursor-pointer shadow-sm"
           ></select>
         </div>
         <!-- Divider -->
         <span class="text-white/20 text-xs select-none">|</span>
-        <!-- Right: Quick Horizontal Chapter Buttons (starts with "All 26 Chapters" button) -->
+        <!-- Right: Neighboring Chapter Buttons (Dynamically scoped by dropdown selection; no duplicate "All" button) -->
         <div id="subtopic-bar" class="flex space-x-1.5 overflow-x-auto no-scrollbar flex-1 items-center"></div>
       </div>
     </div>
@@ -269,24 +257,16 @@
     // 2. AUDITED & MATHEMATICALLY VERIFIED INLINE SVG DIAGRAMS
     // =========================================================================
     const SVG_DIAGRAMS = {
-      // FIXED: Quadratic Parabola y = a(x - α)(x - β)
-      // X-axis at y=52; curve M 85 14 Q 165 130 245 14 crosses y=52 at x=117 (α) and x=213 (β)
-      // Axis of symmetry at x=165; exact minimum vertex at (165, 72)
+      // Quadratic Parabola y = a(x - α)(x - β)
       parabola_roots: `
         <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <!-- X-axis (y = 0) and Y-axis -->
           <line x1="25" y1="52" x2="295" y2="52" stroke="#94a3b8" stroke-width="1.3"/>
           <line x1="65" y1="10" x2="65" y2="90" stroke="#64748b" stroke-width="1.2"/>
-          <!-- Axis of Symmetry x = -b/(2a) -->
           <line x1="165" y1="12" x2="165" y2="88" stroke="#f43f5e" stroke-width="1.1" stroke-dasharray="3,3"/>
-          <!-- Parabola Curve (a > 0, D > 0) -->
           <path d="M 85 14 Q 165 130 245 14" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
-          <!-- Roots α and β on X-axis (y=52) -->
           <circle cx="117" cy="52" r="3.8" fill="#fbbf24"/>
           <circle cx="213" cy="52" r="3.8" fill="#fbbf24"/>
-          <!-- Exact Vertex Minimum at (165, 72) -->
           <circle cx="165" cy="72" r="4" fill="#f43f5e"/>
-          <!-- Labels -->
           <text x="108" y="45" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">α</text>
           <text x="217" y="45" fill="#fde68a" font-size="10" font-weight="bold" font-family="monospace">β</text>
           <text x="172" y="85" fill="#fda4af" font-size="9.5" font-family="monospace">Vertex (-b/2a, -D/4a)</text>
@@ -325,7 +305,6 @@
       triangle_centroid: `
         <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
           <polygon points="155,10 65,82 245,82" fill="none" stroke="#a5b4fc" stroke-width="2"/>
-          <!-- 3 Medians intersecting at G(155, 58) -->
           <line x1="155" y1="10" x2="155" y2="82" stroke="#fbbf24" stroke-width="2"/>
           <line x1="65" y1="82" x2="200" y2="46" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
           <line x1="245" y1="82" x2="110" y2="46" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
@@ -340,15 +319,10 @@
         </svg>`,
 
       // Circle Secant-Tangent Power Theorem: PT² = PA × PB
-      // Circle center (210, 49), R=36. External point P(50, 75).
-      // Secant line from P(50,75) through A(175.3, 57.9) to B(245.5, 48.3) — strictly collinear!
-      // Tangent line from P(50,75) to T(196, 15.8) where CT ⊥ PT.
       circle_secant: `
         <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
           <circle cx="210" cy="49" r="36" fill="#38bdf8" fill-opacity="0.08" stroke="#38bdf8" stroke-width="2"/>
-          <!-- Tangent Segment PT -->
           <line x1="50" y1="75" x2="196" y2="15.8" stroke="#fbbf24" stroke-width="2.2"/>
-          <!-- Collinear Secant Line P -> A -> B -->
           <line x1="50" y1="75" x2="245.5" y2="48.3" stroke="#a5b4fc" stroke-width="2"/>
           <circle cx="50" cy="75" r="3.5" fill="#ffffff"/>
           <circle cx="196" cy="15.8" r="3.5" fill="#fbbf24"/>
@@ -364,29 +338,22 @@
       // Mensuration 1 : 2 : 3 Volume Ratio (Cone : Hemisphere : Cylinder with r = h)
       mensuration_123: `
         <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <!-- Cone (h = r) -->
           <polygon points="55,26 30,72 80,72" fill="#fbbf24" fill-opacity="0.2" stroke="#fbbf24" stroke-width="1.8"/>
           <ellipse cx="55" cy="72" rx="25" ry="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
           <text x="31" y="90" fill="#fde68a" font-size="9.5" font-family="monospace">Cone (1)</text>
-          <!-- Hemisphere (h = r) -->
           <path d="M 133 72 A 25 25 0 0 1 183 72" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1.8"/>
           <ellipse cx="158" cy="72" rx="25" ry="6" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
           <text x="133" y="90" fill="#7dd3fc" font-size="9.5" font-family="monospace">Hemi (2)</text>
-          <!-- Cylinder (h = r) -->
           <rect x="233" y="26" width="50" height="46" fill="#a5b4fc" fill-opacity="0.2" stroke="#a5b4fc" stroke-width="1.8"/>
           <ellipse cx="258" cy="26" rx="25" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
           <ellipse cx="258" cy="72" rx="25" ry="6" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>
           <text x="236" y="90" fill="#c7d2fe" font-size="9.5" font-family="monospace">Cyl (3)</text>
         </svg>`,
 
-      // Co-ordinate Reflection across Mirror Line ax + by + c = 0 (Strictly 90° perpendicular)
-      // Mirror line from (50, 74) to (250, 24) has slope -1/4.
-      // Perpendicular segment from P(143, 21) through Foot M(150, 49) to Image P'(157, 77) has slope +4.
+      // Co-ordinate Reflection across Mirror Line ax + by + c = 0
       coord_reflection: `
         <svg viewBox="0 0 320 98" class="w-full h-24 rounded-xl bg-slate-950/60 border border-indigo-400/25 p-1.5">
-          <!-- Mirror Line ax + by + c = 0 -->
           <line x1="50" y1="74" x2="250" y2="24" stroke="#38bdf8" stroke-width="2.2"/>
-          <!-- Perpendicular Segment P -> M -> P' -->
           <line x1="143" y1="21" x2="157" y2="77" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="3,3"/>
           <circle cx="143" cy="21" r="3.5" fill="#fbbf24"/>
           <circle cx="150" cy="49" r="3.2" fill="#ffffff"/>
@@ -478,7 +445,6 @@
       // -----------------------------------------------------------------------
       // TOPIC 1: ALGEBRA (10 Chapters -> 20 Cards)
       // -----------------------------------------------------------------------
-      // Ch 1: Simple Equations (Booklet 1, Ch 1)
       {
         id: "c_se_1",
         topic: "Algebra",
@@ -507,8 +473,6 @@
         ],
         hook: "Swapped coefficients? Add & subtract. Reversed digits? Factor out 9."
       },
-
-      // Ch 2: Special Equations (Booklet 3, Ch 1)
       {
         id: "c_spe_1",
         topic: "Algebra",
@@ -537,8 +501,6 @@
         ],
         hook: "Bound k on both ends; watch zero vs positive integer wording."
       },
-
-      // Ch 3: Quadratic Equations (Booklet 3, Ch 2)
       {
         id: "c_qe_1",
         topic: "Algebra",
@@ -568,8 +530,6 @@
         ],
         hook: "Reciprocal roots flip a and c; always check D ≥ 0 before claiming real roots."
       },
-
-      // Ch 4: Inequalities and Modulus (Booklet 3, Ch 3)
       {
         id: "c_im_1",
         topic: "Algebra",
@@ -599,8 +559,6 @@
         ],
         hook: "Sum of absolute distances hits its floor at the median point."
       },
-
-      // Ch 5: Sequences and Series (Booklet 3, Ch 4)
       {
         id: "c_ss_1",
         topic: "Algebra",
@@ -629,8 +587,6 @@
         ],
         hook: "Split denominator product by the gap d; watch inner terms cancel."
       },
-
-      // Ch 6: Functions (Booklet 3, Ch 5)
       {
         id: "c_fn_1",
         topic: "Algebra",
@@ -659,8 +615,6 @@
         ],
         hook: "Spot the functional pattern, substitute the known template, and solve the power."
       },
-
-      // Ch 7: Graphs (Booklet 3, Ch 6)
       {
         id: "c_gr_1",
         topic: "Algebra",
@@ -690,8 +644,6 @@
         ],
         hook: "|f(x)| bounces the bottom up; |x|+|y|=a encloses area 2a²."
       },
-
-      // Ch 8: Indices – Surds (Booklet 3, Ch 7)
       {
         id: "c_is_1",
         topic: "Algebra",
@@ -720,8 +672,6 @@
         ],
         hook: "Consecutive factors n(n+1)? Plus picks (n+1), Minus picks n."
       },
-
-      // Ch 9: Logarithms (Booklet 3, Ch 8)
       {
         id: "c_log_1",
         topic: "Algebra",
@@ -750,8 +700,6 @@
         ],
         hook: "Base power goes to the bottom; fractional base (<1) flips the inequality."
       },
-
-      // Ch 10: Operator Based Questions (Booklet 2, Ch 8)
       {
         id: "c_op_1",
         topic: "Algebra",
@@ -784,7 +732,6 @@
       // -----------------------------------------------------------------------
       // TOPIC 2: NUMBER THEORY (3 Chapters -> 6 Cards)
       // -----------------------------------------------------------------------
-      // Ch 11: Numbers – I (Booklet 2, Ch 1)
       {
         id: "c_n1_1",
         topic: "Number Theory",
@@ -813,8 +760,6 @@
         ],
         hook: "Add 1 to prime powers for factor count; zero sum collapses cubes to 3abc."
       },
-
-      // Ch 12: Numbers – II (Booklet 2, Ch 2)
       {
         id: "c_n2_1",
         topic: "Number Theory",
@@ -843,8 +788,6 @@
         ],
         hook: "Coprime base? Chop exponent mod φ(n). Cancel factor k? Multiply remainder by k."
       },
-
-      // Ch 13: Number Systems (Booklet 2, Ch 3)
       {
         id: "c_ns_1",
         topic: "Number Theory",
@@ -877,7 +820,6 @@
       // -----------------------------------------------------------------------
       // TOPIC 3: GEOMETRY (4 Chapters -> 8 Cards)
       // -----------------------------------------------------------------------
-      // Ch 14: Geometry (Booklet 2, Ch 4)
       {
         id: "c_geo_1",
         topic: "Geometry",
@@ -908,8 +850,6 @@
         ],
         hook: "Tangent squared equals Outside piece (PA) times Whole secant (PB)."
       },
-
-      // Ch 15: Mensuration (Booklet 2, Ch 5)
       {
         id: "c_men_1",
         topic: "Geometry",
@@ -939,8 +879,6 @@
         ],
         hook: "Same radius & height r? Cone : Hemisphere : Cylinder volumes go 1 : 2 : 3."
       },
-
-      // Ch 16: Co-ordinate Geometry (Booklet 2, Ch 6)
       {
         id: "c_cg_1",
         topic: "Geometry",
@@ -970,8 +908,6 @@
         ],
         hook: "k=1 lands on the mirror (Foot); k=2 jumps across the mirror (Image)."
       },
-
-      // Ch 17: Trigonometry (Booklet 2, Ch 7)
       {
         id: "c_trig_1",
         topic: "Geometry",
@@ -1006,7 +942,6 @@
       // -----------------------------------------------------------------------
       // TOPIC 4: RATIO & MIXTURES (2 Chapters -> 4 Cards)
       // -----------------------------------------------------------------------
-      // Ch 18: Ratio – Proportion – Variation (Booklet 1, Ch 2)
       {
         id: "c_rpv_1",
         topic: "Ratio & Mixtures",
@@ -1035,8 +970,6 @@
         ],
         hook: "Sum over Difference untangles x and y; cyclic ratios have two answers (1/2 or -1)."
       },
-
-      // Ch 19: Averages – Mixtures – Alligations (Booklet 1, Ch 7)
       {
         id: "c_ama_1",
         topic: "Ratio & Mixtures",
@@ -1070,7 +1003,6 @@
       // -----------------------------------------------------------------------
       // TOPIC 5: ARITHMETIC (4 Chapters -> 8 Cards)
       // -----------------------------------------------------------------------
-      // Ch 20: Percentages – Profit & Loss – Partnerships (Booklet 1, Ch 3)
       {
         id: "c_ppl_1",
         topic: "Arithmetic",
@@ -1099,8 +1031,6 @@
         ],
         hook: "Dishonest scale denominator is ALWAYS the actual weight that leaves the shop."
       },
-
-      // Ch 21: Simple Interest and Compound Interest (Booklet 1, Ch 4)
       {
         id: "c_sici_1",
         topic: "Arithmetic",
@@ -1129,8 +1059,6 @@
         ],
         hook: "2-Yr gap is P(R/100)²; 3-Yr gap multiplies that by (3 + R/100)."
       },
-
-      // Ch 22: Time and Distance (Booklet 1, Ch 5)
       {
         id: "c_td_1",
         topic: "Arithmetic",
@@ -1160,8 +1088,6 @@
         ],
         hook: "Post-meeting times flip under a square root; reduce track speeds to coprime integers first."
       },
-
-      // Ch 23: Time and Work (Booklet 1, Ch 6)
       {
         id: "c_tw_1",
         topic: "Arithmetic",
@@ -1194,7 +1120,6 @@
       // -----------------------------------------------------------------------
       // TOPIC 6: MODERN MATH (3 Chapters -> 6 Cards)
       // -----------------------------------------------------------------------
-      // Ch 24: Permutations and Combinations (Booklet 3, Ch 9)
       {
         id: "c_pc_1",
         topic: "Modern Math",
@@ -1223,8 +1148,6 @@
         ],
         hook: "Identical coins to r beggars: (n+r−1)C(r−1); memorize D₄ = 9 and D₅ = 44."
       },
-
-      // Ch 25: Probability (Booklet 3, Ch 10)
       {
         id: "c_prob_1",
         topic: "Modern Math",
@@ -1254,8 +1177,6 @@
         ],
         hook: "Bayes = (Target Branch) / (Sum of All Branches reaching the observed outcome)."
       },
-
-      // Ch 26: Statistics (Booklet 2, Ch 9)
       {
         id: "c_stat_1",
         topic: "Modern Math",
@@ -1288,325 +1209,7 @@
     ];
 
     // =========================================================================
-    // 4. SEED QUESTIONS (26 Interactive MCQs — 1 per Chapter across all 26 Chapters)
-    // =========================================================================
-    const SEED_QUESTIONS = [
-      {
-        id: "q_se_1",
-        topic: "Algebra",
-        subtopic: "Simple Equations",
-        difficulty: "Easy",
-        question: "For what value of k will the system of linear equations 3x + 4y = 12 and 6x + ky = 20 have NO solution?",
-        options: ["4", "6", "8", "10"],
-        correctIndex: 2,
-        shortcut: "No solution requires parallel non-coincident lines: a₁/a₂ = b₁/b₂ ≠ c₁/c₂ ⇒ 3/6 = 4/k ≠ 12/20 ⇒ k = 8.",
-        trap: "Not checking that 12/20 ≠ 1/2 (if constant ratio also matched, there would be infinitely many solutions).",
-        concept_ref: "c_se_1"
-      },
-      {
-        id: "q_spe_1",
-        topic: "Algebra",
-        subtopic: "Special Equations",
-        difficulty: "Medium",
-        question: "How many positive integer solutions (x, y ≥ 1) satisfy the equation 3x + 7y = 95?",
-        options: ["3", "4", "5", "6"],
-        correctIndex: 1,
-        shortcut: "Find first positive y: 95 − 7y ≡ 0 (mod 3) ⇒ 2 − y ≡ 0 (mod 3) ⇒ y₀ = 2 (gives x₀ = 27). Step y by +3: y ∈ {2, 5, 8, 11}, giving x ∈ {27, 20, 13, 6} → 4 positive integer solutions.",
-        trap: "Missing the boundary solution or including x = 0 when strictly positive integers are required.",
-        concept_ref: "c_spe_2"
-      },
-      {
-        id: "q_qe_1",
-        topic: "Algebra",
-        subtopic: "Quadratic Equations",
-        difficulty: "Medium",
-        question: "If α and β are the roots of x² − 5x + 3 = 0, what is the quadratic equation whose roots are 1/α and 1/β?",
-        options: ["3x² − 5x + 1 = 0", "3x² + 5x + 1 = 0", "x² − 3x + 5 = 0", "3x² − x + 5 = 0"],
-        correctIndex: 0,
-        shortcut: "To form the equation with reciprocal roots (1/α, 1/β), simply swap the first and last coefficients (a ↔ c): 3x² − 5x + 1 = 0.",
-        trap: "Flipping the middle sign −5x to +5x unnecessarily.",
-        concept_ref: "c_qe_2"
-      },
-      {
-        id: "q_im_1",
-        topic: "Algebra",
-        subtopic: "Inequalities and Modulus",
-        difficulty: "Easy",
-        question: "What is the minimum possible value of f(x) = |x − 3| + |x − 7| + |x − 12| for real x?",
-        options: ["4", "7", "9", "12"],
-        correctIndex: 2,
-        shortcut: "Minimum of ∑|x − aᵢ| occurs at the median of {3, 7, 12}, which is x = 7. Plugging x = 7 gives |7−3| + 0 + |7−12| = 4 + 5 = 9.",
-        trap: "Taking the arithmetic mean (3+7+12)/3 = 7.33 instead of the median x = 7.",
-        concept_ref: "c_im_2"
-      },
-      {
-        id: "q_ss_1",
-        topic: "Algebra",
-        subtopic: "Sequences and Series",
-        difficulty: "Medium",
-        question: "If the Arithmetic Mean and Harmonic Mean of two positive numbers are 16 and 9 respectively, what is their Geometric Mean?",
-        options: ["12", "12.5", "13", "144"],
-        correctIndex: 0,
-        shortcut: "For any two positive numbers, G² = A × H = 16 × 9 = 144 ⇒ G = 12.",
-        trap: "Averaging 16 and 9 to get 12.5 or forgetting to take the square root of 144.",
-        concept_ref: "c_ss_2"
-      },
-      {
-        id: "q_fn_1",
-        topic: "Algebra",
-        subtopic: "Functions",
-        difficulty: "Medium",
-        question: "If f(x) = (3x + 5) / (2x − 3) for x ≠ 1.5, what is the value of f(f(2026))?",
-        options: ["1.5", "3/2", "2026", "4052"],
-        correctIndex: 2,
-        shortcut: "Since f(x) is of the self-inverse form (ax + b)/(cx − a), f(f(x)) = x identically for all valid x. Hence f(f(2026)) = 2026.",
-        trap: "Actually plugging 2026 into (3x+5)/(2x−3) and doing heavy arithmetic.",
-        concept_ref: "c_fn_2"
-      },
-      {
-        id: "q_gr_1",
-        topic: "Algebra",
-        subtopic: "Graphs",
-        difficulty: "Easy",
-        question: "What is the area of the region enclosed by the graph of |x − 4| + |y + 2| ≤ 6 on the coordinate plane?",
-        options: ["36", "72", "18", "144"],
-        correctIndex: 1,
-        shortcut: "Shifting the center to (4, −2) does not change the area. For |X| + |Y| ≤ a, Area = 2a² = 2 × 6² = 72.",
-        trap: "Using a² = 36 instead of 2a² = 72.",
-        concept_ref: "c_gr_2"
-      },
-      {
-        id: "q_is_1",
-        topic: "Algebra",
-        subtopic: "Indices – Surds",
-        difficulty: "Easy",
-        question: "Evaluate the infinite nested radical: √(30 + √(30 + √(30 + …)))",
-        options: ["5", "6", "7.5", "15"],
-        correctIndex: 1,
-        shortcut: "Factor 30 into consecutive integers: 30 = 5 × 6. Since the sign is '+', the value is the larger factor, 6.",
-        trap: "Picking the smaller factor 5 (which corresponds to the '−' nested radical).",
-        concept_ref: "c_is_2"
-      },
-      {
-        id: "q_log_1",
-        topic: "Algebra",
-        subtopic: "Logarithms",
-        difficulty: "Medium",
-        question: "Evaluate: log₈(128) + log₂₇(81)",
-        options: ["3", "31/9", "11/3", "4"],
-        correctIndex: 2,
-        shortcut: "Write as prime powers: log_(2³)(2⁷) + log_(3³)(3⁴) = (7/3)·log₂(2) + (4/3)·log₃(3) = 7/3 + 4/3 = 11/3.",
-        trap: "Inverting the power ratio as 3/7 + 3/4.",
-        concept_ref: "c_log_2"
-      },
-      {
-        id: "q_op_1",
-        topic: "Algebra",
-        subtopic: "Operator Based Questions",
-        difficulty: "Medium",
-        question: "An operation is defined on real numbers as a @ b = a + b + ab. What is the identity element 'e' for this operation?",
-        options: ["0", "1", "−1", "Does not exist"],
-        correctIndex: 0,
-        shortcut: "Set a @ e = a ⇒ a + e + ae = a ⇒ e(1 + a) = 0 ⇒ e = 0.",
-        trap: "Assuming multiplication-like operators always have identity 1.",
-        concept_ref: "c_op_1"
-      },
-      {
-        id: "q_n1_1",
-        topic: "Number Theory",
-        subtopic: "Numbers – I",
-        difficulty: "Medium",
-        question: "If a = 25, b = −15, and c = −10, what is the value of (a³ + b³ + c³ − 3abc) / (a² + b² + c²)?",
-        options: ["0", "1", "3", "3750"],
-        correctIndex: 0,
-        shortcut: "Check sum first: a + b + c = 25 − 15 − 10 = 0. By Euler's Cubic Identity, a³ + b³ + c³ − 3abc = 0.",
-        trap: "Computing 25³ manually instead of checking whether a + b + c = 0.",
-        concept_ref: "c_n1_2"
-      },
-      {
-        id: "q_n2_1",
-        topic: "Number Theory",
-        subtopic: "Numbers – II",
-        difficulty: "Medium",
-        question: "What is the remainder when 3¹⁰² is divided by 101?",
-        options: ["1", "3", "9", "92"],
-        correctIndex: 2,
-        shortcut: "101 is prime. By Fermat's Little Theorem, 3¹⁰⁰ ≡ 1 (mod 101). Thus 3¹⁰² = 3¹⁰⁰ × 3² ≡ 1 × 9 = 9 (mod 101).",
-        trap: "Reducing the exponent mod 101 instead of mod (p − 1) = 100.",
-        concept_ref: "c_n2_2"
-      },
-      {
-        id: "q_ns_1",
-        topic: "Number Theory",
-        subtopic: "Number Systems",
-        difficulty: "Easy",
-        question: "In base 8 (octal), the number (3k54)₈ is divisible by 7. What is the digit k?",
-        options: ["1", "2", "4", "6"],
-        correctIndex: 1,
-        shortcut: "In Base 8, divisibility by (8 − 1) = 7 requires the sum of digits to be a multiple of 7: 3 + k + 5 + 4 = 12 + k = 14 ⇒ k = 2.",
-        trap: "Converting the entire number to base 10 before dividing by 7.",
-        concept_ref: "c_ns_2"
-      },
-      {
-        id: "q_geo_1",
-        topic: "Geometry",
-        subtopic: "Geometry",
-        difficulty: "Medium",
-        question: "From external point P, a tangent PT of length 12 cm and a secant PAB are drawn to a circle. If PA = 8 cm, what is the length of chord AB?",
-        options: ["10 cm", "12 cm", "16 cm", "18 cm"],
-        correctIndex: 0,
-        shortcut: "By Secant-Tangent Power: PT² = PA × PB ⇒ 144 = 8 × PB ⇒ PB = 18 cm. Chord AB = PB − PA = 18 − 8 = 10 cm.",
-        trap: "Picking PB = 18 cm directly without subtracting the external segment PA = 8 cm.",
-        concept_ref: "c_geo_2"
-      },
-      {
-        id: "q_men_1",
-        topic: "Geometry",
-        subtopic: "Mensuration",
-        difficulty: "Easy",
-        question: "A cone, a hemisphere, and a cylinder stand on equal circular bases of radius r and have the same height r. What is the ratio of their volumes?",
-        options: ["1 : 2 : 3", "1 : 3 : 2", "1 : √2 : √3", "2 : 3 : 4"],
-        correctIndex: 0,
-        shortcut: "With height h = r: V_cone = (1/3)πr³, V_hemi = (2/3)πr³, V_cyl = πr³ = (3/3)πr³ ⇒ Ratio = 1 : 2 : 3.",
-        trap: "Using total sphere volume (4/3)πr³ instead of hemisphere (2/3)πr³.",
-        concept_ref: "c_men_2"
-      },
-      {
-        id: "q_cg_1",
-        topic: "Geometry",
-        subtopic: "Co-ordinate Geometry",
-        difficulty: "Medium",
-        question: "What is the perpendicular distance between the parallel lines 3x + 4y − 7 = 0 and 6x + 8y + 16 = 0?",
-        options: ["2", "3", "4.6", "5"],
-        correctIndex: 1,
-        shortcut: "First match coefficients by dividing the 2nd equation by 2: 3x + 4y + 8 = 0. Now d = |c₁ − c₂| / √(3² + 4²) = |−7 − 8| / 5 = 15 / 5 = 3.",
-        trap: "Using c₂ = 16 without matching x and y coefficients first.",
-        concept_ref: "c_cg_2"
-      },
-      {
-        id: "q_trig_1",
-        topic: "Geometry",
-        subtopic: "Trigonometry",
-        difficulty: "Easy",
-        question: "What is the maximum possible value of 5 sin θ − 12 cos θ for any real angle θ?",
-        options: ["7", "12", "13", "17"],
-        correctIndex: 2,
-        shortcut: "Max of a·sin θ + b·cos θ is √(a² + b²) = √(5² + (−12)²) = √169 = 13.",
-        trap: "Adding the absolute coefficients 5 + 12 = 17.",
-        concept_ref: "c_trig_2"
-      },
-      {
-        id: "q_rpv_1",
-        topic: "Ratio & Mixtures",
-        subtopic: "Ratio – Proportion – Variation",
-        difficulty: "Medium",
-        question: "If (3x + 5y) / (3x − 5y) = 7 / 3, what is the ratio x : y?",
-        options: ["25 : 6", "5 : 2", "15 : 7", "6 : 25"],
-        correctIndex: 0,
-        shortcut: "By Componendo-Dividendo: (3x)/(5y) = (7 + 3)/(7 − 3) = 10/4 = 5/2 ⇒ x/y = (5/2) × (5/3) = 25/6.",
-        trap: "Stopping at 3x/5y = 5/2 without multiplying by 5/3.",
-        concept_ref: "c_rpv_2"
-      },
-      {
-        id: "q_ama_1",
-        topic: "Ratio & Mixtures",
-        subtopic: "Averages – Mixtures – Alligations",
-        difficulty: "Medium",
-        question: "From a cask full of pure wine, 8 liters are drawn and replaced with water 4 times in total. The final ratio of wine to water is 16 : 65. Find the capacity of the cask.",
-        options: ["24 L", "32 L", "40 L", "48 L"],
-        correctIndex: 0,
-        shortcut: "Wine / Total = 16 / (16 + 65) = 16/81 = (2/3)⁴. Thus 1 − 8/V = 2/3 ⇒ 8/V = 1/3 ⇒ V = 24 L.",
-        trap: "Using 16/65 instead of 16/(16+65) = 16/81.",
-        concept_ref: "c_ama_2"
-      },
-      {
-        id: "q_ppl_1",
-        topic: "Arithmetic",
-        subtopic: "Percentages – Profit & Loss – Partnerships",
-        difficulty: "Medium",
-        question: "A dishonest dealer claims to sell goods at cost price but uses a false weight of 800g for 1 kg. What is his actual profit percentage?",
-        options: ["20%", "22.5%", "25%", "80%"],
-        correctIndex: 2,
-        shortcut: "He charges for 1000g while dispensing only 800g. Profit % = (200 / 800) × 100 = 25%.",
-        trap: "Dividing by 1000g instead of actual cost weight (800g) and picking 20%.",
-        concept_ref: "c_ppl_2"
-      },
-      {
-        id: "q_sici_1",
-        topic: "Arithmetic",
-        subtopic: "Simple Interest and Compound Interest",
-        difficulty: "Easy",
-        question: "The difference between Compound Interest and Simple Interest on a certain sum at 10% per annum for 2 years is ₹65. Find the principal.",
-        options: ["₹6,500", "₹5,000", "₹6,000", "₹13,000"],
-        correctIndex: 0,
-        shortcut: "2-Yr (CI − SI) = P(R/100)² ⇒ 65 = P(10/100)² = P/100 ⇒ P = ₹6,500.",
-        trap: "Using R/100 instead of (R/100)².",
-        concept_ref: "c_sici_2"
-      },
-      {
-        id: "q_td_1",
-        topic: "Arithmetic",
-        subtopic: "Time and Distance",
-        difficulty: "Medium",
-        question: "Trains A and B start simultaneously from X and Y toward each other. After passing each other, A takes 9 hours to reach Y and B takes 4 hours to reach X. If A's speed is 40 km/hr, find B's speed.",
-        options: ["50 km/hr", "60 km/hr", "80 km/hr", "90 km/hr"],
-        correctIndex: 1,
-        shortcut: "S_A / S_B = √(t_B / t_A) = √(4 / 9) = 2 / 3. Since S_A = 40, S_B = 40 × (3/2) = 60 km/hr.",
-        trap: "Using the direct ratio 9 : 4 without taking the square root.",
-        concept_ref: "c_td_2"
-      },
-      {
-        id: "q_tw_1",
-        topic: "Arithmetic",
-        subtopic: "Time and Work",
-        difficulty: "Medium",
-        question: "A alone takes 16 days more than (A + B) together to complete a job, while B alone takes 9 days more than (A + B) together. How many days do (A + B) take together?",
-        options: ["10 days", "12 days", "12.5 days", "14 days"],
-        correctIndex: 1,
-        shortcut: "Combined time T_(A+B) = √(a × b) = √(16 × 9) = 12 days.",
-        trap: "Taking the arithmetic average (16 + 9)/2 = 12.5 days.",
-        concept_ref: "c_tw_2"
-      },
-      {
-        id: "q_pc_1",
-        topic: "Modern Math",
-        subtopic: "Permutations and Combinations",
-        difficulty: "Medium",
-        question: "In how many ways can 10 identical chocolates be distributed among 4 children such that every child gets at least 1 chocolate?",
-        options: ["84", "120", "210", "286"],
-        correctIndex: 0,
-        shortcut: "Positive integral solutions (xᵢ ≥ 1) to x₁ + x₂ + x₃ + x₄ = 10 is ⁿ⁻¹C_(r−1) = ⁹C₃ = (9 × 8 × 7) / (3 × 2 × 1) = 84.",
-        trap: "Using ⁿ⁺ʳ⁻¹C_(r−1) = ¹³C₃ = 286 (which allows children to receive 0 chocolates).",
-        concept_ref: "c_pc_2"
-      },
-      {
-        id: "q_prob_1",
-        topic: "Modern Math",
-        subtopic: "Probability",
-        difficulty: "Easy",
-        question: "Three students A, B, and C can independently solve a problem with probabilities 1/2, 1/3, and 1/4 respectively. What is the probability that the problem will be solved?",
-        options: ["1/4", "3/4", "13/24", "23/24"],
-        correctIndex: 1,
-        shortcut: "P(Solved) = 1 − P(None) = 1 − (1 − 1/2)(1 − 1/3)(1 − 1/4) = 1 − (1/2)(2/3)(3/4) = 1 − 1/4 = 3/4.",
-        trap: "Adding 1/2 + 1/3 + 1/4 directly.",
-        concept_ref: "c_prob_1"
-      },
-      {
-        id: "q_stat_1",
-        topic: "Modern Math",
-        subtopic: "Statistics",
-        difficulty: "Easy",
-        question: "The standard deviation of 15 observations is 6. If each observation is multiplied by 2 and then increased by 10, what is the new standard deviation?",
-        options: ["6", "12", "22", "24"],
-        correctIndex: 1,
-        shortcut: "Adding +10 has zero effect on Standard Deviation. Multiplying by 2 scales SD by |2|: New SD = 2 × 6 = 12.",
-        trap: "Adding 10 to get 2 × 6 + 10 = 22.",
-        concept_ref: "c_stat_2"
-      }
-    ];
-
-    // =========================================================================
-    // 5. STATE MANAGEMENT & STRICT FILTER SYNC (quantbyprof_v2_state)
+    // 4. STATE MANAGEMENT & DYNAMIC FILTER SYNC (quantbyprof_v2_state)
     // =========================================================================
     const STORAGE_KEY = "quantbyprof_v2_state";
 
@@ -1614,8 +1217,6 @@
       savedConcepts: [],
       reviseQueue: [],
       masteredConcepts: [],
-      savedQuestions: [],
-      questionStatus: {},
       customConcepts: [],
       arcade: {
         xp: 0,
@@ -1628,20 +1229,16 @@
     class QuantApp {
       constructor() {
         this.state = this.loadState();
-        this.section = "revise";     // 'revise' | 'questions' | 'arcade'
-        this.topic = "All";          // Parent Topic pill
-        this.subtopic = "All";       // Scoped Chapter selection (Dropdown + Pill bar)
+        this.section = "revise";     // 'revise' | 'arcade'
+        this.topic = "All";          // Parent Topic ('All' or one of the 6 core topics)
+        this.subtopic = "All";       // Scoped Chapter selection
         this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
         this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
-        this.questionSub = "all";    // 'all' | 'unattempted' | 'retry' | 'saved' | 'correct'
         this.arcadeGame = "blitz";   // 'blitz' | 'survival' | 'traphunter'
-
-        this.selectedAnswers = {};
-        this.openShortcuts = {};
 
         this.activeTimer = null;
         this.blitzState = { active: false, timeLeft: 60, score: 0, streak: 0, current: null, feedback: null };
-        this.survivalState = { active: false, hearts: 3, timeLeft: 60, score: 0, streak: 0, qIndex: 0, deck: [], answered: null };
+        this.survivalState = { active: false, hearts: 3, timeLeft: 60, score: 0, streak: 0, round: null, answered: null };
         this.trapState = { active: false, index: 0, deck: [], revealed: false, timeLeft: 10, nailedCount: 0 };
 
         this.populateModalSubtopics();
@@ -1704,22 +1301,6 @@
         return list;
       }
 
-      getTopicScopedQuestions() {
-        let list = [...SEED_QUESTIONS];
-        if (this.topic !== "All") list = list.filter(q => q.topic === this.topic);
-        if (this.subtopic !== "All") list = list.filter(q => q.subtopic === this.subtopic);
-        return list;
-      }
-
-      getFilteredQuestions() {
-        let list = this.getTopicScopedQuestions();
-        if (this.questionSub === "unattempted") list = list.filter(q => !this.state.questionStatus[q.id]);
-        if (this.questionSub === "retry") list = list.filter(q => this.state.questionStatus[q.id] === "retry");
-        if (this.questionSub === "saved") list = list.filter(q => this.state.savedQuestions.includes(q.id));
-        if (this.questionSub === "correct") list = list.filter(q => this.state.questionStatus[q.id] === "correct");
-        return list;
-      }
-
       clearTimers() {
         if (this.activeTimer) {
           clearInterval(this.activeTimer);
@@ -1728,7 +1309,7 @@
       }
 
       // =======================================================================
-      // NAVIGATION, STRICT FILTER SYNC & THEME SWITCHING
+      // NAVIGATION, DROPDOWN <-> NEIGHBORING BUTTONS SYNC & THEME SWITCHING
       // =======================================================================
       setSection(sec) {
         this.clearTimers();
@@ -1739,14 +1320,11 @@
 
         const body = document.body;
         const header = document.getElementById("app-header");
-        body.classList.remove("theme-revise", "theme-questions", "theme-arcade");
+        body.classList.remove("theme-revise", "theme-arcade");
 
         if (sec === "revise") {
           body.classList.add("theme-revise");
           header.className = "sticky top-0 z-40 shadow-md transition-colors duration-300 bg-[#1e1b4b] text-white";
-        } else if (sec === "questions") {
-          body.classList.add("theme-questions");
-          header.className = "sticky top-0 z-40 shadow-md transition-colors duration-300 questions-header-gradient text-white";
         } else {
           body.classList.add("theme-arcade");
           header.className = "sticky top-0 z-40 shadow-md transition-colors duration-300 arcade-gradient text-white";
@@ -1757,7 +1335,6 @@
 
       setTopic(t) {
         this.topic = t;
-        // Strict sync: Reset subtopic if it does not belong to the newly selected parent topic
         const validSubs = this.getAvailableSubtopics();
         if (this.subtopic !== "All" && !validSubs.includes(this.subtopic)) {
           this.subtopic = "All";
@@ -1765,13 +1342,41 @@
         this.renderAll();
       }
 
+      // Handles selections from the left dropdown (#subtopic-select)
+      // - "All": Resets both topic & subtopic ("All 26 Chapters")
+      // - "TOPIC:<TopicName>": Scopes neighboring buttons to that Topic's chapters
+      // - "<ChapterName>": Scopes neighboring buttons to that Chapter's parent topic AND highlights the chapter
+      handleDropdownChange(val) {
+        if (val === "All") {
+          this.topic = "All";
+          this.subtopic = "All";
+        } else if (val.startsWith("TOPIC:")) {
+          this.topic = val.replace("TOPIC:", "");
+          this.subtopic = "All";
+        } else {
+          this.subtopic = val;
+          const parentTopic = this.findParentTopicForChapter(val);
+          if (parentTopic !== "All") {
+            this.topic = parentTopic;
+          }
+        }
+        this.renderAll();
+      }
+
+      // Handles clicks on the neighboring horizontal chapter buttons (#subtopic-bar)
       setSubtopic(sub) {
-        this.subtopic = sub;
-        // If a specific parent topic is active and user selects a chapter outside it, keep parent synced
-        if (sub !== "All" && this.topic !== "All") {
-          const parentOfSub = this.findParentTopicForChapter(sub);
-          if (parentOfSub !== this.topic) {
-            this.topic = parentOfSub;
+        if (sub === "All") {
+          this.subtopic = "All";
+        } else if (this.subtopic === sub) {
+          // Clicking the already-active chapter button toggles back to showing all chapters in current scope
+          this.subtopic = "All";
+        } else {
+          this.subtopic = sub;
+          if (this.topic !== "All") {
+            const parentOfSub = this.findParentTopicForChapter(sub);
+            if (parentOfSub !== this.topic) {
+              this.topic = parentOfSub;
+            }
           }
         }
         this.renderAll();
@@ -1787,11 +1392,6 @@
         this.renderAll();
       }
 
-      setQuestionSub(sub) {
-        this.questionSub = sub;
-        this.renderAll();
-      }
-
       setArcadeGame(game) {
         this.clearTimers();
         this.blitzState.active = false;
@@ -1802,7 +1402,7 @@
       }
 
       // =======================================================================
-      // STATE MUTATIONS (BOOKMARKS, QUEUE, MASTERY, MCQ ANSWERS)
+      // STATE MUTATIONS (BOOKMARKS, QUEUE, MASTERY)
       // =======================================================================
       toggleArrayItem(arr, id) {
         const idx = arr.indexOf(id);
@@ -1810,33 +1410,6 @@
         else arr.splice(idx, 1);
         this.saveState();
         this.renderAll();
-      }
-
-      answerQuestion(qId, optIdx, correctIdx) {
-        this.selectedAnswers[qId] = optIdx;
-        if (optIdx === correctIdx) {
-          this.state.questionStatus[qId] = "correct";
-          this.state.arcade.xp += 5;
-        } else {
-          this.state.questionStatus[qId] = "retry";
-          const q = SEED_QUESTIONS.find(item => item.id === qId);
-          if (q && q.concept_ref && !this.state.reviseQueue.includes(q.concept_ref)) {
-            this.state.reviseQueue.push(q.concept_ref);
-          }
-        }
-        this.saveState();
-        this.renderMain();
-        this.renderSubfilters();
-      }
-
-      retryQuestion(qId) {
-        delete this.selectedAnswers[qId];
-        this.renderMain();
-      }
-
-      toggleShortcut(qId) {
-        this.openShortcuts[qId] = !this.openShortcuts[qId];
-        this.renderMain();
       }
 
       openConceptModal(conceptId, badgeLabel = "🛡️ Concept Shield") {
@@ -1946,32 +1519,77 @@
       }
 
       // =======================================================================
-      // MINIGAME 2: SURVIVAL ARENA (3 Hearts + Concept Shield)
+      // MINIGAME 2: SURVIVAL ARENA (3 Hearts + Concept-Driven Recall Gauntlet)
       // =======================================================================
       startSurvival() {
         this.clearTimers();
-        const scoped = this.getTopicScopedQuestions();
-        const basePool = scoped.length > 0 ? scoped : [...SEED_QUESTIONS];
-
-        const prioritized = basePool.sort((a, b) => {
-          const sa = this.state.questionStatus[a.id];
-          const sb = this.state.questionStatus[b.id];
-          const weight = s => (s === "retry" ? 0 : !s ? 1 : 2);
-          return weight(sa) - weight(sb) || Math.random() - 0.5;
-        });
-
         this.survivalState = {
           active: true,
           hearts: 3,
           timeLeft: 60,
           score: 0,
           streak: 0,
-          qIndex: 0,
-          deck: prioritized,
+          round: this.generateSurvivalRound(),
           answered: null
         };
         this.startSurvivalShotClock();
         this.renderMain();
+      }
+
+      generateSurvivalRound() {
+        const scoped = this.getTopicScopedConcepts();
+        const fullPool = this.getAllConcepts();
+        const pool = scoped.length > 0 ? scoped : fullPool;
+
+        // Prioritize cards in Revise Queue or Saved
+        const weighted = [...pool].sort((a, b) => {
+          const wa = (this.state.reviseQueue.includes(a.id) ? -2 : 0) + (this.state.savedConcepts.includes(a.id) ? -1 : 0);
+          const wb = (this.state.reviseQueue.includes(b.id) ? -2 : 0) + (this.state.savedConcepts.includes(b.id) ? -1 : 0);
+          return wa - wb || Math.random() - 0.5;
+        });
+
+        const target = weighted[0] || fullPool[0];
+        const sameTopicPool = fullPool.filter(c => c.id !== target.id && c.topic === target.topic);
+        const otherPool = fullPool.filter(c => c.id !== target.id && c.topic !== target.topic);
+        const distractors = [
+          ...sameTopicPool.sort(() => Math.random() - 0.5),
+          ...otherPool.sort(() => Math.random() - 0.5)
+        ].slice(0, 3);
+
+        // 3 Concept Challenge Modes: 'formula' | 'highlight' | 'trap'
+        const modes = ["formula", "highlight", "trap"];
+        const mode = modes[Math.floor(Math.random() * modes.length)];
+
+        let promptLabel = "";
+        let cueText = "";
+        const getOptionText = (c) => {
+          if (mode === "formula") return c.formula.split("\n")[0];
+          if (mode === "highlight") return c.highlight;
+          return c.bullets[1] || c.bullets[0];
+        };
+
+        if (mode === "formula") {
+          promptLabel = "Identify the exact Core Formula for this concept:";
+          cueText = `${target.title} — ★ ${target.highlight}`;
+        } else if (mode === "highlight") {
+          promptLabel = "Which Gold Rule / Condition holds true for this concept?";
+          cueText = `${target.title}\n${target.formula.split("\n")[0]}`;
+        } else {
+          promptLabel = "Spot the true Exam Trap / Shortcut for this concept:";
+          cueText = `${target.title} (${target.subtopic})`;
+        }
+
+        const shuffledCards = [target, ...distractors].sort(() => Math.random() - 0.5);
+        const correctIndex = shuffledCards.findIndex(c => c.id === target.id);
+
+        return {
+          target,
+          mode,
+          promptLabel,
+          cueText,
+          options: shuffledCards.map(c => getOptionText(c)),
+          correctIndex
+        };
       }
 
       startSurvivalShotClock() {
@@ -1991,13 +1609,12 @@
       handleSurvivalAnswer(optIdx) {
         if (this.survivalState.answered !== null) return;
         this.survivalState.answered = optIdx;
-        const currentQ = this.survivalState.deck[this.survivalState.qIndex];
+        const { target, correctIndex } = this.survivalState.round;
 
-        if (optIdx === currentQ.correctIndex) {
+        if (optIdx === correctIndex) {
           this.survivalState.streak += 1;
           this.survivalState.score += 1;
           this.state.arcade.xp += 10;
-          this.state.questionStatus[currentQ.id] = "correct";
           if (this.survivalState.streak % 3 === 0 && this.survivalState.hearts < 3) {
             this.survivalState.hearts += 1;
           }
@@ -2007,26 +1624,23 @@
         } else {
           this.survivalState.hearts -= 1;
           this.survivalState.streak = 0;
-          this.state.questionStatus[currentQ.id] = "retry";
-          if (currentQ.concept_ref) {
-            if (!this.state.reviseQueue.includes(currentQ.concept_ref)) {
-              this.state.reviseQueue.push(currentQ.concept_ref);
-            }
-            this.openConceptModal(currentQ.concept_ref, "🛡️ Shield Recovery");
+          if (!this.state.reviseQueue.includes(target.id)) {
+            this.state.reviseQueue.push(target.id);
           }
+          this.openConceptModal(target.id, "🛡️ Shield Recovery");
         }
         this.saveState();
         this.renderMain();
       }
 
       nextSurvivalQuestion() {
-        if (this.survivalState.hearts <= 0 || this.survivalState.qIndex >= this.survivalState.deck.length - 1) {
+        if (this.survivalState.hearts <= 0) {
           this.clearTimers();
           this.survivalState.active = false;
           this.renderMain();
           return;
         }
-        this.survivalState.qIndex += 1;
+        this.survivalState.round = this.generateSurvivalRound();
         this.survivalState.answered = null;
         this.startSurvivalShotClock();
         this.renderMain();
@@ -2189,9 +1803,11 @@
       renderHeaderTabs() {
         const activeStyle = "bg-white text-slate-950 shadow-sm";
         const idleStyle = "text-white/75 hover:text-white hover:bg-white/10";
-        ["revise", "questions", "arcade"].forEach(s => {
+        ["revise", "arcade"].forEach(s => {
           const btn = document.getElementById(`tab-${s}`);
-          btn.className = `py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1 ${this.section === s ? activeStyle : idleStyle}`;
+          if (btn) {
+            btn.className = `py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1 ${this.section === s ? activeStyle : idleStyle}`;
+          }
         });
       }
 
@@ -2210,43 +1826,46 @@
         const selectEl = document.getElementById("subtopic-select");
         const container = document.getElementById("subtopic-bar");
         const chapters = this.getAvailableSubtopics();
-        const allLabel = this.topic === "All" ? `All 26 Chapters` : `All ${this.topic} (${chapters.length})`;
 
-        // 1. Populate Left Sectional Dropdown (<optgroup> when "All" topics active, or scoped group when specific topic active)
+        // 1. Populate Left Dropdown (#subtopic-select)
+        // Always includes "All 26 Chapters" at top to reset selection, plus Topic-group & Chapter options
         if (selectEl) {
-          let optionsHtml = `<option value="All">📂 ${allLabel}</option>`;
-          if (this.topic === "All") {
-            for (const [grpTopic, grpChapters] of Object.entries(TOPIC_CHAPTER_MAP)) {
-              optionsHtml += `<optgroup label="── ${grpTopic} (${grpChapters.length}) ──">`;
-              grpChapters.forEach(ch => {
-                const isSelected = this.subtopic === ch ? "selected" : "";
-                optionsHtml += `<option value="${ch}" ${isSelected}>${ch}</option>`;
-              });
-              optionsHtml += `</optgroup>`;
-            }
-          } else {
-            optionsHtml += `<optgroup label="── ${this.topic} (${chapters.length}) ──">`;
-            chapters.forEach(ch => {
+          const isGlobalAll = this.topic === "All" && this.subtopic === "All";
+          let optionsHtml = `<option value="All" ${isGlobalAll ? "selected" : ""}>📂 All 26 Chapters</option>`;
+
+          for (const [grpTopic, grpChapters] of Object.entries(TOPIC_CHAPTER_MAP)) {
+            optionsHtml += `<optgroup label="── ${grpTopic} (${grpChapters.length}) ──">`;
+            const isTopicAll = this.topic === grpTopic && this.subtopic === "All";
+            optionsHtml += `<option value="TOPIC:${grpTopic}" ${isTopicAll ? "selected" : ""}>📂 All ${grpTopic} (${grpChapters.length})</option>`;
+            grpChapters.forEach(ch => {
               const isSelected = this.subtopic === ch ? "selected" : "";
               optionsHtml += `<option value="${ch}" ${isSelected}>${ch}</option>`;
             });
             optionsHtml += `</optgroup>`;
           }
           selectEl.innerHTML = optionsHtml;
-          selectEl.value = this.subtopic;
         }
 
-        // 2. Populate Right Horizontal Buttons (starting with "All 26 Chapters" / "All <Topic>")
-        const pills = ["All", ...chapters];
-        container.innerHTML = pills.map(ch => {
+        // 2. Populate Neighboring Horizontal Chapter Buttons (#subtopic-bar)
+        // Dynamically changes according to what's selected in the dropdown (no redundant "All 26 Chapters" button)
+        container.innerHTML = chapters.map(ch => {
           const active = this.subtopic === ch;
-          const label = ch === "All" ? allLabel : ch;
-          return `<button onclick="window.app.setSubtopic('${ch.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition ${
+          return `<button data-chapter="${ch}" onclick="window.app.setSubtopic('${ch.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition ${
             active
-              ? "bg-indigo-400/30 text-amber-300 border border-amber-400/50 font-bold"
+              ? "bg-indigo-400/30 text-amber-300 border border-amber-400/50 font-bold shadow-sm"
               : "bg-white/5 text-white/70 hover:bg-white/15 border border-transparent"
-          }">${label}</button>`;
+          }">${ch}</button>`;
         }).join("");
+
+        // Auto-scroll active chapter button into view if selected
+        if (this.subtopic !== "All") {
+          requestAnimationFrame(() => {
+            const activeBtn = container.querySelector(`[data-chapter="${CSS.escape(this.subtopic)}"]`);
+            if (activeBtn) {
+              activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }
+          });
+        }
       }
 
       renderSubfilters() {
@@ -2289,28 +1908,6 @@
                 : "bg-indigo-50 text-indigo-900 border-indigo-200 hover:bg-indigo-100"
             }">${l.label}</button>
           `).join("");
-        } else if (this.section === "questions") {
-          levelBar.classList.add("hidden");
-          const scopedQ = this.getTopicScopedQuestions();
-          const unattempted = scopedQ.filter(q => !this.state.questionStatus[q.id]).length;
-          const retry = scopedQ.filter(q => this.state.questionStatus[q.id] === "retry").length;
-          const saved = scopedQ.filter(q => this.state.savedQuestions.includes(q.id)).length;
-          const correct = scopedQ.filter(q => this.state.questionStatus[q.id] === "correct").length;
-
-          const items = [
-            { id: "all", label: `All Questions (${scopedQ.length})` },
-            { id: "unattempted", label: `❓ Unattempted (${unattempted})` },
-            { id: "retry", label: `❌ Needs Retry (${retry})` },
-            { id: "saved", label: `🔖 Saved (${saved})` },
-            { id: "correct", label: `✅ Correct (${correct})` }
-          ];
-          bar.innerHTML = items.map(i => `
-            <button onclick="window.app.setQuestionSub('${i.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition ${
-              this.questionSub === i.id
-                ? "bg-[#042f2e] text-white border-[#042f2e] shadow-sm"
-                : "bg-white text-teal-950 border-teal-200 hover:border-teal-400"
-            }">${i.label}</button>
-          `).join("");
         } else {
           levelBar.classList.add("hidden");
           const games = [
@@ -2332,8 +1929,6 @@
         const main = document.getElementById("main-content");
         if (this.section === "revise") {
           main.innerHTML = this.renderReviseSection();
-        } else if (this.section === "questions") {
-          main.innerHTML = this.renderQuestionsSection();
         } else {
           main.innerHTML = this.renderArcadeSection();
         }
@@ -2389,81 +1984,7 @@
       }
 
       // -----------------------------------------------------------------------
-      // QUESTIONS VIEW
-      // -----------------------------------------------------------------------
-      renderQuestionsSection() {
-        const list = this.getFilteredQuestions();
-        if (list.length === 0) {
-          return `<div class="p-8 text-center bg-white rounded-2xl border border-teal-200 text-teal-900/60 text-sm">No questions match this chapter/sub-filter selection.</div>`;
-        }
-        return `<div class="space-y-4">${list.map((q, idx) => {
-          const picked = this.selectedAnswers[q.id];
-          const status = this.state.questionStatus[q.id];
-          const isSaved = this.state.savedQuestions.includes(q.id);
-          const showShortcut = this.openShortcuts[q.id];
-          const diffColor = q.difficulty === "Easy"
-            ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-            : q.difficulty === "Medium"
-            ? "bg-amber-100 text-amber-800 border-amber-300"
-            : "bg-rose-100 text-rose-800 border-rose-300";
-
-          return `
-            <article class="bg-white rounded-2xl p-5 shadow-md border border-teal-200 text-slate-900">
-              <div class="flex flex-wrap justify-between items-center gap-2 mb-2.5">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded bg-teal-900 text-teal-100 font-semibold">${q.topic}</span>
-                  <span class="text-xs font-semibold text-teal-800">› ${q.subtopic}</span>
-                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${diffColor}">${q.difficulty}</span>
-                  ${status === "correct" ? `<span class="text-xs font-bold text-emerald-600">✅ Solved</span>` : status === "retry" ? `<span class="text-xs font-bold text-rose-600">❌ Needs Retry</span>` : ""}
-                </div>
-                <button onclick="window.app.toggleArrayItem(window.app.state.savedQuestions, '${q.id}')" class="px-2.5 py-1 rounded-lg text-xs border ${isSaved ? 'bg-amber-400 border-amber-500 font-bold text-slate-950' : 'bg-slate-100 border-slate-200 text-slate-600'}">🔖</button>
-              </div>
-              <p class="text-sm font-semibold text-slate-900 mb-4 leading-relaxed">Q${idx + 1}. ${q.question}</p>
-              <div class="space-y-2 mb-3">
-                ${q.options.map((opt, oIdx) => {
-                  let btnStyle = "bg-slate-50 border-slate-200 text-slate-800 hover:border-teal-500";
-                  if (picked !== undefined) {
-                    if (oIdx === q.correctIndex) btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold";
-                    else if (picked === oIdx) btnStyle = "bg-rose-50 border-rose-500 text-rose-900 font-semibold";
-                    else btnStyle = "bg-slate-50 border-slate-200 opacity-50";
-                  }
-                  return `
-                    <button
-                      ${picked !== undefined ? "disabled" : ""}
-                      onclick="window.app.answerQuestion('${q.id}', ${oIdx}, ${q.correctIndex})"
-                      class="w-full text-left p-3 rounded-xl border text-xs transition flex items-center justify-between ${btnStyle}"
-                    >
-                      <span><strong class="font-mono-code mr-2">${String.fromCharCode(65 + oIdx)}.</strong> ${opt}</span>
-                      ${picked !== undefined && oIdx === q.correctIndex ? `<span class="text-emerald-600 font-bold">✓</span>` : ""}
-                      ${picked !== undefined && picked === oIdx && oIdx !== q.correctIndex ? `<span class="text-rose-600 font-bold">✕</span>` : ""}
-                    </button>
-                  `;
-                }).join("")}
-              </div>
-
-              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 text-xs">
-                <div class="flex space-x-2">
-                  <button onclick="window.app.toggleShortcut('${q.id}')" class="px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-900 font-semibold border border-teal-200">
-                    ${showShortcut ? "Hide Shortcut ▲" : "⚡ View Shortcut ▼"}
-                  </button>
-                  ${q.concept_ref ? `<button onclick="window.app.openConceptModal('${q.concept_ref}', '📖 Linked Concept')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-semibold border border-indigo-200">🔗 Concept Card</button>` : ""}
-                </div>
-                ${picked !== undefined ? `<button onclick="window.app.retryQuestion('${q.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold">🔄 Retry</button>` : ""}
-              </div>
-
-              ${showShortcut || picked !== undefined ? `
-                <div class="mt-3 p-3.5 rounded-xl bg-teal-950 text-teal-50 text-xs space-y-1.5">
-                  <div><span class="text-amber-300 font-bold">⚡ 15-Sec Shortcut:</span> ${q.shortcut}</div>
-                  <div><span class="text-rose-300 font-bold">⚠️ Exam Trap:</span> ${q.trap}</div>
-                </div>
-              ` : ""}
-            </article>
-          `;
-        }).join("")}</div>`;
-      }
-
-      // -----------------------------------------------------------------------
-      // ARCADE VIEW (COMBINED 3-IN-1 MINIGAME HUB)
+      // ARCADE VIEW (100% CONCEPT-DRIVEN 3-IN-1 MINIGAME HUB)
       // -----------------------------------------------------------------------
       renderArcadeSection() {
         const statsBar = `
@@ -2478,7 +1999,7 @@
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
               <div class="text-[10px] font-mono-code uppercase text-slate-400">Survival Best</div>
-              <div class="text-base font-black text-rose-400">🔥 ${this.state.arcade.survivalBest} Qs</div>
+              <div class="text-base font-black text-rose-400">🔥 ${this.state.arcade.survivalBest} Cards</div>
             </div>
           </div>
         `;
@@ -2545,11 +2066,11 @@
           return `
             <div class="arcade-card border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
               <div class="text-3xl mb-2">🛡️</div>
-              <h2 class="text-lg font-black text-white mb-1">Survival Arena (3-Lives Gauntlet)</h2>
+              <h2 class="text-lg font-black text-white mb-1">Survival Arena (3-Lives Concept Gauntlet)</h2>
               <p class="text-xs text-slate-300 max-w-md mx-auto mb-4">
-                Enter with <strong>3 Hearts (❤️❤️❤️)</strong> and a 60s shot clock per question. Losing a heart triggers the <strong>Concept Shield</strong> popup with SVG diagrams and formulas; 3 correct in a row restores 1 heart!
+                Enter with <strong>3 Hearts (❤️❤️❤️)</strong> and a 60s shot clock per concept card. Test your recall on formulas, gold rules, and exam traps — losing a heart triggers the <strong>Concept Shield</strong> popup, and 3 in a row restores 1 heart!
               </p>
-              ${this.survivalState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-xs font-bold">Last Run Survived: ${this.survivalState.score} Questions</div>` : ""}
+              ${this.survivalState.score > 0 ? `<div class="mb-4 p-3 rounded-xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-xs font-bold">Last Run Survived: ${this.survivalState.score} Concept Cards</div>` : ""}
               <button onclick="window.app.startSurvival()" class="w-full max-w-xs py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
                 Enter Survival Arena →
               </button>
@@ -2557,8 +2078,8 @@
           `;
         }
 
-        const { hearts, timeLeft, score, streak, qIndex, deck, answered } = this.survivalState;
-        const q = deck[qIndex];
+        const { hearts, timeLeft, score, streak, round, answered } = this.survivalState;
+        const { target, promptLabel, cueText, options, correctIndex } = round;
         const heartsDisplay = "❤️".repeat(Math.max(0, hearts)) + "🖤".repeat(Math.max(0, 3 - hearts));
 
         return `
@@ -2569,14 +2090,15 @@
               <span class="font-mono-code text-xs font-bold text-emerald-400">🔥 Streak: ${streak} | Cleared: ${score}</span>
             </div>
 
-            <div class="text-[10px] font-mono-code uppercase text-emerald-400 mb-1">${q.topic} › ${q.subtopic} • ${q.difficulty}</div>
-            <p class="text-sm font-semibold text-white mb-4 leading-relaxed">${q.question}</p>
+            <div class="text-[10px] font-mono-code uppercase text-emerald-400 mb-1">${target.topic} › ${target.subtopic} • ${target.level}</div>
+            <p class="text-xs text-amber-300 font-semibold mb-1.5">${promptLabel}</p>
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-700 text-sm font-bold text-white mb-4 whitespace-pre-line leading-relaxed">${cueText}</div>
 
             <div class="space-y-2 mb-4">
-              ${q.options.map((opt, idx) => {
+              ${options.map((opt, idx) => {
                 let cls = "bg-slate-800 border-slate-700 text-slate-200 hover:border-emerald-400";
                 if (answered !== null) {
-                  if (idx === q.correctIndex) cls = "bg-emerald-950 border-emerald-400 text-emerald-200 font-bold";
+                  if (idx === correctIndex) cls = "bg-emerald-950 border-emerald-400 text-emerald-200 font-bold";
                   else if (idx === answered) cls = "bg-rose-950 border-rose-500 text-rose-200 font-semibold";
                   else cls = "bg-slate-900 border-slate-800 opacity-40";
                 }
@@ -2584,9 +2106,9 @@
                   <button
                     ${answered !== null ? "disabled" : ""}
                     onclick="window.app.handleSurvivalAnswer(${idx})"
-                    class="w-full text-left p-3 rounded-xl border text-xs transition ${cls}"
+                    class="w-full text-left p-3 rounded-xl border text-xs font-mono-code transition ${cls}"
                   >
-                    <strong class="font-mono-code mr-2">${String.fromCharCode(65 + idx)}.</strong> ${opt}
+                    <strong class="mr-2">${String.fromCharCode(65 + idx)}.</strong> ${opt}
                   </button>
                 `;
               }).join("")}
@@ -2594,10 +2116,10 @@
 
             ${answered !== null ? `
               <div class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 mb-3">
-                <strong class="text-amber-300">⚡ Shortcut:</strong> ${q.shortcut}
+                <strong class="text-amber-300">🧠 Memory Hook:</strong> ${target.hook}
               </div>
               <button onclick="window.app.nextSurvivalQuestion()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-xs uppercase">
-                ${hearts <= 0 ? "View Run Summary" : "Next Arena Question →"}
+                ${hearts <= 0 ? "View Run Summary" : "Next Concept Challenge →"}
               </button>
             ` : ""}
           </div>
