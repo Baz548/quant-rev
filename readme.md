@@ -25,3 +25,8 @@ The file stores progress in the browser's local storage. Progress is local to th
 
 - `index.html` — the application.
 - `README.md` — this guide.
+
+
+## AI Disclosure
+
+1. Gemini and ChatGPT were used for coding the webpage and adding educational material.
