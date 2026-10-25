@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v3.1 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf v4.0 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -43,7 +43,7 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 
-    /* v3.1: lightweight, self-contained game UI */
+    /* v4.0: Afterimage + expanded, source-linked Faultline challenge bank */
     .game-panel {
       background: linear-gradient(145deg, rgba(15,23,42,.97), rgba(2,6,23,.98));
       border: 1px solid rgba(148,163,184,.22);
@@ -62,31 +62,12 @@
       from { box-shadow: 0 0 10px rgba(129,140,248,.12); opacity: .88; }
       to { box-shadow: 0 0 30px rgba(129,140,248,.35); opacity: 1; }
     }
-    .redline-track {
-      position: relative;
-      height: 42px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: linear-gradient(180deg, #111827, #170d18);
-      border: 1px solid rgba(251,113,133,.25);
-      isolation: isolate;
+    .faultline-work {
+      border-left: 3px solid rgba(251,191,36,.8);
+      background: linear-gradient(120deg, rgba(120,53,15,.20), rgba(15,23,42,.72));
     }
-    .redline-track::before {
-      content: "";
-      position: absolute;
-      inset: -20% -25%;
-      background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(251,113,133,.12) 22px 25px, transparent 25px 50px, rgba(251,191,36,.18) 50px 53px, transparent 53px 82px);
-      animation: redlineSweep var(--track-duration, 2.4s) linear infinite;
-      z-index: -1;
-    }
-    .redline-track::after {
-      content: "";
-      position: absolute;
-      left: 0; right: 0; top: 50%; height: 2px;
-      background: linear-gradient(90deg, transparent, #fb7185, #fbbf24, transparent);
-      box-shadow: 0 0 10px rgba(251,113,133,.55);
-    }
-    @keyframes redlineSweep { from { transform: translateX(-15%); } to { transform: translateX(15%); } }
+    .faultline-tag { letter-spacing: .18em; }
+    .faultline-step { border: 1px solid rgba(251,191,36,.22); background: rgba(2,6,23,.55); }
     .game-progress { transition: width .12s linear; }
 
     /* v3.1: larger navigation targets while games are active */
@@ -112,12 +93,16 @@
     }
     body.theme-arcade #subfilter-bar { gap: .55rem; }
     .game-answer-copy { overflow-wrap: anywhere; white-space: pre-line; }
+
+    /* Math scripts: keep subscript and superscript alignment independent. */
+    .math-text sub { font-size: .72em; line-height: 0; vertical-align: sub; }
+    .math-text sup { font-size: .72em; line-height: 0; vertical-align: super; }
     @media (max-width: 640px) {
       body.theme-arcade #subtopic-select { max-width: 42vw !important; }
       body.theme-arcade #subtopic-bar button { padding-left: .62rem !important; padding-right: .62rem !important; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .afterimage-glow, .redline-track::before { animation-duration: 8s !important; }
+      .afterimage-glow { animation-duration: 8s !important; }
       .game-option, .game-progress { transition: none !important; }
     }
 
@@ -130,7 +115,7 @@
     <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <span class="font-black text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v3.1</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v4.0</span>
       </div>
       <div class="flex items-center space-x-2">
         <button onclick="window.app.openAddModal()" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 transition">+ Add</button>
@@ -1288,7 +1273,944 @@
       }
     ];
 
-    // =========================================================================
+    const FAULTLINE_CHALLENGES = [
+  {
+    "id": "fl_log_product_rule",
+    "conceptId": "c_log_1",
+    "difficulty": 0,
+    "type": "RULE CHECK",
+    "title": "The false logarithm rule",
+    "scenario": "A student expands log_b(x + y) as log_b(x) + log_b(y).",
+    "question": "Which repair is mathematically valid?",
+    "options": [
+      "Replace x + y with xy: log_b(xy) = log_b(x) + log_b(y), for x, y > 0 and b > 0, b ≠ 1.",
+      "Keep x + y but multiply the logarithms: log_b(x + y) = log_b(x) · log_b(y).",
+      "Use log_b(x/y) = log_b(x) + log_b(y).",
+      "The rule is valid for every pair of positive x and y; no correction is needed."
+    ],
+    "answer": "Replace x + y with xy: log_b(xy) = log_b(x) + log_b(y), for x, y > 0 and b > 0, b ≠ 1.",
+    "correction": "Logarithms turn multiplication into addition, not addition into a sum of logarithms.",
+    "explanation": "The product identity is log_b(xy) = log_b(x) + log_b(y). There is no equivalent split rule for log_b(x + y). The base must satisfy b > 0 and b ≠ 1, and each argument must be positive."
+  },
+  {
+    "id": "fl_gp_nth_term",
+    "conceptId": "c_ss_1",
+    "difficulty": 0,
+    "type": "FORMULA CHECK",
+    "title": "The off-by-one term",
+    "scenario": "A geometric progression starts with a and has common ratio r. A student writes Tₙ = a·rⁿ.",
+    "question": "What is the precise correction?",
+    "options": [
+      "Use Tₙ = a·rⁿ⁻¹, so that T₁ = a.",
+      "Use Tₙ = a·rⁿ⁺¹, because the first term is counted as term zero.",
+      "Use Tₙ = a + (n−1)r, which is the GP term rule.",
+      "Use Tₙ = n·a·r, because each term adds one ratio."
+    ],
+    "answer": "Use Tₙ = a·rⁿ⁻¹, so that T₁ = a.",
+    "correction": "The exponent is n−1: the first term must be a·r⁰ = a.",
+    "explanation": "A GP multiplies by r once to move from T₁ to T₂. Therefore Tₙ = ar^(n−1). The expression ar^n would make the first term ar, not a."
+  },
+  {
+    "id": "fl_graph_shift",
+    "conceptId": "c_gr_1",
+    "difficulty": 0,
+    "type": "TRANSFORMATION CHECK",
+    "title": "The reversed graph shift",
+    "scenario": "For y = f(x − 3), a student moves the graph 3 units to the left.",
+    "question": "How should the graph actually move?",
+    "options": [
+      "Move it 3 units to the right; a horizontal shift inside f acts opposite to the sign.",
+      "Move it 3 units to the left; the minus sign always means left.",
+      "Move it 3 units down; the negative constant changes the output.",
+      "Reflect it across the y-axis, then move it 3 units right."
+    ],
+    "answer": "Move it 3 units to the right; a horizontal shift inside f acts opposite to the sign.",
+    "correction": "f(x−h) shifts right by h; f(x+h) shifts left by h.",
+    "explanation": "The inside change is opposite to the horizontal direction. For y = f(x−3), the original graph shifts right by 3 units."
+  },
+  {
+    "id": "fl_linear_system_check",
+    "conceptId": "c_se_1",
+    "difficulty": 1,
+    "type": "REASONING CHECK",
+    "title": "The incomplete ratio test",
+    "scenario": "For two linear equations, a student finds a₁/a₂ = b₁/b₂ and immediately concludes that the system has infinitely many solutions.",
+    "question": "What must be checked before that conclusion is valid?",
+    "options": [
+      "Also compare c₁/c₂: it must match the same ratio for infinitely many solutions; if it differs, there is no solution.",
+      "The first two ratios matching always gives one unique solution, whatever the constants are.",
+      "Calculate a quadratic discriminant; it decides the number of solutions of this linear system.",
+      "Compare c₁/c₂ only with a₁/a₂; the ratio involving b is not relevant."
+    ],
+    "answer": "Also compare c₁/c₂: it must match the same ratio for infinitely many solutions; if it differs, there is no solution.",
+    "correction": "When the x- and y-coefficient ratios match, check the constant ratio: all three equal means infinitely many solutions; a different constant ratio means no solution.",
+    "explanation": "Matching coefficient ratios indicate parallel or coincident lines. The constants distinguish coincident lines from distinct parallel lines. If the first two ratios differ, the lines intersect in one unique solution."
+  },
+  {
+    "id": "fl_same_remainder_hcf",
+    "conceptId": "c_n1_1",
+    "difficulty": 1,
+    "type": "NUMBER REASONING",
+    "title": "The unknown remainder",
+    "scenario": "A largest divisor leaves the same unknown remainder when dividing A, B and C. A student tries HCF(A, B, C).",
+    "question": "Which expression finds the required divisor?",
+    "options": [
+      "HCF(|A−B|, |B−C|, |C−A|).",
+      "HCF(A, B, C), because the original numbers must be divisible by the answer.",
+      "LCM(|A−B|, |B−C|, |C−A|), because the divisor must be the least common multiple.",
+      "HCF(A+B, B+C, C+A), because equal remainders cancel only in sums."
+    ],
+    "answer": "HCF(|A−B|, |B−C|, |C−A|).",
+    "correction": "Subtract the numbers pairwise; the common remainder cancels. Take the HCF of the absolute differences.",
+    "explanation": "If A, B and C leave the same remainder r, then A−B, B−C and C−A are all divisible by the divisor. The greatest possible divisor is the HCF of their absolute differences."
+  },
+  {
+    "id": "fl_equal_distance_speed",
+    "conceptId": "c_td_1",
+    "difficulty": 1,
+    "type": "METHOD CHECK",
+    "title": "The average-speed shortcut",
+    "scenario": "A driver covers equal distances at 40 km/h and 60 km/h, then reports the average speed as (40 + 60)/2 = 50 km/h.",
+    "question": "What is the correct average speed?",
+    "options": [
+      "48 km/h, using 2 × 40 × 60 / (40 + 60) for equal distances.",
+      "50 km/h, because the arithmetic mean always gives average speed.",
+      "40 km/h, because the slower speed determines the whole journey's average.",
+      "60 km/h, because each leg has the same distance and the faster leg dominates."
+    ],
+    "answer": "48 km/h, using 2 × 40 × 60 / (40 + 60) for equal distances.",
+    "correction": "For equal distances, use the harmonic mean: 2v₁v₂/(v₁+v₂). The arithmetic mean applies when equal time is spent at each speed.",
+    "explanation": "The two equal-distance legs take different amounts of time. The total distance divided by total time gives 2/(1/40+1/60) = 48 km/h, not 50 km/h."
+  },
+  {
+    "id": "fl_secant_whole_length",
+    "conceptId": "c_geo_2",
+    "difficulty": 2,
+    "type": "GEOMETRY CHECK",
+    "title": "The incomplete secant length",
+    "scenario": "From an external point P, PT is a tangent and P–A–B is a secant. A student writes PT² = PA × AB, using only the internal chord AB.",
+    "question": "Which correction uses the correct secant length?",
+    "options": [
+      "Use PT² = PA × PB, where PB is the entire secant length from P to the far intersection B.",
+      "Keep PT² = PA × AB, because only the part inside the circle counts as secant length.",
+      "Use PT = PA × PB; the tangent length is not squared.",
+      "Use PT² = AB × PB, leaving out the external segment PA."
+    ],
+    "answer": "Use PT² = PA × PB, where PB is the entire secant length from P to the far intersection B.",
+    "correction": "The tangent-secant theorem is PT² = (external segment) × (whole secant): PT² = PA × PB.",
+    "explanation": "PB includes both the outside segment PA and the internal chord AB. Substituting AB for the entire secant is the common trap."
+  },
+  {
+    "id": "fl_replacement_denominator",
+    "conceptId": "c_ama_2",
+    "difficulty": 2,
+    "type": "MIXTURE CHECK",
+    "title": "The wrong replacement denominator",
+    "scenario": "A vessel holds total mixture volume V. Each replacement removes volume x and adds the same volume of water. A student models the fraction of original liquid remaining after n rounds using (1 − x / added-water-volume)ⁿ.",
+    "question": "Which formula fixes the denominator?",
+    "options": [
+      "Use (1 − x/V)ⁿ; divide the removed volume by the total mixture volume in the vessel.",
+      "Use (1 − x/x)ⁿ; the denominator is the amount added back each time.",
+      "Use (1 + x/V)ⁿ; replacement increases the fraction of original liquid remaining.",
+      "Use (V/x)ⁿ; the amount withdrawn should be inverted before subtracting."
+    ],
+    "answer": "Use (1 − x/V)ⁿ; divide the removed volume by the total mixture volume in the vessel.",
+    "correction": "The dilution factor per replacement is (1 − x/V), where V is the total vessel volume, not the added-water volume.",
+    "explanation": "Each draw removes x/V of the mixture that is present, so the fraction of the tracked original component remaining is multiplied by 1−x/V at each round. After n equal replacements, the multiplier is (1−x/V)ⁿ."
+  },
+  {
+    "id": "fl_probability_exactly_one",
+    "conceptId": "c_prob_2",
+    "difficulty": 2,
+    "type": "PROBABILITY CHECK",
+    "title": "The missing overlap subtraction",
+    "scenario": "A and B are independent events. A student writes P(exactly one occurs) = P(A) + P(B) − P(A)P(B).",
+    "question": "What needs to be corrected?",
+    "options": [
+      "Subtract the overlap twice: P(exactly one) = P(A) + P(B) − 2P(A)P(B).",
+      "The student's formula is correct because exactly one and at least one mean the same thing.",
+      "Use P(A)P(B) only; the probabilities of A and B separately do not matter.",
+      "Add the overlap twice: P(exactly one) = P(A) + P(B) + 2P(A)P(B)."
+    ],
+    "answer": "Subtract the overlap twice: P(exactly one) = P(A) + P(B) − 2P(A)P(B).",
+    "correction": "For independent events, P(exactly one) = P(A)+P(B)−2P(A)P(B).",
+    "explanation": "P(A)+P(B)−P(A∩B) gives the probability of at least one. To count exactly one, the both-occurring case must be removed from each of the two event terms, so the intersection is subtracted twice. Independence gives P(A∩B)=P(A)P(B)."
+  },
+  {
+    "id": "fl_unlabeled_groups",
+    "conceptId": "c_pc_2",
+    "difficulty": 2,
+    "type": "COUNTING CHECK",
+    "title": "The duplicated group order",
+    "scenario": "A student divides 2n distinct objects into two UNLABELED groups of n each and counts all choices using ²ⁿCₙ, without adjusting the result.",
+    "question": "What correction removes the duplicate counting?",
+    "options": [
+      "Divide ²ⁿCₙ by 2!, because swapping the two unlabeled groups does not create a new division.",
+      "Multiply ²ⁿCₙ by 2!, because either group can be chosen first.",
+      "Use ²ⁿPₙ, because every object in each group must be ordered.",
+      "Keep ²ⁿCₙ unchanged; exchanging the labels makes every partition different even when groups are unlabeled."
+    ],
+    "answer": "Divide ²ⁿCₙ by 2!, because swapping the two unlabeled groups does not create a new division.",
+    "correction": "For two unlabeled groups of equal size, divide ²ⁿCₙ by 2! to remove the duplicate created by exchanging the group order.",
+    "explanation": "Choosing one group determines the other, but the same partition is counted once for each group being chosen first. Because the two groups are unlabeled, those two counts represent the same division."
+  },
+  {
+    "id": "fl_se_reversed_number",
+    "conceptId": "c_se_2",
+    "difficulty": 0,
+    "type": "NUMBER PATTERN",
+    "title": "The reversed-number difference",
+    "scenario": "A two-digit number is N = 10t + u and its reverse is 10u + t. A student claims N − Rev(N) is always a multiple of 11.",
+    "question": "Which correction is valid?",
+    "options": [
+      "N − Rev(N) = 9(t − u), so the difference is a multiple of 9.",
+      "N − Rev(N) = 11(t + u), so the difference is a multiple of 11.",
+      "N − Rev(N) = 10(t − u), because the tens digit shifts one place.",
+      "The difference is always a multiple of 10, regardless of the digits."
+    ],
+    "answer": "N − Rev(N) = 9(t − u), so the difference is a multiple of 9.",
+    "correction": "Subtracting 10u + t from 10t + u gives 9(t − u). The sum, rather than the difference, is always a multiple of 11.",
+    "explanation": "N − Rev(N) = (10t+u) − (10u+t) = 9t−9u = 9(t−u)."
+  },
+  {
+    "id": "fl_spe_diophantine_gcd",
+    "conceptId": "c_spe_1",
+    "difficulty": 0,
+    "type": "INTEGER SOLUTION CHECK",
+    "title": "The impossible integer equation",
+    "scenario": "A student tries to find integer solutions of 6x + 9y = 20 and starts applying the general step rule without checking the coefficients first.",
+    "question": "What should be checked first, and what is the conclusion here?",
+    "options": [
+      "gcd(6,9)=3 does not divide 20, so no integer solution exists.",
+      "Because gcd(6,9)=3, divide the left side by 3 and round 20/3 to the nearest integer.",
+      "Every linear equation ax+by=c has an integer solution, so continue searching.",
+      "The equation has infinitely many integer solutions because both coefficients are divisible by 3."
+    ],
+    "answer": "gcd(6,9)=3 does not divide 20, so no integer solution exists.",
+    "correction": "An integer solution exists only if gcd(a,b) divides c. Here 3 does not divide 20, so the equation has no integer solution.",
+    "explanation": "Every integer combination 6x+9y is divisible by 3, but 20 is not. The necessary divisibility condition fails."
+  },
+  {
+    "id": "fl_spe_positive_solutions",
+    "conceptId": "c_spe_2",
+    "difficulty": 1,
+    "type": "INTEGER BOUNDARY CHECK",
+    "title": "Zero is not positive",
+    "scenario": "For coprime a=3 and b=2, a student claims 3x + 2y = 6 has positive-integer solutions because (x,y)=(2,0) and (0,3) satisfy it.",
+    "question": "What is the correct conclusion for x,y ≥ 1?",
+    "options": [
+      "There are no positive-integer solutions; both displayed pairs contain a zero.",
+      "There are exactly two positive-integer solutions, because both pairs satisfy the equation.",
+      "There is one positive-integer solution (1,1), because 3+2=6.",
+      "There are infinitely many positive-integer solutions by increasing x and decreasing y."
+    ],
+    "answer": "There are no positive-integer solutions; both displayed pairs contain a zero.",
+    "correction": "Distinguish non-negative solutions from positive solutions. (2,0) and (0,3) are non-negative solutions, but neither has both variables at least 1.",
+    "explanation": "For x,y≥1, the smallest possible left side is 3+2=5. Testing x=1 gives 2y=3, impossible; x≥2 leaves no positive y. Hence there are no positive-integer solutions."
+  },
+  {
+    "id": "fl_qe_discriminant_zero",
+    "conceptId": "c_qe_1",
+    "difficulty": 0,
+    "type": "DISCRIMINANT CHECK",
+    "title": "The double root mistaken for two roots",
+    "scenario": "For x² − 6x + 9 = 0, a student calculates D = b²−4ac = 0 but reports two distinct real roots.",
+    "question": "Which correction follows from the discriminant?",
+    "options": [
+      "D=0 gives equal real roots; here the repeated root is x=3.",
+      "D=0 gives no real roots, so the equation has no solution.",
+      "D=0 gives two distinct roots, x=−3 and x=3.",
+      "The discriminant is 9, so the roots are not real."
+    ],
+    "answer": "D=0 gives equal real roots; here the repeated root is x=3.",
+    "correction": "When D=0, the two roots coincide at −b/(2a). Here x=6/2=3.",
+    "explanation": "The polynomial is (x−3)². It has one repeated real root, not two distinct roots."
+  },
+  {
+    "id": "fl_qe_reciprocal_roots",
+    "conceptId": "c_qe_2",
+    "difficulty": 1,
+    "type": "ROOT TRANSFORMATION",
+    "title": "The reciprocal-root polynomial",
+    "scenario": "The roots of x² − 5x + 6 = 0 are 2 and 3. A student says the equation whose roots are their reciprocals is still x² − 5x + 6 = 0.",
+    "question": "Which polynomial has roots 1/2 and 1/3?",
+    "options": [
+      "6x² − 5x + 1 = 0.",
+      "x² − 5x + 6 = 0.",
+      "x² + 5x + 6 = 0.",
+      "x² − 6x + 5 = 0."
+    ],
+    "answer": "6x² − 5x + 1 = 0.",
+    "correction": "For ax²+bx+c=0, the reciprocal roots satisfy cx²+bx+a=0, provided the original roots are non-zero.",
+    "explanation": "The original roots are 2 and 3, so the reciprocal roots are 1/2 and 1/3. Their sum is 5/6 and product is 1/6, giving x²−(5/6)x+1/6=0; multiply through by 6."
+  },
+  {
+    "id": "fl_im_odd_even_roots",
+    "conceptId": "c_im_1",
+    "difficulty": 1,
+    "type": "SIGN ANALYSIS",
+    "title": "The root that should not flip the sign",
+    "scenario": "A student makes a sign chart for (x−1)²(x+2) and flips the sign at both x=−2 and x=1.",
+    "question": "What is the correct sign-chart rule?",
+    "options": [
+      "The sign flips at x=−2 (odd multiplicity) but does not flip at x=1 (even multiplicity).",
+      "The sign flips at both roots because every zero reverses the sign.",
+      "The sign never changes at either root because both are factors.",
+      "The sign flips at x=1 only because it is the repeated root."
+    ],
+    "answer": "The sign flips at x=−2 (odd multiplicity) but does not flip at x=1 (even multiplicity).",
+    "correction": "Cross an odd-multiplicity real root and the sign changes; cross an even-multiplicity root and it stays the same. The roots themselves make the expression zero.",
+    "explanation": "The factor (x+2) has multiplicity 1, while (x−1)² has multiplicity 2. Thus only x=−2 changes the sign across the root."
+  },
+  {
+    "id": "fl_im_median_abs",
+    "conceptId": "c_im_2",
+    "difficulty": 1,
+    "type": "MINIMUM CHECK",
+    "title": "The minimum is at the median",
+    "scenario": "A student wants to minimise f(x)=|x−1|+|x−4|+|x−10| and chooses the mean of 1, 4 and 10, namely 5, as the minimiser.",
+    "question": "Which correction gives the minimum?",
+    "options": [
+      "Choose x=4, the median; the sum of absolute deviations is minimised at the median.",
+      "Choose x=5, the mean; mean always minimises absolute deviations.",
+      "Choose x=10, the largest point; absolute distances are smallest at an endpoint.",
+      "Choose x=0, because centring at zero minimises every absolute-value sum."
+    ],
+    "answer": "Choose x=4, the median; the sum of absolute deviations is minimised at the median.",
+    "correction": "For a sum of absolute distances to fixed points, a median of those points minimises the sum. Here the middle value is 4.",
+    "explanation": "At x=4, the sum is 3+0+6=9. Moving left increases the distance to 10; moving right increases the distance to both 1 and 4."
+  },
+  {
+    "id": "fl_ss_sum_cubes",
+    "conceptId": "c_ss_2",
+    "difficulty": 1,
+    "type": "SERIES IDENTITY",
+    "title": "The sum of cubes swapped with sum of squares",
+    "scenario": "A student writes 1³+2³+…+n³ = n(n+1)(2n+1)/6, using the formula for the sum of squares.",
+    "question": "Which formula repairs the statement?",
+    "options": [
+      "1³+2³+…+n³ = [n(n+1)/2]².",
+      "1³+2³+…+n³ = n(n+1)(2n+1)/6.",
+      "1³+2³+…+n³ = n(n+1)/2.",
+      "1³+2³+…+n³ = n²(n+1)(2n+1)/6."
+    ],
+    "answer": "1³+2³+…+n³ = [n(n+1)/2]².",
+    "correction": "The sum of cubes of the first n natural numbers is the square of their sum: [n(n+1)/2]².",
+    "explanation": "The expression n(n+1)(2n+1)/6 is the sum of squares. At n=2, the cubes sum to 9, which matches [2·3/2]²=9."
+  },
+  {
+    "id": "fl_fn_domain_surd",
+    "conceptId": "c_fn_1",
+    "difficulty": 0,
+    "type": "DOMAIN CHECK",
+    "title": "The missing negative branch",
+    "scenario": "For f(x)=√(x²−4), a student states that the domain is x≥2 because the expression under a square root must be non-negative.",
+    "question": "What is the complete real domain?",
+    "options": [
+      "x≤−2 or x≥2.",
+      "x≥2 only.",
+      "−2≤x≤2.",
+      "All real x, because x² is always non-negative."
+    ],
+    "answer": "x≤−2 or x≥2.",
+    "correction": "Require x²−4≥0, so x²≥4 and therefore |x|≥2.",
+    "explanation": "Both x=−2 and x=2 make the radicand zero, and values farther out on either side make it positive. The interval between them makes it negative."
+  },
+  {
+    "id": "fl_fn_self_inverse",
+    "conceptId": "c_fn_2",
+    "difficulty": 1,
+    "type": "FUNCTION COMPOSITION",
+    "title": "The self-inverse function",
+    "scenario": "Let f(x)=(x+2)/(3x−1). A student claims that applying f twice gives 1/x because the expression is fractional.",
+    "question": "What is the correct composition, wherever it is defined?",
+    "options": [
+      "f(f(x))=x.",
+      "f(f(x))=1/x.",
+      "f(f(x))=−x.",
+      "f(f(x))=f(x)+x."
+    ],
+    "answer": "f(f(x))=x.",
+    "correction": "This is a self-inverse fractional transformation: applying f a second time returns x (with x≠1/3).",
+    "explanation": "Substituting (x+2)/(3x−1) into f simplifies to x. The only excluded real input is x=1/3, where the original denominator is zero."
+  },
+  {
+    "id": "fl_gr_abs_input",
+    "conceptId": "c_gr_2",
+    "difficulty": 1,
+    "type": "GRAPH TRANSFORMATION",
+    "title": "Reflecting the wrong half of a graph",
+    "scenario": "For y=f(|x|), a student keeps the original left half and reflects it to the right, claiming that the absolute value affects the output.",
+    "question": "What should the transformation actually do?",
+    "options": [
+      "Keep the right half (x≥0) and mirror it across the y-axis to form the left half.",
+      "Keep the upper half (y≥0) and mirror it across the x-axis.",
+      "Flip all negative y-values upward while leaving x unchanged.",
+      "Shift the entire graph one unit right."
+    ],
+    "answer": "Keep the right half (x≥0) and mirror it across the y-axis to form the left half.",
+    "correction": "In f(|x|), the absolute value acts on the input x, so values from the right half are copied symmetrically to the left.",
+    "explanation": "For x<0, |x| is positive, so the output equals the value of the original function at the corresponding positive x."
+  },
+  {
+    "id": "fl_is_rationalize",
+    "conceptId": "c_is_1",
+    "difficulty": 0,
+    "type": "SURD CHECK",
+    "title": "The denominator still has a surd",
+    "scenario": "A student simplifies 1/(√7−√3) by multiplying numerator and denominator by √7−√3, leaving a radical expression in the denominator.",
+    "question": "Which step rationalises the denominator correctly?",
+    "options": [
+      "Multiply by the conjugate: (√7+√3)/(7−3) = (√7+√3)/4.",
+      "Multiply by √7−√3 again to get 1/(7−3).",
+      "Replace √7−√3 with √4, so the answer is 1/2.",
+      "Multiply only the numerator by √7+√3, leaving the denominator unchanged."
+    ],
+    "answer": "Multiply by the conjugate: (√7+√3)/(7−3) = (√7+√3)/4.",
+    "correction": "Multiply numerator and denominator by the conjugate. The denominator becomes (√7)²−(√3)²=4.",
+    "explanation": "The difference of squares identity (a−b)(a+b)=a²−b² removes the radical terms from the denominator."
+  },
+  {
+    "id": "fl_is_nested_radical",
+    "conceptId": "c_is_2",
+    "difficulty": 1,
+    "type": "NESTED RADICAL",
+    "title": "The infinite radical fixed point",
+    "scenario": "Let x=√(12+√(12+√(12+…))). A student claims x=12 because the same number repeats inside the radical.",
+    "question": "What value satisfies the nested radical?",
+    "options": [
+      "x=4, because x²=12+x and the non-negative solution is 4.",
+      "x=12, because the repeated constant is the value of the whole radical.",
+      "x=3, because 3²=9 is closest to 12.",
+      "x=−3, because the quadratic has a negative root."
+    ],
+    "answer": "x=4, because x²=12+x and the non-negative solution is 4.",
+    "correction": "Set x=√(12+x), square to get x²−x−12=0, then choose the non-negative root x=4.",
+    "explanation": "The quadratic factors as (x−4)(x+3)=0. A square root cannot be negative, so x=4."
+  },
+  {
+    "id": "fl_log_base_inequality",
+    "conceptId": "c_log_2",
+    "difficulty": 2,
+    "type": "LOGARITHM INEQUALITY",
+    "title": "The inequality that must flip",
+    "scenario": "Solve log₀.₅(x−1)>−2. A student solves it as if the logarithm were increasing and obtains x>5.",
+    "question": "Which solution respects both the base and the domain?",
+    "options": [
+      "1 < x < 5, because base 0.5 is decreasing and x−1 must be positive.",
+      "x>5, because logarithms always preserve inequality direction.",
+      "x<1, because the argument of a logarithm must be negative.",
+      "All real x, because the logarithm base lies between 0 and 1."
+    ],
+    "answer": "1 < x < 5, because base 0.5 is decreasing and x−1 must be positive.",
+    "correction": "Since 0<0.5<1, log base 0.5 is decreasing: x−1<4. Also require x−1>0, so 1<x<5.",
+    "explanation": "The inequality reverses when converting from the decreasing logarithm to its argument. The logarithm's domain supplies the strict lower bound x>1."
+  },
+  {
+    "id": "fl_op_identity",
+    "conceptId": "c_op_1",
+    "difficulty": 0,
+    "type": "OPERATOR CHECK",
+    "title": "Find the identity before the inverse",
+    "scenario": "A custom operation is defined by a @ b = a+b+ab. A student states that its identity is e=1 because 1 is the usual multiplicative identity.",
+    "question": "Which value leaves every a unchanged under this operation?",
+    "options": [
+      "e=0, since a@0=a+0+a·0=a.",
+      "e=1, since every operation uses 1 as identity.",
+      "e=−1, since it makes the product term disappear.",
+      "There is no identity because the operation contains three terms."
+    ],
+    "answer": "e=0, since a@0=a+0+a·0=a.",
+    "correction": "Set a@e=a: a+e+ae=a gives e(1+a)=0 for all a, so e=0.",
+    "explanation": "An identity must leave every input unchanged under the defined operation. Substituting e=0 satisfies that condition on both sides."
+  },
+  {
+    "id": "fl_op_factorized_loop",
+    "conceptId": "c_op_2",
+    "difficulty": 1,
+    "type": "OPERATOR PATTERN",
+    "title": "The long operator loop",
+    "scenario": "For a @ b = ab+a+b, a student expands repeated operations as a long polynomial and misses the factorisation.",
+    "question": "Which compact expression equals x₁ @ x₂ @ … @ xₙ?",
+    "options": [
+      "∏(xᵢ+1) − 1.",
+      "∏xᵢ + 1.",
+      "Σxᵢ − 1.",
+      "(x₁+x₂+…+xₙ)²."
+    ],
+    "answer": "∏(xᵢ+1) − 1.",
+    "correction": "Use a@b+1=(a+1)(b+1). Each additional operation multiplies one more (xᵢ+1), then subtracts 1 at the end.",
+    "explanation": "For two inputs, a@b+1=ab+a+b+1=(a+1)(b+1). Repeating this identity gives the product formula."
+  },
+  {
+    "id": "fl_n1_divisor_count",
+    "conceptId": "c_n1_2",
+    "difficulty": 1,
+    "type": "FACTOR COUNT",
+    "title": "The divisor-count exponents",
+    "scenario": "For N=2³·3², a student counts the positive divisors as 3×2=6 by multiplying the exponents directly.",
+    "question": "What is the correct divisor count?",
+    "options": [
+      "(3+1)(2+1)=12.",
+      "3×2=6.",
+      "2³×3²=72, because every divisor is a prime factor product.",
+      "3+2+1=6."
+    ],
+    "answer": "(3+1)(2+1)=12.",
+    "correction": "For N=∏pᵢ^aᵢ, the number of positive divisors is ∏(aᵢ+1). Each exponent in a divisor can range from 0 to the original exponent.",
+    "explanation": "A divisor can use 2 to powers 0–3 (four choices) and 3 to powers 0–2 (three choices): 4×3=12."
+  },
+  {
+    "id": "fl_n2_last_digit_cycle",
+    "conceptId": "c_n2_1",
+    "difficulty": 0,
+    "type": "LAST-DIGIT CYCLE",
+    "title": "The exponent remainder is zero",
+    "scenario": "To find the last digit of 2⁸, a student reduces the exponent modulo 4 to 0 and treats it as 2⁰, getting last digit 1.",
+    "question": "How should the cycle be handled?",
+    "options": [
+      "Use exponent 4 when the positive exponent is divisible by 4; 2⁴ ends in 6, so 2⁸ also ends in 6.",
+      "Use exponent 0 and always conclude the last digit is 1.",
+      "Use exponent 1 because any remainder of 0 means the cycle restarts at the first term.",
+      "Use exponent 8 without reducing; powers never repeat their last digits."
+    ],
+    "answer": "Use exponent 4 when the positive exponent is divisible by 4; 2⁴ ends in 6, so 2⁸ also ends in 6.",
+    "correction": "In a cycle of length 4, a positive exponent congruent to 0 mod 4 corresponds to the fourth position, not a zero-th position.",
+    "explanation": "The last digits of powers of 2 cycle 2,4,8,6. The 4th, 8th, 12th, … powers all end in 6."
+  },
+  {
+    "id": "fl_n2_euler_condition",
+    "conceptId": "c_n2_2",
+    "difficulty": 1,
+    "type": "MODULAR THEOREM",
+    "title": "The missing coprime condition",
+    "scenario": "A student applies Euler's theorem to claim 2^φ(8)≡1 (mod 8), without checking whether the base is coprime to the modulus.",
+    "question": "What condition was omitted?",
+    "options": [
+      "Euler's theorem requires gcd(a,n)=1; here gcd(2,8)=2, so the theorem cannot be applied.",
+      "Euler's theorem works only when a is even.",
+      "The theorem requires n to be prime, so it applies to every power of 2 except 8.",
+      "The theorem requires a=n; otherwise the exponent is always zero."
+    ],
+    "answer": "Euler's theorem requires gcd(a,n)=1; here gcd(2,8)=2, so the theorem cannot be applied.",
+    "correction": "Use a^φ(n)≡1 mod n only when gcd(a,n)=1. For a=2 and n=8, the condition fails.",
+    "explanation": "The coprime condition is essential to Euler's theorem. Indeed, 2⁴=16≡0 (mod 8), not 1."
+  },
+  {
+    "id": "fl_ns_invalid_digit",
+    "conceptId": "c_ns_1",
+    "difficulty": 0,
+    "type": "BASE DIGIT CHECK",
+    "title": "A digit that cannot exist in base eight",
+    "scenario": "A student accepts (178)₈ as a valid octal number and begins converting it to decimal.",
+    "question": "What should happen before conversion?",
+    "options": [
+      "Reject it: base 8 permits only digits 0 through 7, so digit 8 is invalid.",
+      "Convert it normally because every base permits digits 0 through 9.",
+      "Treat the digit 8 as a hexadecimal digit and keep the base as 8.",
+      "Replace digit 8 with 0 automatically and continue."
+    ],
+    "answer": "Reject it: base 8 permits only digits 0 through 7, so digit 8 is invalid.",
+    "correction": "A base-b numeral can use only digits from 0 to b−1. Validate its digits before conversion.",
+    "explanation": "Octal is base 8, so each digit must be one of 0,1,2,3,4,5,6,7. The numeral (178)₈ is not valid as written."
+  },
+  {
+    "id": "fl_ns_base_divisibility",
+    "conceptId": "c_ns_2",
+    "difficulty": 1,
+    "type": "BASE DIVISIBILITY",
+    "title": "The octal divisibility rule",
+    "scenario": "For an octal numeral, a student uses the alternating-sum rule to test divisibility by 7.",
+    "question": "Which rule applies in base 8?",
+    "options": [
+      "For divisibility by 7 (=8−1), test whether the sum of the octal digits is divisible by 7.",
+      "For divisibility by 7, test only the last digit.",
+      "For divisibility by 7 (=8+1), use the alternating sum of digits.",
+      "No digit rule applies in any base other than base 10."
+    ],
+    "answer": "For divisibility by 7 (=8−1), test whether the sum of the octal digits is divisible by 7.",
+    "correction": "In base b, divisibility by b−1 is tested by the sum of digits; divisibility by b+1 uses the alternating sum.",
+    "explanation": "For base 8, b−1=7 and b+1=9. The sum rule belongs to 7, while the alternating-sum rule belongs to 9."
+  },
+  {
+    "id": "fl_geo_angle_bisector",
+    "conceptId": "c_geo_1",
+    "difficulty": 0,
+    "type": "GEOMETRY RATIO",
+    "title": "The angle-bisector ratio reversed",
+    "scenario": "In triangle ABC, AB=6 and AC=9. AD bisects angle A and meets BC at D. A student writes BD:DC=AC:AB=3:2.",
+    "question": "Which ratio is correct?",
+    "options": [
+      "BD:DC=AB:AC=6:9=2:3.",
+      "BD:DC=AC:AB=9:6=3:2.",
+      "BD:DC=1:1, because an angle bisector always bisects the opposite side.",
+      "BD:DC=AB²:AC²=4:9."
+    ],
+    "answer": "BD:DC=AB:AC=6:9=2:3.",
+    "correction": "The angle-bisector theorem gives BD/DC=AB/AC, so the side adjacent to B corresponds to BD.",
+    "explanation": "The ratio is 6:9, which simplifies to 2:3. An angle bisector divides the opposite side in the ratio of the two adjacent sides, not necessarily into equal halves."
+  },
+  {
+    "id": "fl_men_sector_perimeter",
+    "conceptId": "c_men_1",
+    "difficulty": 0,
+    "type": "MENSURATION CHECK",
+    "title": "The missing radii in a sector perimeter",
+    "scenario": "A 90° sector has radius 4. A student reports its perimeter as 2π, counting only the arc.",
+    "question": "What is the full perimeter?",
+    "options": [
+      "2π+8, because the sector perimeter includes the arc and two radii.",
+      "2π, because a sector perimeter is just its curved edge.",
+      "4π+8, because a quarter-circle arc is the full circumference.",
+      "π+4, because both radii are counted as one radius."
+    ],
+    "answer": "2π+8, because the sector perimeter includes the arc and two radii.",
+    "correction": "A 90° arc of radius 4 has length (90/360)·2π·4=2π; add 2r=8 for the two straight edges.",
+    "explanation": "Perimeter is the curved arc plus both bounding radii. Omitting the two radii gives arc length, not perimeter."
+  },
+  {
+    "id": "fl_men_hemisphere_tsa",
+    "conceptId": "c_men_2",
+    "difficulty": 1,
+    "type": "SURFACE AREA CHECK",
+    "title": "The flat base was omitted",
+    "scenario": "A student calculates the total surface area of a solid hemisphere as 2πr², counting only its curved surface.",
+    "question": "What is the correct total surface area?",
+    "options": [
+      "3πr²: curved area 2πr² plus the circular base πr².",
+      "2πr²: the base is never counted for a solid hemisphere.",
+      "4πr²: the hemisphere has the same total area as a full sphere.",
+      "πr²: only the flat circular base counts."
+    ],
+    "answer": "3πr²: curved area 2πr² plus the circular base πr².",
+    "correction": "For a solid hemisphere, TSA=2πr²+πr²=3πr². The curved surface area alone is 2πr².",
+    "explanation": "The word total includes the flat circular face. Curved surface area and total surface area are different quantities."
+  },
+  {
+    "id": "fl_cg_slope_sign",
+    "conceptId": "c_cg_1",
+    "difficulty": 0,
+    "type": "COORDINATE GEOMETRY",
+    "title": "The line slope sign",
+    "scenario": "A student rewrites 2x+3y−6=0 as y=−(2/3)x+2 but reports the slope as +2/3.",
+    "question": "What is the correct slope?",
+    "options": [
+      "−2/3.",
+      "+2/3.",
+      "−3/2.",
+      "+3/2."
+    ],
+    "answer": "−2/3.",
+    "correction": "For ax+by+c=0, slope m=−a/b. Here m=−2/3.",
+    "explanation": "Solving for y gives 3y=−2x+6, so y=−(2/3)x+2. The coefficient of x is the slope."
+  },
+  {
+    "id": "fl_cg_distance_abs",
+    "conceptId": "c_cg_2",
+    "difficulty": 1,
+    "type": "POINT-LINE DISTANCE",
+    "title": "A distance cannot be negative",
+    "scenario": "A student uses the point-to-line distance formula for (0,0) and 3x+4y−10=0 but reports d=(−10)/5=−2.",
+    "question": "Which correction is required?",
+    "options": [
+      "Take the absolute value: d=|−10|/√(3²+4²)=10/5=2.",
+      "Keep −2, because a point below the line has negative distance.",
+      "Use denominator 3+4=7, giving distance −10/7.",
+      "Square the numerator only and report d=100/5=20."
+    ],
+    "answer": "Take the absolute value: d=|−10|/√(3²+4²)=10/5=2.",
+    "correction": "The perpendicular distance is d=|ax₁+by₁+c|/√(a²+b²), so it is never negative.",
+    "explanation": "For the origin, the numerator expression is −10 and the denominator is 5. The absolute value gives the distance 2."
+  },
+  {
+    "id": "fl_trig_conjugate",
+    "conceptId": "c_trig_1",
+    "difficulty": 0,
+    "type": "TRIGONOMETRIC IDENTITY",
+    "title": "The missing reciprocal identity",
+    "scenario": "Given secθ+tanθ=5, a student assumes secθ−tanθ=5 as well.",
+    "question": "What value must secθ−tanθ have?",
+    "options": [
+      "1/5, because (secθ+tanθ)(secθ−tanθ)=sec²θ−tan²θ=1.",
+      "5, because changing the sign between the terms has no effect.",
+      "−5, because the second expression reverses every term.",
+      "25, because the two expressions are squares of one another."
+    ],
+    "answer": "1/5, because (secθ+tanθ)(secθ−tanθ)=sec²θ−tan²θ=1.",
+    "correction": "Use sec²θ−tan²θ=1. If one factor is 5, the conjugate factor is its reciprocal 1/5.",
+    "explanation": "The product of the conjugate expressions is 1, so 5·(secθ−tanθ)=1."
+  },
+  {
+    "id": "fl_trig_linear_bound",
+    "conceptId": "c_trig_2",
+    "difficulty": 1,
+    "type": "TRIGONOMETRIC BOUND",
+    "title": "The loose maximum",
+    "scenario": "To find the maximum of 3sinθ+4cosθ, a student adds the coefficients and reports 7.",
+    "question": "What is the correct maximum over real θ?",
+    "options": [
+      "5, because the maximum is √(3²+4²).",
+      "7, because sinθ and cosθ can both equal 1 simultaneously.",
+      "4, because cosine has the larger coefficient.",
+      "12, because the two coefficients must be multiplied."
+    ],
+    "answer": "5, because the maximum is √(3²+4²).",
+    "correction": "For a sinθ+b cosθ, the maximum magnitude is √(a²+b²), not |a|+|b|.",
+    "explanation": "By the Cauchy–Schwarz inequality, 3sinθ+4cosθ≤√(3²+4²)√(sin²θ+cos²θ)=5. Equality is attainable."
+  },
+  {
+    "id": "fl_rpv_chain_ratio",
+    "conceptId": "c_rpv_1",
+    "difficulty": 0,
+    "type": "CHAIN RATIO",
+    "title": "The shared term does not match",
+    "scenario": "Given A:B=2:3 and B:C=4:5, a student writes A:B:C=2:3:5 by simply joining the ratios.",
+    "question": "Which combined ratio is consistent with both statements?",
+    "options": [
+      "8:12:15.",
+      "2:3:5.",
+      "4:3:5.",
+      "8:3:15."
+    ],
+    "answer": "8:12:15.",
+    "correction": "Make the shared B term equal. Scale 2:3 to 8:12, and 4:5 to 12:15, then combine as 8:12:15.",
+    "explanation": "The B term must have the same value in both ratios. The least common multiple of 3 and 4 is 12."
+  },
+  {
+    "id": "fl_rpv_cd_domain",
+    "conceptId": "c_rpv_2",
+    "difficulty": 1,
+    "type": "RATIO IDENTITY",
+    "title": "The zero denominator in componendo-dividendo",
+    "scenario": "A student applies (a+b)/(a−b)=(c+d)/(c−d) from a/b=c/d, even when a=b and c=d, and continues dividing by zero.",
+    "question": "What condition must be checked before using this form?",
+    "options": [
+      "The differences a−b and c−d must be non-zero; otherwise the displayed fractions are undefined.",
+      "Only a and c must be positive; denominator differences never matter.",
+      "The sums a+b and c+d must both equal zero.",
+      "No extra condition is needed because equal ratios allow division by zero."
+    ],
+    "answer": "The differences a−b and c−d must be non-zero; otherwise the displayed fractions are undefined.",
+    "correction": "Componendo-dividendo in this form requires the new denominators to be non-zero, as well as the original ratios to be defined.",
+    "explanation": "If a=b or c=d, the corresponding difference is zero and the transformed quotient is undefined. Algebraic transformations do not remove denominator restrictions."
+  },
+  {
+    "id": "fl_ama_alligation_ratio",
+    "conceptId": "c_ama_1",
+    "difficulty": 0,
+    "type": "ALLIGATION CHECK",
+    "title": "The alligation ratio reversed",
+    "scenario": "A mixture is made from 20% and 50% solutions to obtain 30%. A student claims the ratio of 20% solution to 50% solution is 1:2.",
+    "question": "What ratio does the criss-cross rule give?",
+    "options": [
+      "2:1, because (50−30):(30−20)=20:10.",
+      "1:2, because the lower concentration is closer to the average.",
+      "1:1, because the target concentration lies between the two.",
+      "3:2, by dividing 30 by 20 and 50."
+    ],
+    "answer": "2:1, because (50−30):(30−20)=20:10.",
+    "correction": "The quantity of the lower-strength ingredient is proportional to the upper gap; the higher-strength ingredient is proportional to the lower gap.",
+    "explanation": "Alligation gives low:high=(50−30):(30−20)=20:10=2:1. Twice as much 20% solution as 50% solution produces a 30% mixture."
+  },
+  {
+    "id": "fl_ppl_constant_spend",
+    "conceptId": "c_ppl_1",
+    "difficulty": 0,
+    "type": "PERCENTAGE CHECK",
+    "title": "The consumption cut is too large",
+    "scenario": "A product's price rises by 25%. A student says consumption must fall by 25% to keep total expenditure unchanged.",
+    "question": "What is the required percentage reduction in consumption?",
+    "options": [
+      "20%, because the new quantity must be 1/1.25=0.8 of the old quantity.",
+      "25%, because price and consumption percentages always offset equally.",
+      "30%, because the price rise compounds with the quantity reduction.",
+      "0%, because expenditure is independent of quantity."
+    ],
+    "answer": "20%, because the new quantity must be 1/1.25=0.8 of the old quantity.",
+    "correction": "For a price rise of a/b, the consumption reduction needed to keep spending constant is a/(a+b). With a/b=1/4, the reduction is 1/5=20%.",
+    "explanation": "The price multiplier is 1.25. To keep price×quantity constant, quantity must be multiplied by 1/1.25=0.8, a 20% reduction."
+  },
+  {
+    "id": "fl_ppl_equal_sp_loss",
+    "conceptId": "c_ppl_2",
+    "difficulty": 1,
+    "type": "SUCCESSIVE PROFIT-LOSS CHECK",
+    "title": "Equal selling prices are not break-even",
+    "scenario": "Two items are sold at the same selling price; one yields 20% profit and the other 20% loss. A student concludes the seller breaks even overall.",
+    "question": "What is the net result?",
+    "options": [
+      "A 4% overall loss.",
+      "Break-even, because +20% and −20% cancel.",
+      "A 4% overall profit.",
+      "A 20% overall loss."
+    ],
+    "answer": "A 4% overall loss.",
+    "correction": "For equal selling prices with x% profit on one and x% loss on the other, the net loss is (x/10)²%. At x=20, it is 4%.",
+    "explanation": "Equal selling prices imply different cost prices. The loss-making item's cost price is higher than the profit-making item's cost price by enough to produce a 4% net loss."
+  },
+  {
+    "id": "fl_sici_half_yearly",
+    "conceptId": "c_sici_1",
+    "difficulty": 0,
+    "type": "COMPOUNDING PERIOD",
+    "title": "The annual rate used twice",
+    "scenario": "₹1,000 is invested at 10% per annum, compounded half-yearly for one year. A student calculates the amount as 1000×1.10²=₹1,210.",
+    "question": "Which calculation uses the correct half-yearly period?",
+    "options": [
+      "1000×(1+0.10/2)² = ₹1,102.50.",
+      "1000×(1+0.10)² = ₹1,210.",
+      "1000×(1+0.10/4) = ₹1,025.",
+      "1000×(1+0.20) = ₹1,200."
+    ],
+    "answer": "1000×(1+0.10/2)² = ₹1,102.50.",
+    "correction": "For half-yearly compounding, halve the annual rate and double the number of periods: 5% for two periods.",
+    "explanation": "The amount is 1000×1.05×1.05=₹1,102.50. Using 10% per half-year applies twice the intended rate."
+  },
+  {
+    "id": "fl_sici_ci_si_gap",
+    "conceptId": "c_sici_2",
+    "difficulty": 1,
+    "type": "INTEREST DIFFERENCE",
+    "title": "The two-year CI–SI gap",
+    "scenario": "₹10,000 is invested for two years at 10% per annum. A student states that the compound-interest amount exceeds simple interest by ₹2,000.",
+    "question": "What is the correct difference between compound interest and simple interest?",
+    "options": [
+      "₹100, using P(R/100)² = 10000×0.1².",
+      "₹1,000, using P×R/100 once more.",
+      "₹2,000, because two years means two full rates of interest are added to the gap.",
+      "₹10,000, because the principal is the difference."
+    ],
+    "answer": "₹100, using P(R/100)² = 10000×0.1².",
+    "correction": "For two years, CI−SI=P(R/100)². Here that is 10000×(0.1)²=₹100.",
+    "explanation": "SI is ₹2,000 and CI is ₹2,100, so the difference is ₹100. Only the interest-on-interest creates the gap."
+  },
+  {
+    "id": "fl_td_reduce_speed_ratio",
+    "conceptId": "c_td_2",
+    "difficulty": 1,
+    "type": "CIRCULAR TRACK CHECK",
+    "title": "The speed ratio must be reduced first",
+    "scenario": "Two runners move around the same circular track in the same direction at speeds in the ratio 6:4. A student uses |6−4|=2 as the number of distinct meeting points.",
+    "question": "What should be done before applying the meeting-point rule?",
+    "options": [
+      "Reduce 6:4 to 3:2 first; the coprime ratio gives |3−2|=1 distinct meeting point.",
+      "Use 6+4=10 because same-direction runners add speeds.",
+      "Keep 6:4 because reducing a ratio changes physical speed.",
+      "Use the LCM 12 as the number of meeting points."
+    ],
+    "answer": "Reduce 6:4 to 3:2 first; the coprime ratio gives |3−2|=1 distinct meeting point.",
+    "correction": "Reduce the speed ratio to coprime integers before using |a−b| for same-direction distinct meeting points.",
+    "explanation": "The ratio 6:4 represents the same proportion as 3:2. The reduced integers determine the distinct relative meeting points around the track."
+  },
+  {
+    "id": "fl_tw_combined_time",
+    "conceptId": "c_tw_1",
+    "difficulty": 0,
+    "type": "WORK RATE",
+    "title": "Adding days instead of rates",
+    "scenario": "Worker A completes a job in 6 days and worker B in 3 days. A student adds 6+3 and claims they finish together in 9 days.",
+    "question": "How long do they take working together at constant rates?",
+    "options": [
+      "2 days, since the combined time is (6×3)/(6+3).",
+      "9 days, because their individual times add.",
+      "4.5 days, because the average of their individual times is the combined time.",
+      "3 days, because the faster worker determines the whole duration."
+    ],
+    "answer": "2 days, since the combined time is (6×3)/(6+3).",
+    "correction": "Add efficiencies, not completion times: 1/6+1/3=1/2 job per day, so the job takes 2 days.",
+    "explanation": "Together they complete half the job each day. The product-over-sum shortcut gives (6×3)/(6+3)=2 days."
+  },
+  {
+    "id": "fl_tw_monkey_pole",
+    "conceptId": "c_tw_2",
+    "difficulty": 1,
+    "type": "ALTERNATING WORK",
+    "title": "The final climb has no slip",
+    "scenario": "A monkey climbs 5 m in each climbing minute and slips 2 m in the following minute on a 29 m pole. A student divides 29 by the net gain of 3 m and estimates about 10 cycles.",
+    "question": "What is the correct elapsed time?",
+    "options": [
+      "17 minutes: after 8 climb-slip cycles it is at 24 m at minute 16, then the final 5 m climb reaches the top at minute 17.",
+      "20 minutes, because 29/3 rounds up to 10 complete two-minute cycles.",
+      "16 minutes, because reaching 24 m means the pole is completed.",
+      "18 minutes, because the slip must occur after the final climb too."
+    ],
+    "answer": "17 minutes: after 8 climb-slip cycles it is at 24 m at minute 16, then the final 5 m climb reaches the top at minute 17.",
+    "correction": "For an alternating climb-and-slip process, calculate the cycles before the final upward stroke separately. Once the top is reached, no further slip occurs.",
+    "explanation": "Each complete cycle gains 3 m. Eight cycles leave the monkey at 24 m after 16 minutes; the next 5 m upward stroke reaches 29 m during minute 17."
+  },
+  {
+    "id": "fl_pc_gap_method",
+    "conceptId": "c_pc_1",
+    "difficulty": 1,
+    "type": "COUNTING CHECK",
+    "title": "The gap method counted incorrectly",
+    "scenario": "Three distinct boys and two distinct girls are arranged in a row. A student wants no two girls adjacent and counts only 3!×C(4,2), forgetting to arrange the two girls within the selected gaps.",
+    "question": "What is the complete count?",
+    "options": [
+      "3!×⁴P₂=72, because after arranging the boys, choose and order two of the four gaps.",
+      "3!×C(4,2)=36, because girls have no identities once their gaps are selected.",
+      "5!=120, because adjacency restrictions do not affect arrangements.",
+      "3!×2!=12, because girls can occupy only the two ends."
+    ],
+    "answer": "3!×⁴P₂=72, because after arranging the boys, choose and order two of the four gaps.",
+    "correction": "Arrange the boys in 3! ways. Then place the two distinct girls in two different gaps in ⁴P₂ ways.",
+    "explanation": "There are four gaps around three boys. The girls are distinct, so choose the first gap and girl order: 4×3=12, multiplied by 3!=6 gives 72."
+  },
+  {
+    "id": "fl_prob_independent_exclusive",
+    "conceptId": "c_prob_1",
+    "difficulty": 0,
+    "type": "PROBABILITY CHECK",
+    "title": "Independent or mutually exclusive?",
+    "scenario": "Events A and B both have non-zero probability and cannot occur together. A student calls them independent because neither event affects the experiment.",
+    "question": "What is the mathematical issue with that conclusion?",
+    "options": [
+      "If they are mutually exclusive, P(A∩B)=0; if both probabilities are non-zero, independence would require P(A∩B)=P(A)P(B)>0, so they cannot be both.",
+      "Mutually exclusive events are always independent, whatever their probabilities.",
+      "Independence means P(A)=P(B), so only equal-probability events qualify.",
+      "The events are independent whenever P(A)+P(B)=1."
+    ],
+    "answer": "If they are mutually exclusive, P(A∩B)=0; if both probabilities are non-zero, independence would require P(A∩B)=P(A)P(B)>0, so they cannot be both.",
+    "correction": "Distinguish disjointness (intersection probability zero) from independence (intersection probability equals the product). Non-zero mutually exclusive events are dependent.",
+    "explanation": "Because P(A)>0 and P(B)>0, their product is positive. This contradicts the zero intersection probability required by mutual exclusivity."
+  },
+  {
+    "id": "fl_stat_median_sorted",
+    "conceptId": "c_stat_1",
+    "difficulty": 0,
+    "type": "STATISTICS CHECK",
+    "title": "The median without sorting",
+    "scenario": "For the data 12, 3, 8, 1, a student selects the third written value, 8, as the median without sorting the observations.",
+    "question": "What is the correct median?",
+    "options": [
+      "5.5, the average of the two middle sorted values 3 and 8.",
+      "8, because the third listed value is the median of four observations.",
+      "6, the average of all four values rounded to an integer.",
+      "1, the smallest value in the data set."
+    ],
+    "answer": "5.5, the average of the two middle sorted values 3 and 8.",
+    "correction": "Sort the data as 1,3,8,12. With an even number of observations, average the two middle values.",
+    "explanation": "The middle observations after sorting are 3 and 8, so median=(3+8)/2=5.5. The mean is a different measure."
+  },
+  {
+    "id": "fl_stat_sd_scaling",
+    "conceptId": "c_stat_2",
+    "difficulty": 1,
+    "type": "STATISTICS TRANSFORMATION",
+    "title": "A negative multiplier cannot make SD negative",
+    "scenario": "Every value in a data set is transformed by y=−3x+5. A student claims the new standard deviation is −3 times the old standard deviation.",
+    "question": "How do standard deviation and variance change?",
+    "options": [
+      "SD becomes 3σ and variance becomes 9σ²; adding 5 does not change spread.",
+      "SD becomes −3σ and variance becomes −9σ².",
+      "SD becomes σ+5 and variance becomes σ²+5.",
+      "Both SD and variance remain unchanged because only a linear transformation was applied."
+    ],
+    "answer": "SD becomes 3σ and variance becomes 9σ²; adding 5 does not change spread.",
+    "correction": "For y=cx+k, SD_y=|c|SD_x and Var(y)=c²Var(x). The shift k changes the mean but not the spread.",
+    "explanation": "The multiplier −3 reverses and stretches the data, but distances from the mean are non-negative. Thus SD scales by 3 and variance by 9."
+  }
+];    // =========================================================================
     // 4. STATE MANAGEMENT & DYNAMIC FILTER SYNC (quantbyprof_v2_state)
     // =========================================================================
     const STORAGE_KEY = "quantbyprof_v2_state";
@@ -1304,9 +2226,9 @@
         survivalBest: 0,
         trapSessions: 0,
         afterimageBest: 0,
-        redlineBest: 0,
+        faultlineBest: 0,
         afterimageRuns: 0,
-        redlineRuns: 0
+        faultlineRuns: 0
       }
     });
 
@@ -1318,11 +2240,11 @@
         this.subtopic = "All";       // Scoped Chapter selection
         this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
         this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
-        this.arcadeGame = "afterimage"; // 'afterimage' | 'redline'
+        this.arcadeGame = "afterimage"; // 'afterimage' | 'faultline'
 
         this.activeTimer = null;
         this.afterimageState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, lastRunScore: 0 };
-        this.redlineState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, lastRunScore: 0, animationSpeed: 1 };
+        this.faultlineState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, maxStreak: 0, speedBonusCount: 0, runResults: [], lastRunScore: 0 };
 
         this.populateModalSubtopics();
         this.renderAll();
@@ -1481,7 +2403,7 @@
 
       stopArcadeRuns() {
         this.clearTimers();
-        for (const key of ["afterimageState", "redlineState"]) {
+        for (const key of ["afterimageState", "faultlineState"]) {
           const game = this[key];
           if (game && game.active) {
             game.lastRunScore = game.score || 0;
@@ -1531,10 +2453,10 @@
           svgContainer.innerHTML = "";
           svgContainer.classList.add("hidden");
         }
-        document.getElementById("modal-concept-formula").textContent = c.formula;
-        document.getElementById("modal-concept-highlight").textContent = `★ ${c.highlight}`;
-        document.getElementById("modal-concept-bullets").innerHTML = c.bullets.map(b => `<li>${b}</li>`).join("");
-        document.getElementById("modal-concept-hook").textContent = `🧠 ${c.hook}`;
+        document.getElementById("modal-concept-formula").innerHTML = this.formatMathText(c.formula);
+        document.getElementById("modal-concept-highlight").innerHTML = `★ ${this.formatMathText(c.highlight)}`;
+        document.getElementById("modal-concept-bullets").innerHTML = c.bullets.map(b => `<li>${this.formatMathText(b)}</li>`).join("");
+        document.getElementById("modal-concept-hook").innerHTML = `🧠 ${this.formatMathText(c.hook)}`;
         document.getElementById("concept-modal").classList.remove("hidden");
       }
 
@@ -1543,12 +2465,62 @@
       }
 
       // =======================================================================
-      // v3.1 MINIGAMES: AFTERIMAGE + REDLINE
+      // v3.1 MINIGAMES: AFTERIMAGE + FAULTLINE
       // =======================================================================
       escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, ch => ({
           "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
         }[ch]));
+      }
+
+      // Render plain-text math notation safely, preserving both subscripts and superscripts.
+      // Examples: log_b(x), log_(b^m)(x), x^2, x^{n+1}, T_((n+1)/2), b^(log_b x).
+      // The parser operates on raw text and HTML-escapes every literal segment before adding tags.
+      formatMathText(value) {
+        const source = String(value ?? "");
+        const pairs = { "(": ")", "{": "}" };
+        const readScriptArgument = (text, markerIndex) => {
+          let start = markerIndex + 1;
+          if (start >= text.length) return null;
+          const opener = text[start];
+          if (pairs[opener]) {
+            const stack = [pairs[opener]];
+            for (let j = start + 1; j < text.length; j++) {
+              const ch = text[j];
+              if (pairs[ch]) stack.push(pairs[ch]);
+              else if (stack.length && ch === stack[stack.length - 1]) {
+                stack.pop();
+                if (!stack.length) return { value: text.slice(start + 1, j), end: j + 1 };
+              }
+            }
+            return null;
+          }
+          // For a bare exponent, include a leading sign when present; otherwise consume one atom.
+          if ((text[markerIndex] === "^") && (opener === "+" || opener === "-" || opener === "−")) start++;
+          const match = text.slice(start).match(/^[\p{L}\p{N}∞]+/u);
+          if (!match) return null;
+          return { value: (start > markerIndex + 1 ? opener : "") + match[0], end: start + match[0].length };
+        };
+        const renderSegment = text => {
+          let html = "";
+          let literal = "";
+          const flush = () => {
+            if (literal) { html += this.escapeHTML(literal); literal = ""; }
+          };
+          for (let i = 0; i < text.length;) {
+            const marker = text[i];
+            if (marker !== "_" && marker !== "^") { literal += marker; i++; continue; }
+            const arg = readScriptArgument(text, i);
+            if (!arg || !arg.value.length) { literal += marker; i++; continue; }
+            flush();
+            const tag = marker === "_" ? "sub" : "sup";
+            html += `<${tag}>${renderSegment(arg.value)}</${tag}>`;
+            i = arg.end;
+          }
+          flush();
+          return html;
+        };
+        return `<span class="math-text">${renderSegment(source)}</span>`;
       }
 
       shuffleList(items) {
@@ -1606,35 +2578,6 @@
               sourceIndex: index
             });
           });
-        });
-        return items;
-      }
-
-      getRedlineFactItems(pool) {
-        const items = [];
-        const seenByConcept = new Set();
-        const add = (concept, kind, value, suffix = "") => {
-          const text = String(value ?? "").trim();
-          if (!text) return;
-          const normalized = this.normalizeFact(text);
-          const unique = `${concept.id}::${normalized}`;
-          if (seenByConcept.has(unique)) return;
-          seenByConcept.add(unique);
-          items.push({ key: `${concept.id}::${kind}::${normalized}${suffix}`, concept, kind, value: text });
-        };
-        (pool || []).forEach(concept => {
-          const formulaParts = this.getFormulaParts(concept);
-          const formula = formulaParts.length ? formulaParts[0].text : "";
-          if (formula) {
-            add(concept, "formula", formula);
-            const formulaItem = items[items.length - 1];
-            if (formulaItem && formulaItem.concept.id === concept.id && formulaItem.kind === "formula") formulaItem.label = formulaParts[0].label || "Formula";
-          }
-          if (concept.highlight) add(concept, "highlight", concept.highlight);
-          (concept.bullets || []).forEach((bullet, i) => {
-            add(concept, /\btrap\s*:/i.test(bullet) ? "trap" : "bullet", bullet, `::${i}`);
-          });
-          if (concept.hook) add(concept, "hook", concept.hook);
         });
         return items;
       }
@@ -1702,6 +2645,39 @@
         return [sameLevelSiblings, siblingChapters, chapter, parent, all];
       }
 
+      getConceptOptionLabel(concept) {
+        const title = String(concept?.title || "Untitled concept").trim();
+        const chapter = String(concept?.subtopic || "").trim();
+        const level = String(concept?.level || "Foundation").trim();
+        return [title, chapter, level].filter(Boolean).join(" · ");
+      }
+
+      makeConceptOptions(targetConcept, difficulty = 1) {
+        if (!targetConcept?.id) return null;
+        const distractors = [];
+        const usedIds = new Set([targetConcept.id]);
+        const usedLabels = new Set([this.normalizeFact(this.getConceptOptionLabel(targetConcept))]);
+        // Prefer nearby/sibling concepts, then broaden the pool only when needed.
+        for (const pool of this.getOptionPools(targetConcept, difficulty)) {
+          for (const candidate of this.shuffleList(pool)) {
+            if (!candidate?.id || usedIds.has(candidate.id)) continue;
+            // Do not use a same-titled card as a distractor; only the level may differ.
+            if (this.normalizeFact(candidate.title) === this.normalizeFact(targetConcept.title)) continue;
+            const label = this.getConceptOptionLabel(candidate);
+            const normalized = this.normalizeFact(label);
+            if (!normalized || usedLabels.has(normalized)) continue;
+            usedIds.add(candidate.id);
+            usedLabels.add(normalized);
+            distractors.push(candidate);
+            if (distractors.length === 3) break;
+          }
+          if (distractors.length === 3) break;
+        }
+        if (distractors.length !== 3) return null;
+        const options = this.shuffleList([targetConcept, ...distractors]);
+        return { options, correctIndex: options.findIndex(option => option.id === targetConcept.id) };
+      }
+
       getShortConceptTitle(title) {
         const raw = String(title ?? "").trim();
         if (raw.length <= 44) return raw;
@@ -1715,39 +2691,21 @@
         const correctNorm = this.normalizeFact(correctText);
         const wrong = [];
         const seen = new Set([correctNorm]);
-        const pools = this.getOptionPools(targetConcept, difficulty);
-        for (const pool of pools) {
-          const items = (isFormula || kind === "formula")
-            ? this.getFormulaItems(pool)
-            : this.getRedlineFactItems(pool).filter(item => item.kind === kind);
+        for (const pool of this.getOptionPools(targetConcept, difficulty)) {
+          const items = this.getFormulaItems(pool);
           for (const item of this.shuffleList(items)) {
             if (item.concept.id === targetConcept.id) continue;
-            const value = item.value;
-            const normalized = this.normalizeFact(value);
+            const normalized = this.normalizeFact(item.value);
             if (!normalized || seen.has(normalized)) continue;
             seen.add(normalized);
-            wrong.push(value);
+            wrong.push(item.value);
             if (wrong.length >= 3) break;
           }
           if (wrong.length >= 3) break;
         }
-        // For sparse trap categories, use other concise notes as distractors rather than inventing facts.
-        if (wrong.length < 3 && !isFormula && kind === "trap") {
-          for (const pool of [this.getAllConcepts()]) {
-            const items = this.getRedlineFactItems(pool).filter(item => ["trap", "bullet"].includes(item.kind));
-            for (const item of this.shuffleList(items)) {
-              if (item.concept.id === targetConcept.id) continue;
-              const normalized = this.normalizeFact(item.value);
-              if (!normalized || seen.has(normalized)) continue;
-              seen.add(normalized); wrong.push(item.value);
-              if (wrong.length >= 3) break;
-            }
-          }
-        }
         if (wrong.length < 3) return null;
         const options = this.shuffleList([correctText, ...wrong.slice(0, 3)]);
-        const uniqueCount = new Set(options.map(value => this.normalizeFact(value))).size;
-        if (options.length !== 4 || uniqueCount !== 4) return null;
+        if (new Set(options.map(value => this.normalizeFact(value))).size !== 4) return null;
         return { options, correctIndex: options.findIndex(value => this.normalizeFact(value) === correctNorm) };
       }
 
@@ -1759,44 +2717,37 @@
         return { formula: correctFormula, options: optionSet.options, correctIndex: optionSet.correctIndex, formulaLabel: formulaItem.label || "Formula" };
       }
 
-      createFactChallenge(item, difficulty = 0) {
-        if (!item || !item.concept || !item.value) return null;
-        const optionSet = this.makeOptions(item.value, item.concept, item.kind, difficulty, false);
-        if (!optionSet) return null;
-        const prompts = {
-          formula: "FORMULA MATCH",
-          highlight: "RULE CHECK",
-          trap: "TRAP SPOTTER",
-          bullet: "PATTERN CUE",
-          hook: "MEMORY CUE"
-        };
-        return {
-          target: item.concept, sourceItem: item, answer: item.value,
-          prompt: prompts[item.kind] || "DETAIL MATCH",
-          questionType: item.kind, options: optionSet.options,
-          correctIndex: optionSet.correctIndex, difficulty
-        };
-      }
-
-      getGameConceptPool() {
-        // Compatibility helper: use the selected level's preferred tier, expanding only when needed.
-        return this.chooseGameScope(pool => this.getRedlineFactItems(pool), 10).pool;
-      }
-
+      // Restore the existing Afterimage round setup: a formula is previewed,
+      // hidden, and then matched against formula-only distractors.
       prepareAfterimageRound() {
         const state = this.afterimageState;
-        const formulaItem = state.deck[state.index];
-        const challenge = formulaItem ? this.createFormulaChallenge(formulaItem, 1) : null;
-        if (!formulaItem || !challenge) {
+        const item = state.deck[state.index];
+        if (!item) {
           state.active = false;
           state.phase = "idle";
+          state.current = null;
           return;
         }
-        state.current = { target: formulaItem.concept, sourceItem: formulaItem, ...challenge, selectedIndex: null, result: null };
+        const difficulty = state.index < 3 ? 0 : state.index < 7 ? 1 : 2;
+        const challenge = this.createFormulaChallenge(item, difficulty);
+        if (!challenge) {
+          state.active = false;
+          state.phase = "idle";
+          state.current = null;
+          return;
+        }
+        state.current = {
+          ...challenge,
+          target: item.concept,
+          sourceItem: item,
+          formula: item.value,
+          selectedIndex: null,
+          result: null
+        };
         state.phase = "preview";
-        state.phaseStartedAt = Date.now();
         state.previewDurationMs = 2300;
-        state.answerStartedAt = 0;
+        state.phaseStartedAt = Date.now();
+        state.answerStartedAt = Date.now();
       }
 
       startAfterimage() {
@@ -1804,10 +2755,19 @@
         const scope = this.chooseGameScope(pool => this.getFormulaItems(pool), 10);
         const deck = this.buildUniqueDeck(scope.items, 10);
         this.afterimageState = {
-          active: true, phase: "preview", deck, index: 0, current: null,
-          score: 0, streak: 0, speedBonusCount: 0, scopeLabel: scope.label,
+          active: deck.length > 0,
+          phase: "preview",
+          deck,
+          index: 0,
+          current: null,
+          score: 0,
+          streak: 0,
+          speedBonusCount: 0,
+          scopeLabel: scope.label,
           lastRunScore: this.afterimageState.lastRunScore || 0,
-          phaseStartedAt: Date.now(), previewDurationMs: 2300, answerStartedAt: 0
+          previewDurationMs: 2300,
+          phaseStartedAt: Date.now(),
+          answerStartedAt: Date.now()
         };
         this.prepareAfterimageRound();
         if (!this.afterimageState.deck.length || !this.afterimageState.active) {
@@ -1819,70 +2779,121 @@
         this.renderMain();
       }
 
-      getRedlineQuestionDeck(pool, count = 10) {
-        const items = this.getRedlineFactItems(pool);
-        const specs = [
-          ["formula"], ["formula", "hook"], ["hook", "formula"],
-          ["highlight"], ["formula", "highlight"], ["bullet", "hook", "highlight"],
-          ["trap", "bullet"], ["trap", "bullet", "highlight"],
-          ["highlight", "hook", "bullet"], ["trap", "bullet", "hook", "formula"]
-        ];
-        const used = new Set();
-        const deck = [];
-        for (let round = 0; round < count; round++) {
-          const preferred = specs[round] || ["trap", "bullet", "highlight", "hook", "formula"];
-          let candidates = items.filter(item => !used.has(item.key) && preferred.includes(item.kind));
-          if (round >= 6) {
-            const advanced = candidates.filter(item => item.concept.level === "Advanced");
-            if (advanced.length) candidates = advanced;
-          }
-          if (!candidates.length) candidates = items.filter(item => !used.has(item.key));
-          if (!candidates.length) break;
-          const chosen = this.shuffleList(candidates)[0];
-          deck.push(chosen);
-          used.add(chosen.key);
-        }
-        return deck;
+      // -----------------------------------------------------------------------
+      // v4.0 FAULTLINE: complete source-linked challenge bank, one challenge per built-in concept card;
+      // source concept cards. No generated or cross-topic answer fabrication.
+      // -----------------------------------------------------------------------
+      getFaultlineChallenges() {
+        const concepts = new Map(this.getAllConcepts().map(concept => [concept.id, concept]));
+        return FAULTLINE_CHALLENGES.map(challenge => {
+          const target = concepts.get(challenge.conceptId);
+          const options = Array.isArray(challenge.options) ? challenge.options : [];
+          const normal = value => this.normalizeFact(value);
+          const distinct = new Set(options.map(normal));
+          if (!target || options.length !== 4 || distinct.size !== 4 || !options.some(option => normal(option) === normal(challenge.answer))) return null;
+          return { ...challenge, target };
+        }).filter(Boolean);
       }
 
-      prepareRedlineRound() {
-        const state = this.redlineState;
-        const item = state.deck[state.index];
-        if (!item) {
-          state.active = false;
-          state.phase = "idle";
-          return;
+      buildFaultlineDeck(count = 10) {
+        const all = this.getFaultlineChallenges();
+        const byLevel = items => this.levelFilter === "All" ? items : items.filter(item => (item.level || item.target.level || "Foundation") === this.levelFilter);
+        const chapterPool = items => items.filter(item => item.target.subtopic === this.subtopic && (this.topic === "All" || item.target.topic === this.topic));
+        const topicPool = items => this.topic === "All" ? items : items.filter(item => item.target.topic === this.topic);
+        const tiers = [];
+        if (this.subtopic !== "All") {
+          tiers.push({ label: `Chapter · ${this.subtopic}`, items: byLevel(chapterPool(all)) });
+          if (this.topic !== "All") tiers.push({ label: `Expanded to ${this.topic}`, items: byLevel(topicPool(all)) });
+          tiers.push({ label: "Expanded to all chapters", items: byLevel(all) });
+        } else if (this.topic !== "All") {
+          tiers.push({ label: `Topic · ${this.topic}`, items: byLevel(topicPool(all)) });
+          tiers.push({ label: "Expanded to all chapters", items: byLevel(all) });
+        } else {
+          tiers.push({ label: "All reviewed challenges", items: byLevel(all) });
         }
-        const baseDifficulty = state.index < 3 ? 0 : state.index < 6 ? 1 : 2;
-        // Two quick correct answers accelerate the challenge tier; rounds 7–10 are always hard at minimum.
-        const speedBoost = Math.min(2, Math.floor((state.speedBonusCount || 0) / 2));
-        const difficulty = Math.min(2, Math.max(state.index >= 6 ? 2 : 0, baseDifficulty + speedBoost));
-        const challenge = this.createFactChallenge(item, difficulty);
+        if (this.levelFilter !== "All") tiers.push({ label: "Included both Foundation and Advanced", items: all });
+
+        const selected = [];
+        const seen = new Set();
+        let lastTier = tiers[0]?.label || "Reviewed challenge bank";
+        let usedTierCount = 0;
+        for (const tier of tiers) {
+          const candidates = this.shuffleList(tier.items.filter(item => !seen.has(item.id)));
+          if (!candidates.length) continue;
+          usedTierCount++;
+          lastTier = tier.label;
+          for (const item of candidates) {
+            if (seen.has(item.id)) continue;
+            seen.add(item.id);
+            selected.push(item);
+            if (selected.length >= count) break;
+          }
+          if (selected.length >= count) break;
+        }
+        // Put straightforward checks first, then reasoning-heavy challenges at the end.
+        const deck = [];
+        [0, 1, 2].forEach(level => {
+          deck.push(...this.shuffleList(selected.filter(item => Number(item.difficulty || 0) === level)));
+        });
+        const scopeLabel = usedTierCount > 1 || selected.length < count
+          ? (this.levelFilter !== "All" && lastTier.includes("both Foundation") ? "Scope widened · both levels included" : "Scope widened · more chapters included")
+          : lastTier;
+        return { deck: deck.slice(0, count), scopeLabel };
+      }
+
+      prepareFaultlineRound() {
+        const state = this.faultlineState;
+        const challenge = state.deck[state.index];
         if (!challenge) {
           state.active = false;
           state.phase = "idle";
           return;
         }
-        state.current = { ...challenge, selectedIndex: null, result: null };
+        const options = this.shuffleList([...challenge.options]);
+        const answerNorm = this.normalizeFact(challenge.answer);
+        const correctIndex = options.findIndex(option => this.normalizeFact(option) === answerNorm);
+        if (correctIndex < 0 || new Set(options.map(option => this.normalizeFact(option))).size !== 4) {
+          state.active = false;
+          state.phase = "idle";
+          state.current = null;
+          return;
+        }
+        state.current = {
+          ...challenge,
+          options,
+          correctIndex,
+          selectedIndex: null,
+          result: null,
+          questionType: challenge.type
+        };
         state.phase = "answer";
         state.phaseStartedAt = Date.now();
         state.answerStartedAt = Date.now();
       }
 
-      startRedline() {
+      startFaultline() {
         this.clearTimers();
-        const scope = this.chooseGameScope(pool => this.getRedlineFactItems(pool), 10);
-        const deck = this.getRedlineQuestionDeck(scope.pool, 10);
-        this.redlineState = {
-          active: true, phase: "answer", deck, index: 0, current: null,
-          score: 0, streak: 0, speedBonusCount: 0, scopeLabel: scope.label,
-          lastRunScore: this.redlineState.lastRunScore || 0,
-          animationSpeed: 1, phaseStartedAt: Date.now(), answerStartedAt: Date.now()
+        const built = this.buildFaultlineDeck(10);
+        this.faultlineState = {
+          active: built.deck.length > 0,
+          phase: "answer",
+          deck: built.deck,
+          index: 0,
+          current: null,
+          score: 0,
+          streak: 0,
+          maxStreak: 0,
+          speedBonusCount: 0,
+          scopeLabel: built.scopeLabel,
+          runResults: [],
+          lastRunScore: this.faultlineState.lastRunScore || 0,
+          phaseStartedAt: Date.now(),
+          answerStartedAt: Date.now()
         };
-        this.prepareRedlineRound();
-        if (!this.redlineState.deck.length || !this.redlineState.active) {
-          this.redlineState.active = false;
-          this.redlineState.phase = "idle";
+        this.prepareFaultlineRound();
+        if (!this.faultlineState.deck.length || !this.faultlineState.active) {
+          this.faultlineState.active = false;
+          this.faultlineState.phase = "idle";
         } else {
           this.startGameTicker();
         }
@@ -1897,7 +2908,6 @@
       tickGameTimers() {
         const now = Date.now();
         const after = this.afterimageState;
-        const red = this.redlineState;
         if (after.active) {
           if (after.phase === "preview") {
             const remaining = Math.max(0, after.previewDurationMs - (now - after.phaseStartedAt));
@@ -1914,9 +2924,12 @@
             this.updateAnswerClock("after", now - after.answerStartedAt, 15000);
             if (now - after.answerStartedAt >= 15000) this.resolveFormulaAnswer("afterimage", -1, true);
           }
-        } else if (red.active && red.phase === "answer") {
-          this.updateAnswerClock("red", now - red.answerStartedAt, 15000);
-          if (now - red.answerStartedAt >= 15000) this.resolveFormulaAnswer("redline", -1, true);
+        } else {
+          const fault = this.faultlineState;
+          if (fault.active && fault.phase === "answer") {
+            this.updateAnswerClock("faultline", now - fault.answerStartedAt, 25000);
+            if (now - fault.answerStartedAt >= 25000) this.resolveFormulaAnswer("faultline", -1, true);
+          }
         }
       }
 
@@ -1932,13 +2945,15 @@
         this.resolveFormulaAnswer("afterimage", index, false);
       }
 
-      answerRedline(index) {
-        this.resolveFormulaAnswer("redline", index, false);
+      answerFaultline(index) {
+        this.resolveFormulaAnswer("faultline", index, false);
       }
 
       resolveFormulaAnswer(gameName, selectedIndex, timedOut = false) {
         const isAfterimage = gameName === "afterimage";
-        const state = isAfterimage ? this.afterimageState : this.redlineState;
+        const isFaultline = gameName === "faultline";
+        if (!isAfterimage && !isFaultline) return;
+        const state = isAfterimage ? this.afterimageState : this.faultlineState;
         if (!state.active || state.phase !== "answer" || !state.current) return;
         const elapsedMs = Math.max(0, Date.now() - state.answerStartedAt);
         const elapsedSeconds = elapsedMs / 1000;
@@ -1949,26 +2964,32 @@
         const base = correct ? 100 : 0;
         if (correct) {
           state.streak += 1;
-          bonus = elapsedSeconds <= 10 ? Math.max(0, Math.round(100 * (1 - elapsedSeconds / 10))) : 0;
+          if (isFaultline) state.maxStreak = Math.max(state.maxStreak || 0, state.streak);
+          const bonusCap = isAfterimage ? 100 : 30;
+          bonus = elapsedSeconds <= 10 ? Math.max(0, Math.round(bonusCap * (1 - elapsedSeconds / 10))) : 0;
           if (bonus > 0) state.speedBonusCount = (state.speedBonusCount || 0) + 1;
-          multiplier = Math.min(1.5, 1 + Math.floor(state.streak / 3) * 0.1);
+          multiplier = Math.min(isAfterimage ? 1.5 : 1.3, 1 + Math.floor(state.streak / 3) * 0.1);
           points = Math.round((base + bonus) * multiplier);
           state.score += points;
           this.state.arcade.xp += Math.max(1, Math.round(points / 10));
-          if (!isAfterimage && elapsedSeconds <= 10) {
-            const boost = elapsedSeconds <= 3 ? 0.24 : elapsedSeconds <= 6 ? 0.15 : 0.08;
-            state.animationSpeed = Math.min(2.5, state.animationSpeed + boost);
-          }
         } else {
           state.streak = 0;
           if (!this.state.reviseQueue.includes(state.current.target.id)) this.state.reviseQueue.push(state.current.target.id);
-          if (!isAfterimage) state.animationSpeed = Math.max(0.8, state.animationSpeed - 0.2);
+        }
+        if (isFaultline) {
+          state.runResults = state.runResults || [];
+          state.runResults.push({
+            conceptId: state.current.target.id,
+            challengeId: state.current.id,
+            questionType: state.current.questionType || "error diagnosis",
+            correct, timedOut, elapsedSeconds, points, round: state.index + 1
+          });
         }
         state.current.selectedIndex = selectedIndex;
         state.current.result = { correct, timedOut, elapsedSeconds, base, bonus, multiplier, points };
         state.phase = "feedback";
         state.lastRunScore = state.score;
-        const bestKey = isAfterimage ? "afterimageBest" : "redlineBest";
+        const bestKey = isAfterimage ? "afterimageBest" : "faultlineBest";
         this.state.arcade[bestKey] = Math.max(this.state.arcade[bestKey] || 0, state.score);
         this.clearTimers();
         this.saveState();
@@ -1993,20 +3014,20 @@
         this.renderMain();
       }
 
-      continueRedline() {
-        const state = this.redlineState;
+      continueFaultline() {
+        const state = this.faultlineState;
         if (!state.active || state.phase !== "feedback") return;
         if (state.index >= state.deck.length - 1) {
           state.active = false;
           state.phase = "complete";
           state.lastRunScore = state.score;
-          this.state.arcade.redlineRuns = (this.state.arcade.redlineRuns || 0) + 1;
+          this.state.arcade.faultlineRuns = (this.state.arcade.faultlineRuns || 0) + 1;
           this.saveState();
           this.renderMain();
           return;
         }
         state.index += 1;
-        this.prepareRedlineRound();
+        this.prepareFaultlineRound();
         this.startGameTicker();
         this.renderMain();
       }
@@ -2202,14 +3223,14 @@
           bar.className = "flex space-x-2 overflow-x-auto no-scrollbar pb-1";
           const games = [
             { id: "afterimage", label: "✧ Afterimage" },
-            { id: "redline", label: "↗ Redline" }
+            { id: "faultline", label: "⌁ Faultline" }
           ];
           bar.innerHTML = games.map((g, index) => `
             <button aria-pressed="${this.arcadeGame === g.id}" onclick="window.app.setArcadeGame('${g.id}')" class="game-mode-button flex-1 min-w-[145px] px-5 py-3 rounded-xl text-sm sm:text-base font-black whitespace-nowrap border transition ${
               this.arcadeGame === g.id
                 ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/25 scale-[1.02]"
                 : "bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500 hover:bg-slate-700"
-            }">${g.id === "afterimage" ? "✧ Afterimage" : "↗ Redline"}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.id === "afterimage" ? "Memory trace" : "Speed loop"}</span></button>
+            }">${g.id === "afterimage" ? "✧ Afterimage" : "⌁ Faultline"}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.id === "afterimage" ? "Memory trace" : "Catch and repair errors"}</span></button>
           `).join("");
         }
       }
@@ -2259,13 +3280,13 @@
 
               ${c.svg ? `<div class="mb-2.5">${c.svg}</div>` : ""}
 
-              <div class="p-3 rounded-xl bg-black/35 border border-indigo-300/20 font-mono-code text-xs text-indigo-100 mb-2.5 overflow-x-auto whitespace-pre-line leading-relaxed">${c.formula}</div>
-              <div class="p-2.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs font-semibold mb-3">★ ${c.highlight}</div>
+              <div class="p-3 rounded-xl bg-black/35 border border-indigo-300/20 font-mono-code text-xs text-indigo-100 mb-2.5 overflow-x-auto whitespace-pre-line leading-relaxed">${this.formatMathText(c.formula)}</div>
+              <div class="p-2.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs font-semibold mb-3">★ ${this.formatMathText(c.highlight)}</div>
               <ul class="space-y-1.5 text-xs text-indigo-100/90 mb-3 pl-4 list-disc">
-                ${c.bullets.map(b => `<li>${b}</li>`).join("")}
+                ${c.bullets.map(b => `<li>${this.formatMathText(b)}</li>`).join("")}
               </ul>
               <div class="pt-2.5 border-t border-white/10 text-xs text-amber-300 font-medium flex items-center justify-between">
-                <span>🧠 <em>${c.hook}</em></span>
+                <span>🧠 <em>${this.formatMathText(c.hook)}</em></span>
               </div>
             </article>
           `;
@@ -2288,52 +3309,52 @@
               <div class="text-base font-black text-violet-300">${Number(arcade.afterimageBest || 0)}</div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
-              <div class="text-[10px] font-mono-code uppercase text-slate-400">Redline Best</div>
-              <div class="text-base font-black text-rose-300">${Number(arcade.redlineBest || 0)}</div>
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Faultline Best</div>
+              <div class="text-base font-black text-amber-300">${Number(arcade.faultlineBest || 0)}</div>
             </div>
           </div>
         `;
-        return statsBar + (this.arcadeGame === "redline" ? this.renderRedlineGame() : this.renderAfterimageGame());
+        return statsBar + (this.arcadeGame === "faultline" ? this.renderFaultlineGame() : this.renderAfterimageGame());
       }
 
       renderGameLanding(gameName) {
         const isAfter = gameName === "afterimage";
-        const state = isAfter ? this.afterimageState : this.redlineState;
+        const state = isAfter ? this.afterimageState : this.faultlineState;
         const complete = state.phase === "complete";
-        const title = isAfter ? "Afterimage" : "Redline";
-        const subtitle = isAfter ? "Watch it. Hold it. Rebuild it." : "Catch the line before it passes.";
+        const title = isAfter ? "Afterimage" : "Faultline";
+        const subtitle = isAfter ? "Watch it. Hold it. Rebuild it." : "Spot the slip. Repair the reasoning.";
         const description = isAfter
           ? "A formula flashes, then vanishes. Choose the matching expression before the trace fades."
-          : "A short concept cue, four related options, and a moving track. Quick correct answers raise your score and accelerate the loop.";
+          : "Inspect a worked step. Find the fault. Choose the repair.";
         const missedCount = this.state.reviseQueue.length;
-        const scopePreview = this.subtopic !== "All" ? `Starts in ${this.subtopic}; expands to ${this.topic} or all topics only when needed.` : this.topic !== "All" ? `Starts within ${this.topic}; expands to all topics only when needed.` : "Uses all chapter groups, with question types drawn from the full concept cards.";
-        const startButton = isAfter ? "Start Afterimage" : "Start Redline";
-        const action = isAfter ? "startAfterimage" : "startRedline";
-        const accent = isAfter ? "violet" : "rose";
+        const scopePreview = isAfter
+          ? (this.subtopic !== "All" ? `Starts in ${this.subtopic}; expands only when needed.` : this.topic !== "All" ? `Starts within ${this.topic}; expands only when needed.` : "A varied run across the available concepts.")
+          : (this.subtopic !== "All" ? `Starting chapter: ${this.subtopic}.` : this.topic !== "All" ? `Starting topic: ${this.topic}.` : "Challenges across all chapters.");
+        const startButton = isAfter ? "Start Afterimage" : "Start Faultline";
+        const action = isAfter ? "startAfterimage" : "startFaultline";
+        const accent = isAfter ? "violet" : "amber";
         const lastScore = Number(state.lastRunScore || 0);
+        const bestKey = isAfter ? "afterimageBest" : "faultlineBest";
+        const best = Number(this.state.arcade[bestKey] || 0);
         return `
           <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
-            <div class="absolute -top-20 -right-16 w-56 h-56 rounded-full blur-3xl opacity-10 ${isAfter ? "bg-violet-400" : "bg-rose-400"}"></div>
+            <div class="absolute -top-20 -right-16 w-56 h-56 rounded-full blur-3xl opacity-10 ${isAfter ? "bg-violet-400" : "bg-amber-400"}"></div>
             <div class="relative">
               <div class="flex items-start justify-between gap-3 mb-5">
                 <div>
-                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isAfter ? "text-violet-300" : "text-rose-300"}">${isAfter ? "MEMORY TRACE" : "SPEED LOOP"}</div>
+                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isAfter ? "text-violet-300" : "text-amber-300"}">${isAfter ? "MEMORY TRACE" : "ERROR ANALYSIS"}</div>
                   <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">${title}</h2>
                   <p class="text-sm text-slate-300 mt-1">${subtitle}</p>
                 </div>
-                <div class="text-3xl sm:text-4xl ${isAfter ? "text-violet-300" : "text-rose-300"}">${isAfter ? "✧" : "↗"}</div>
+                <div class="text-3xl sm:text-4xl ${isAfter ? "text-violet-300" : "text-amber-300"}">${isAfter ? "✧" : "⌁"}</div>
               </div>
               <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mb-2">${description}</p>
               <p class="text-xs text-amber-200/80 leading-relaxed max-w-xl mb-5">${this.escapeHTML(scopePreview)}</p>
-              <div class="grid sm:grid-cols-3 gap-2 mb-5">
-                <div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Rounds</div><div class="text-sm font-bold text-white">10 per run</div></div>
-                <div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Scoring</div><div class="text-sm font-bold text-white">100 base + speed bonus</div></div>
-                <div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Bonus window</div><div class="text-sm font-bold text-white">First 10 seconds</div></div>
-              </div>
-              ${complete ? `<div class="rounded-xl border ${isAfter ? "border-violet-400/30 bg-violet-400/10" : "border-rose-400/30 bg-rose-400/10"} p-4 mb-4"><div class="text-xs text-slate-300">Last run complete</div><div class="text-2xl font-black text-white mt-1">${lastScore.toLocaleString()} pts</div><div class="text-xs text-slate-400 mt-1">Best: ${Number(this.state.arcade[isAfter ? "afterimageBest" : "redlineBest"] || 0).toLocaleString()} pts</div></div>` : (lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last run: <strong class="text-white">${lastScore.toLocaleString()} pts</strong></div>` : "")}
-              <button onclick="window.app.${action}()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-950 shadow-lg transition hover:brightness-110 ${isAfter ? "bg-violet-300 shadow-violet-500/15" : "bg-rose-300 shadow-rose-500/15"}">${startButton} <span aria-hidden="true">→</span></button>
+              ${isAfter ? `<div class="grid grid-cols-2 gap-2 mb-5"><div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Rounds</div><div class="text-sm font-bold text-white">10 per run</div></div><div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Answer window</div><div class="text-sm font-bold text-white">15 seconds</div></div></div>` : `<div class="inline-flex flex-wrap gap-2 mb-5"><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">10 challenges per run</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">25 seconds each</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">Misses → Revise Queue</span></div>`}
+              ${complete ? `<div class="rounded-xl border ${isAfter ? "border-violet-400/30 bg-violet-400/10" : "border-amber-400/30 bg-amber-400/10"} p-4 mb-4"><div class="text-xs text-slate-300">Last run complete</div><div class="text-2xl font-black text-white mt-1">${lastScore.toLocaleString()} pts</div><div class="text-xs text-slate-400 mt-1">Best: ${best.toLocaleString()} pts</div>${!isAfter ? (() => { const rs = state.runResults || []; const right = rs.filter(r => r.correct).length; const avg = rs.length ? (rs.reduce((sum, r) => sum + r.elapsedSeconds, 0) / rs.length).toFixed(1) : "—"; return `<div class="grid grid-cols-3 gap-2 mt-3"><div class="rounded-lg bg-black/20 p-2"><div class="text-[9px] text-slate-400 uppercase">Accuracy</div><div class="text-sm font-black text-white">${rs.length ? Math.round(right / rs.length * 100) : 0}%</div></div><div class="rounded-lg bg-black/20 p-2"><div class="text-[9px] text-slate-400 uppercase">Avg. time</div><div class="text-sm font-black text-white">${avg}s</div></div><div class="rounded-lg bg-black/20 p-2"><div class="text-[9px] text-slate-400 uppercase">Best streak</div><div class="text-sm font-black text-white">${Number(state.maxStreak || 0)}</div></div></div>`; })() : ""}</div>` : (lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last run: <strong class="text-white">${lastScore.toLocaleString()} pts</strong></div>` : "")}
+              <button onclick="window.app.${action}()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-950 shadow-lg transition hover:brightness-110 ${isAfter ? "bg-violet-300 shadow-violet-500/15" : "bg-amber-300 shadow-amber-500/15"}">${startButton} <span aria-hidden="true">→</span></button>
               ${missedCount ? `<button onclick="window.app.goToReviseQueue()" class="w-full sm:w-auto sm:ml-2 mt-3 px-5 py-3 rounded-xl border border-rose-400/40 bg-rose-400/10 text-rose-200 text-sm font-bold hover:bg-rose-400/20 transition">Review missed cards (${missedCount}) →</button>` : ""}
-              <p class="text-[10px] text-slate-500 mt-4">Missed concepts are added to the Revise Queue. Question variety comes from formulas, rules, bullets, traps and memory hooks.</p>
+              ${isAfter ? "" : `<p class="text-[10px] text-slate-500 mt-4">Diagnose first; speed is a bonus, not the goal.</p>`}
             </div>
           </section>
         `;
@@ -2348,7 +3369,7 @@
         const isPreview = phase === "preview";
         const isAnswer = phase === "answer";
         const result = current.result;
-        const formula = this.escapeHTML(current.formula);
+        const formula = this.formatMathText(current.formula);
         const title = this.escapeHTML(target.title);
         const roundCount = `${state.index + 1} / ${state.deck.length}`;
         const topic = this.escapeHTML(`${target.topic} · ${target.subtopic}`);
@@ -2360,7 +3381,7 @@
             else if (idx === current.selectedIndex) cls = "border-rose-400/80 bg-rose-950/50 text-rose-100";
             else cls = "border-slate-800 bg-slate-950/50 text-slate-500 opacity-60";
           }
-          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerAfterimage(${idx})" class="game-option w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls} ${phase === "feedback" ? "cursor-default" : ""}"><span class="text-violet-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.escapeHTML(option)}</button>`;
+          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerAfterimage(${idx})" class="game-option w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls} ${phase === "feedback" ? "cursor-default" : ""}"><span class="text-violet-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.formatMathText(option)}</button>`;
         }).join("");
         const feedback = result ? `
           <div class="rounded-xl border ${result.correct ? "border-emerald-400/40 bg-emerald-400/10" : "border-rose-400/40 bg-rose-400/10"} p-4 mt-4">
@@ -2391,58 +3412,58 @@
         `;
       }
 
-      renderRedlineGame() {
-        const state = this.redlineState;
-        if (!state.active || !state.current) return this.renderGameLanding("redline");
+      renderFaultlineGame() {
+        const state = this.faultlineState;
+        if (!state.active || !state.current) return this.renderGameLanding("faultline");
         const current = state.current;
-        const target = current.target;
         const phase = state.phase;
         const isAnswer = phase === "answer";
         const result = current.result;
-        const cue = this.escapeHTML(this.getShortConceptTitle(target.title));
-        const answer = this.escapeHTML(current.answer || "");
-        const sourceLabel = current.questionType === "formula" && current.sourceItem && current.sourceItem.label && current.sourceItem.label !== "Formula"
-          ? `<div class="text-xs text-rose-200/85 mt-1">${this.escapeHTML(current.sourceItem.label)}</div>` : "";
+        const scenarioHtml = this.formatMathText(current.scenario || "");
+        const questionHtml = this.formatMathText(current.question || "");
         const roundCount = `${state.index + 1} / ${state.deck.length}`;
         const progress = ((state.index + (isAnswer ? 0.55 : 1)) / state.deck.length) * 100;
-        const duration = Math.max(0.45, 2.4 / Math.max(0.8, state.animationSpeed || 1));
-        const difficultyLabel = ["EASY", "MID", "HARD"][current.difficulty || 0];
+        const difficultyLabel = ["EASY", "MID", "HARD"][Math.max(0, Math.min(2, Number(current.difficulty || 0)))];
         const optionsHtml = current.options.map((option, idx) => {
-          let cls = "border-rose-400/20 bg-slate-900/90 text-slate-100 hover:border-rose-300/70 hover:bg-rose-950/30";
+          let cls = "border-amber-400/20 bg-slate-900/90 text-slate-100 hover:border-amber-300/70 hover:bg-amber-950/30";
           if (phase === "feedback") {
             if (idx === current.correctIndex) cls = "border-emerald-400/80 bg-emerald-950/60 text-emerald-100";
             else if (idx === current.selectedIndex) cls = "border-rose-400/80 bg-rose-950/50 text-rose-100";
             else cls = "border-slate-800 bg-slate-950/50 text-slate-500 opacity-60";
           }
-          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerRedline(${idx})" class="game-option game-answer-copy w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls}"><span class="text-rose-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.escapeHTML(option)}</button>`;
+          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerFaultline(${idx})" class="game-option game-answer-copy w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls}"><span class="text-amber-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.formatMathText(String(option ?? ""))}</button>`;
         }).join("");
         const feedback = result ? `
           <div class="rounded-xl border ${result.correct ? "border-emerald-400/40 bg-emerald-400/10" : "border-rose-400/40 bg-rose-400/10"} p-4 mt-4">
-            <div class="font-bold text-sm ${result.correct ? "text-emerald-200" : "text-rose-200"}">${result.timedOut ? "Checkpoint missed — time expired" : result.correct ? `Clean pass · +${result.points} pts` : "Checkpoint missed · +0 pts"}</div>
-            <div class="text-xs text-slate-300 mt-1">${result.correct ? `Base 100 + speed bonus ${result.bonus}${result.multiplier > 1 ? ` · ${result.multiplier.toFixed(1)}× streak` : ""}` : `Correct detail: ${answer}`}</div>
-            ${!result.correct ? `<div class="text-xs text-rose-200/90 mt-2">Added to the Revise Queue.</div><button onclick="window.app.goToReviseQueue()" class="mt-2 text-xs font-bold text-rose-200 underline underline-offset-2">Review missed cards in Revise Queue →</button>` : ""}
+            <div class="font-bold text-sm ${result.correct ? "text-emerald-200" : "text-rose-200"}">${result.timedOut ? "Time expired — fault not repaired" : result.correct ? `Fault repaired · +${result.points} pts` : "Fault not repaired · +0 pts"}</div>
+            <div class="text-xs text-slate-200 mt-3"><span class="uppercase tracking-wider text-[10px] text-amber-200 font-bold block mb-1">Correct repair</span>${this.formatMathText(current.correction || current.answer || "")}</div>
+            <div class="text-xs text-slate-300 mt-3"><span class="uppercase tracking-wider text-[10px] text-slate-400 font-bold block mb-1">Why it matters</span>${this.formatMathText(current.explanation || "Review the source concept for the underlying rule.")}</div>
+            <div class="text-[10px] text-slate-500 mt-3 border-t border-white/10 pt-2">Reference card: ${this.escapeHTML(current.target.title)} · ${this.escapeHTML(current.target.subtopic)} · ${this.escapeHTML(current.target.level || "Foundation")}</div>
+            ${!result.correct ? `<div class="text-xs text-amber-200/90 mt-2">Added to the Revise Queue.</div><button onclick="window.app.goToReviseQueue()" class="mt-2 text-xs font-bold text-amber-200 underline underline-offset-2">Review missed cards in Revise Queue →</button>` : ""}
           </div>
-          <button onclick="window.app.continueRedline()" class="w-full mt-3 px-4 py-3 rounded-xl bg-rose-300 hover:bg-rose-200 text-slate-950 text-sm font-black">${state.index >= state.deck.length - 1 ? "Finish run" : "Next checkpoint →"}</button>
+          <button onclick="window.app.continueFaultline()" class="w-full mt-3 px-4 py-3 rounded-xl bg-amber-300 hover:bg-amber-200 text-slate-950 text-sm font-black">${state.index >= state.deck.length - 1 ? "Finish run" : "Next challenge →"}</button>
         ` : "";
         return `
           <section class="game-panel rounded-2xl p-4 sm:p-5 overflow-hidden">
             <div class="flex items-center justify-between gap-2 mb-4">
-              <div><div class="text-[10px] uppercase tracking-[.2em] text-rose-300">REDLINE · ${difficultyLabel}</div><div class="text-xs text-slate-400 mt-1">${this.escapeHTML(state.scopeLabel || `${target.topic} · ${target.subtopic}`)}</div></div>
+              <div><div class="text-[10px] uppercase tracking-[.2em] text-amber-300">FAULTLINE · ${difficultyLabel}</div><div class="text-xs text-slate-400 mt-1">${this.escapeHTML(state.scopeLabel || "Reviewed challenge run")}</div></div>
               <div class="text-right"><div class="text-[10px] text-slate-500">ROUND</div><div class="font-mono-code font-bold text-white">${roundCount}</div></div>
-              <div class="text-right"><div class="text-[10px] text-slate-500">SCORE</div><div class="font-mono-code font-black text-rose-200">${state.score.toLocaleString()}</div></div>
-              <div class="text-right"><div class="text-[10px] text-slate-500">STREAK</div><div class="font-mono-code font-bold text-amber-300">${state.streak}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">SCORE</div><div class="font-mono-code font-black text-amber-200">${state.score.toLocaleString()}</div></div>
+              <div class="text-right"><div class="text-[10px] text-slate-500">STREAK</div><div class="font-mono-code font-bold text-emerald-300">${state.streak}</div></div>
             </div>
-            <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mb-3"><div class="game-progress h-full rounded-full bg-rose-400" style="width:${progress}%"></div></div>
-            <div class="redline-track mb-4" style="--track-duration:${duration.toFixed(2)}s" aria-label="Looping speed track"></div>
-            <div class="rounded-2xl border border-rose-400/25 bg-gradient-to-br from-rose-950/40 to-slate-950 p-4 sm:p-5 mb-4">
-              <div class="text-[10px] uppercase tracking-[.2em] text-rose-300 mb-2">${this.escapeHTML(current.prompt || "DETAIL MATCH")}</div>
-              <h2 class="text-base sm:text-lg font-bold text-white">${cue}</h2>
-              ${sourceLabel}
-              ${isAnswer ? `<div class="flex justify-between items-center mt-4 text-xs text-slate-400"><span>Choose the matching detail</span><span class="font-mono-code font-bold text-rose-200" id="red-time-label">15.0s</span></div><div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="red-answer-progress" class="game-progress h-full bg-rose-400" style="width:100%"></div></div>` : `<div class="text-xs text-slate-300 mt-3">Response time: ${result.elapsedSeconds.toFixed(2)}s</div>`}
+            <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mb-4"><div class="game-progress h-full rounded-full bg-amber-400" style="width:${progress}%"></div></div>
+            <div class="faultline-work rounded-xl p-4 sm:p-5 mb-4">
+              <div class="faultline-tag text-[10px] uppercase text-amber-300 font-bold mb-2">Inspect the work</div>
+              <div class="text-sm sm:text-base text-slate-100 leading-relaxed whitespace-pre-line">${scenarioHtml}</div>
+            </div>
+            <div class="rounded-xl border border-amber-400/25 bg-slate-950/70 p-4 sm:p-5 mb-4">
+              <div class="faultline-tag text-[10px] uppercase text-amber-300 font-bold mb-2">Find the fault</div>
+              <h2 class="text-base sm:text-lg font-bold text-white leading-relaxed">${questionHtml}</h2>
+              ${isAnswer ? `<div class="flex justify-between items-center mt-4 text-xs text-slate-400"><span>Choose the valid repair</span><span class="font-mono-code font-bold text-amber-200" id="faultline-time-label">25.0s</span></div><div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="faultline-answer-progress" class="game-progress h-full bg-amber-400" style="width:100%"></div></div>` : `<div class="text-xs text-slate-300 mt-3">Response time: ${result.elapsedSeconds.toFixed(2)}s</div>`}
             </div>
             ${isAnswer || phase === "feedback" ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optionsHtml}</div>` : ""}
             ${feedback}
-            <div class="flex items-center justify-between gap-3 mt-4 text-[10px] text-slate-500"><span>Fast correct picks speed up the track loop.</span><span>${state.deck.length - state.index - (phase === "feedback" ? 1 : 0)} left</span></div>
+            <div class="flex items-center justify-between gap-3 mt-4 text-[10px] text-slate-500"><span>Diagnose first; speed earns up to 30 bonus points.</span><span>${state.deck.length - state.index - (phase === "feedback" ? 1 : 0)} left</span></div>
           </section>
         `;
       }
