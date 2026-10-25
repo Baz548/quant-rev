@@ -17,7 +17,7 @@ A single-file study tool for CAT/GMAT quantitative concepts, quick revision, and
 2. Open it in a modern browser (Chrome or Edge recommended).
 3. Choose **Revise** to study cards or **Minigames** to launch Afterimage or Faultline.
 
-The file stores progress in the browser's local storage. Progress is local to that browser/profile; use **Sync** to back it up before clearing browser data or moving to another device. Also this file can be accessed online via the links from the pages part of this site.
+The file stores progress in the browser's local storage. Progress is local to that browser/profile; use **Sync** to back it up before clearing browser data or moving to another device. Also this file can be accessed online via the link: (https://baz548.github.io/quant-rev/).
 
 **Internet note:** Tailwind CSS and Google Fonts are loaded from external CDNs for styling. The HTML can open without them, but its appearance may be reduced when offline.
 
