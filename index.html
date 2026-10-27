@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v4.0 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf v4.1 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -96,7 +96,7 @@
       border-color: rgba(255, 255, 255, 0.28) !important;
     }
 
-    /* v4.0: Afterimage + expanded, source-linked Faultline challenge bank */
+    /* v4.4: LinkedIn Queens Logic Grid + expanded, source-linked Faultline challenge bank */
     .game-panel {
       background: linear-gradient(145deg, rgba(15,23,42,.97), rgba(2,6,23,.98));
       border: 1px solid rgba(148,163,184,.22);
@@ -110,10 +110,72 @@
     }
     .game-option:not(:disabled):active { transform: scale(.985); }
     .game-option:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
-    .afterimage-glow { animation: afterimageGlow 2.2s ease-in-out infinite alternate; }
-    @keyframes afterimageGlow {
-      from { box-shadow: 0 0 10px rgba(129,140,248,.12); opacity: .88; }
-      to { box-shadow: 0 0 30px rgba(129,140,248,.35); opacity: 1; }
+    /* Queens Logic Grid (LinkedIn Star-Battle / Queens) */
+    .queens-board {
+      display: grid;
+      width: 100%;
+      max-width: 430px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      border: 3px solid #0f172a;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.12);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .queens-cell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+      transition: filter 0.12s ease, transform 0.08s ease;
+      padding: 0;
+      outline: none;
+    }
+    .queens-cell:hover {
+      filter: brightness(1.08);
+    }
+    .queens-cell:active {
+      transform: scale(0.95);
+    }
+    .queens-cell.is-conflict {
+      animation: queensConflictPulse 0.9s ease-in-out infinite alternate;
+      box-shadow: inset 0 0 0 3px #e11d48, 0 0 12px rgba(225, 29, 72, 0.65);
+      z-index: 2;
+    }
+    .queens-cell.is-hint {
+      box-shadow: inset 0 0 0 3.5px #fbbf24, 0 0 16px rgba(251, 191, 36, 0.85);
+      z-index: 3;
+    }
+    @keyframes queensConflictPulse {
+      from { box-shadow: inset 0 0 0 2.5px #f43f5e; }
+      to { box-shadow: inset 0 0 0 4px #be123c; }
+    }
+    .queens-crown {
+      font-size: clamp(1.05rem, 3.6vw, 1.55rem);
+      line-height: 1;
+      filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.45));
+      animation: crownPop 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+    }
+    @keyframes crownPop {
+      from { transform: scale(0.5); opacity: 0.4; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .queens-mark-manual {
+      font-size: clamp(0.78rem, 2.5vw, 1rem);
+      font-weight: 800;
+      color: rgba(15, 23, 42, 0.72);
+      line-height: 1;
+    }
+    .queens-mark-auto {
+      font-size: clamp(0.68rem, 2.1vw, 0.88rem);
+      font-weight: 700;
+      color: rgba(15, 23, 42, 0.42);
+      line-height: 1;
     }
     .faultline-work {
       border-left: 3px solid rgba(251,191,36,.8);
@@ -134,7 +196,7 @@
       min-height: 30px;
     }
 
-    /* STRICT EQUAL-SIZE GAME SELECTION BUTTONS (✧ Afterimage | ⌁ Faultline) */
+    /* STRICT EQUAL-SIZE GAME SELECTION BUTTONS (👑 Queens | ⌁ Faultline) */
     .game-mode-button {
       animation: gameButtonPop .32s cubic-bezier(.2,.85,.25,1.15) both;
     }
@@ -338,7 +400,6 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .afterimage-glow { animation-duration: 8s !important; }
       .game-option, .game-progress { transition: none !important; }
     }
 
@@ -352,7 +413,7 @@
       <!-- Brand & Version -->
       <div class="flex items-center space-x-2 lg:pt-1">
         <span class="font-black text-base sm:text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v4.0</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v4.1</span>
       </div>
 
       <!-- Utility Actions (+ Add & Sync) -->
@@ -2542,9 +2603,9 @@
         blitzHigh: 0,
         survivalBest: 0,
         trapSessions: 0,
-        afterimageBest: 0,
+        queensBest: 0,
+        queensSolved: 0,
         faultlineBest: 0,
-        afterimageRuns: 0,
         faultlineRuns: 0
       }
     });
@@ -2557,10 +2618,30 @@
         this.subtopic = "All";       // Scoped Chapter selection
         this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
         this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
-        this.arcadeGame = "afterimage"; // 'afterimage' | 'faultline'
+        this.arcadeGame = "queens";  // 'queens' | 'faultline'
 
         this.activeTimer = null;
-        this.afterimageState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, lastRunScore: 0 };
+        this.queensState = {
+          active: false,
+          phase: "idle", // 'idle' | 'playing' | 'complete'
+          size: 6,
+          autoX: true,
+          regions: [],
+          solution: [],
+          cells: [],     // 0 = empty, 1 = manual X, 2 = Crown, 3 = auto X
+          history: [],
+          conflicts: [],
+          conflictReasons: [],
+          hintCell: null,
+          hintMessage: "",
+          hintsUsed: 0,
+          elapsedSeconds: 0,
+          startedAt: 0,
+          score: 0,
+          streak: 0,
+          lastRunScore: 0,
+          lastSolveSeconds: 0
+        };
         this.faultlineState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, maxStreak: 0, speedBonusCount: 0, runResults: [], lastRunScore: 0 };
 
         this.populateModalSubtopics();
@@ -2720,7 +2801,7 @@
 
       stopArcadeRuns() {
         this.clearTimers();
-        for (const key of ["afterimageState", "faultlineState"]) {
+        for (const key of ["queensState", "faultlineState"]) {
           const game = this[key];
           if (game && game.active) {
             game.lastRunScore = game.score || 0;
@@ -2782,7 +2863,7 @@
       }
 
       // =======================================================================
-      // v3.1 MINIGAMES: AFTERIMAGE + FAULTLINE
+      // v4.4 MINIGAMES: QUEENS (ARRANGEMENT LOGIC) + FAULTLINE
       // =======================================================================
       escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, ch => ({
@@ -3034,70 +3115,469 @@
         return { formula: correctFormula, options: optionSet.options, correctIndex: optionSet.correctIndex, formulaLabel: formulaItem.label || "Formula" };
       }
 
-      // Restore the existing Afterimage round setup: a formula is previewed,
-      // hidden, and then matched against formula-only distractors.
-      prepareAfterimageRound() {
-        const state = this.afterimageState;
-        const item = state.deck[state.index];
-        if (!item) {
-          state.active = false;
-          state.phase = "idle";
-          state.current = null;
-          return;
-        }
-        const difficulty = state.index < 3 ? 0 : state.index < 7 ? 1 : 2;
-        const challenge = this.createFormulaChallenge(item, difficulty);
-        if (!challenge) {
-          state.active = false;
-          state.phase = "idle";
-          state.current = null;
-          return;
-        }
-        state.current = {
-          ...challenge,
-          target: item.concept,
-          sourceItem: item,
-          formula: item.value,
-          selectedIndex: null,
-          result: null
-        };
-        state.phase = "preview";
-        state.previewDurationMs = 2300;
-        state.phaseStartedAt = Date.now();
-        state.answerStartedAt = Date.now();
+      // =======================================================================
+      // LINKEDIN "QUEENS" LOGIC PUZZLE ENGINE (Arrangement & Deduction Trainer)
+      // Rules:
+      // 1. Exactly 1 Crown (👑) in each Row, Column, and Colored Region.
+      // 2. No two Crowns can touch — not even diagonally (8-neighbor King rule).
+      // =======================================================================
+      getQueensPalette() {
+        return [
+          { bg: "#c4b5fd", name: "Lavender" }, // 0
+          { bg: "#fde68a", name: "Amber" },    // 1
+          { bg: "#99f6e4", name: "Mint" },     // 2
+          { bg: "#fecdd3", name: "Coral" },    // 3
+          { bg: "#bae6fd", name: "Sky" },      // 4
+          { bg: "#fed7aa", name: "Peach" },    // 5
+          { bg: "#d9f99d", name: "Lime" },     // 6
+          { bg: "#f5d0fe", name: "Orchid" }    // 7
+        ];
       }
 
-      startAfterimage() {
-        this.clearTimers();
-        const scope = this.chooseGameScope(pool => this.getFormulaItems(pool), 10);
-        const deck = this.buildUniqueDeck(scope.items, 10);
-        this.afterimageState = {
-          active: deck.length > 0,
-          phase: "preview",
-          deck,
-          index: 0,
-          current: null,
-          score: 0,
-          streak: 0,
-          speedBonusCount: 0,
-          scopeLabel: scope.label,
-          lastRunScore: this.afterimageState.lastRunScore || 0,
-          previewDurationMs: 2300,
-          phaseStartedAt: Date.now(),
-          answerStartedAt: Date.now()
+      countQueensSolutions(regions, n, limit = 2) {
+        let count = 0;
+        let usedCols = 0;
+        let usedRegs = 0;
+
+        const backtrack = (r, prevC) => {
+          if (r === n) {
+            count += 1;
+            return;
+          }
+          for (let c = 0; c < n; c++) {
+            if (usedCols & (1 << c)) continue;
+            if (prevC !== -2 && Math.abs(c - prevC) <= 1) continue;
+            const reg = regions[r][c];
+            if (usedRegs & (1 << reg)) continue;
+
+            usedCols |= (1 << c);
+            usedRegs |= (1 << reg);
+            backtrack(r + 1, c);
+            usedCols &= ~(1 << c);
+            usedRegs &= ~(1 << reg);
+            if (count >= limit) return;
+          }
         };
-        this.prepareAfterimageRound();
-        if (!this.afterimageState.deck.length || !this.afterimageState.active) {
-          this.afterimageState.active = false;
-          this.afterimageState.phase = "idle";
-        } else {
-          this.startGameTicker();
+
+        backtrack(0, -2);
+        return count;
+      }
+
+      generateQueensBoard(n = 6) {
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        const weightChoices = [1, 1, 2, 4, 8];
+
+        for (let attempt = 0; attempt < 600; attempt++) {
+          // 1. Generate a valid non-touching Queen placement (1 per row, 1 per col, |c[i] - c[i+1]| >= 2)
+          let qCols = null;
+          const baseCols = Array.from({ length: n }, (_, i) => i);
+          for (let tries = 0; tries < 250; tries++) {
+            const cand = this.shuffleList(baseCols);
+            let ok = true;
+            for (let i = 0; i < n - 1; i++) {
+              if (Math.abs(cand[i] - cand[i + 1]) <= 1) {
+                ok = false;
+                break;
+              }
+            }
+            if (ok) {
+              qCols = cand;
+              break;
+            }
+          }
+          if (!qCols) continue;
+
+          // 2. Seed contiguous regions at each Queen position and grow with varied region weights
+          const regions = Array.from({ length: n }, () => Array(n).fill(-1));
+          const frontier = [];
+          for (let r = 0; r < n; r++) {
+            const c = qCols[r];
+            regions[r][c] = r;
+            for (const [dr, dc] of dirs) {
+              const nr = r + dr, nc = c + dc;
+              if (nr >= 0 && nr < n && nc >= 0 && nc < n) {
+                frontier.push([nr, nc, r]);
+              }
+            }
+          }
+
+          const weights = Array.from({ length: n }, () => weightChoices[Math.floor(Math.random() * weightChoices.length)]);
+          let unassigned = n * n - n;
+          let guard = 0;
+
+          while (unassigned > 0 && frontier.length > 0 && guard < 4000) {
+            guard++;
+            const idx = Math.floor(Math.random() * frontier.length);
+            const [r, c, reg] = frontier[idx];
+            if (regions[r][c] !== -1) {
+              frontier[idx] = frontier[frontier.length - 1];
+              frontier.pop();
+              continue;
+            }
+            if (Math.random() > 1 / weights[reg] && guard < 2500) {
+              continue;
+            }
+            regions[r][c] = reg;
+            unassigned--;
+            frontier[idx] = frontier[frontier.length - 1];
+            frontier.pop();
+            for (const [dr, dc] of dirs) {
+              const nr = r + dr, nc = c + dc;
+              if (nr >= 0 && nr < n && nc >= 0 && nc < n && regions[nr][nc] === -1) {
+                frontier.push([nr, nc, reg]);
+              }
+            }
+          }
+
+          // Verify unique solution
+          if (unassigned === 0 && this.countQueensSolutions(regions, n, 2) === 1) {
+            return { regions, solution: qCols };
+          }
         }
+
+        // Fallback deterministic unique board if random generation ever hits cap
+        const fallbackCols = n === 5 ? [1, 3, 0, 2, 4] : n === 7 ? [1, 3, 5, 0, 2, 4, 6] : n === 8 ? [1, 3, 5, 7, 0, 2, 4, 6] : [1, 3, 5, 0, 2, 4];
+        const fallbackRegions = Array.from({ length: n }, (_, r) =>
+          Array.from({ length: n }, (__, c) => (c === fallbackCols[r] ? r : r))
+        );
+        return { regions: fallbackRegions, solution: fallbackCols };
+      }
+
+      setQueensSize(size) {
+        const validSize = [5, 6, 7, 8].includes(Number(size)) ? Number(size) : 6;
+        this.queensState.size = validSize;
+        if (this.queensState.active) {
+          this.startQueens(validSize);
+        } else {
+          this.renderMain();
+        }
+      }
+
+      toggleQueensAutoX() {
+        this.queensState.autoX = !this.queensState.autoX;
+        if (this.queensState.active) {
+          this.recomputeQueensAutoX();
+          this.renderMain();
+        } else {
+          this.renderMain();
+        }
+      }
+
+      startQueens(customSize) {
+        this.clearTimers();
+        const size = [5, 6, 7, 8].includes(Number(customSize)) ? Number(customSize) : (this.queensState.size || 6);
+        const generated = this.generateQueensBoard(size);
+        const cells = Array.from({ length: size }, () => Array(size).fill(0));
+
+        this.queensState = {
+          ...this.queensState,
+          active: true,
+          phase: "playing",
+          size,
+          regions: generated.regions,
+          solution: generated.solution,
+          cells,
+          history: [],
+          conflicts: [],
+          conflictReasons: [],
+          hintCell: null,
+          hintMessage: "",
+          hintsUsed: 0,
+          elapsedSeconds: 0,
+          startedAt: Date.now()
+        };
+
+        this.startGameTicker();
         this.renderMain();
       }
 
+      cloneQueensCells(cells) {
+        return cells.map(row => [...row]);
+      }
+
+      recomputeQueensAutoX() {
+        const state = this.queensState;
+        const n = state.size;
+        const cells = state.cells;
+        const regions = state.regions;
+
+        // First clear existing auto-X marks (value 3), preserving manual X (1) and Crowns (2)
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (cells[r][c] === 3) cells[r][c] = 0;
+          }
+        }
+
+        if (!state.autoX) return;
+
+        // For every placed Crown (2), mark eliminated cells as auto-X (3) if currently empty (0)
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (cells[r][c] !== 2) continue;
+            const crownReg = regions[r][c];
+            for (let rr = 0; rr < n; rr++) {
+              for (let cc = 0; cc < n; cc++) {
+                if (rr === r && cc === c) continue;
+                if (cells[rr][cc] !== 0) continue;
+                const sameRow = rr === r;
+                const sameCol = cc === c;
+                const sameReg = regions[rr][cc] === crownReg;
+                const touching = Math.abs(rr - r) <= 1 && Math.abs(cc - c) <= 1;
+                if (sameRow || sameCol || sameReg || touching) {
+                  cells[rr][cc] = 3;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      evaluateQueensBoard() {
+        const state = this.queensState;
+        const n = state.size;
+        const cells = state.cells;
+        const regions = state.regions;
+        const crowns = [];
+
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (cells[r][c] === 2) crowns.push([r, c]);
+          }
+        }
+
+        const conflictSet = new Set();
+        const reasons = new Set();
+
+        for (let i = 0; i < crowns.length; i++) {
+          const [r1, c1] = crowns[i];
+          for (let j = i + 1; j < crowns.length; j++) {
+            const [r2, c2] = crowns[j];
+            if (r1 === r2) {
+              conflictSet.add(`${r1},${c1}`);
+              conflictSet.add(`${r2},${c2}`);
+              reasons.add(`Row ${r1 + 1} has multiple crowns`);
+            }
+            if (c1 === c2) {
+              conflictSet.add(`${r1},${c1}`);
+              conflictSet.add(`${r2},${c2}`);
+              reasons.add(`Column ${c1 + 1} has multiple crowns`);
+            }
+            if (regions[r1][c1] === regions[r2][c2]) {
+              conflictSet.add(`${r1},${c1}`);
+              conflictSet.add(`${r2},${c2}`);
+              reasons.add(`Two crowns share the same colored region`);
+            }
+            if (Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1) {
+              conflictSet.add(`${r1},${c1}`);
+              conflictSet.add(`${r2},${c2}`);
+              reasons.add(`Crowns cannot touch (even diagonally)`);
+            }
+          }
+        }
+
+        state.conflicts = Array.from(conflictSet);
+        state.conflictReasons = Array.from(reasons);
+
+        // Check victory: N crowns placed and 0 conflicts
+        if (crowns.length === n && state.conflicts.length === 0) {
+          this.completeQueensRun();
+        }
+      }
+
+      cycleQueensCell(r, c) {
+        const state = this.queensState;
+        if (!state.active || state.phase !== "playing") return;
+
+        state.history.push(this.cloneQueensCells(state.cells));
+        if (state.history.length > 60) state.history.shift();
+        state.hintCell = null;
+        state.hintMessage = "";
+
+        const cur = state.cells[r][c];
+        // Tap cycle: Empty(0) -> Manual X(1) -> Crown(2) -> Empty(0)
+        // If it's an Auto-X(3), tapping it promotes it to a Crown(2) (or clears if tapped again)
+        if (cur === 0) {
+          state.cells[r][c] = 1;
+        } else if (cur === 1 || cur === 3) {
+          state.cells[r][c] = 2;
+        } else {
+          state.cells[r][c] = 0;
+        }
+
+        this.recomputeQueensAutoX();
+        this.evaluateQueensBoard();
+        this.renderMain();
+      }
+
+      undoQueensMove() {
+        const state = this.queensState;
+        if (!state.active || state.phase !== "playing" || !state.history.length) return;
+        state.cells = state.history.pop();
+        state.hintCell = null;
+        state.hintMessage = "";
+        this.recomputeQueensAutoX();
+        this.evaluateQueensBoard();
+        this.renderMain();
+      }
+
+      clearQueensBoard() {
+        const state = this.queensState;
+        if (!state.active || state.phase !== "playing") return;
+        state.history.push(this.cloneQueensCells(state.cells));
+        state.cells = Array.from({ length: state.size }, () => Array(state.size).fill(0));
+        state.conflicts = [];
+        state.conflictReasons = [];
+        state.hintCell = null;
+        state.hintMessage = "";
+        this.renderMain();
+      }
+
+      requestQueensHint() {
+        const state = this.queensState;
+        if (!state.active || state.phase !== "playing") return;
+        const n = state.size;
+        const sol = state.solution;
+        const cells = state.cells;
+        const regions = state.regions;
+        state.hintsUsed = (state.hintsUsed || 0) + 1;
+
+        // 1. Check if any placed Crown is incorrect
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (cells[r][c] === 2 && sol[r] !== c) {
+              state.hintCell = `${r},${c}`;
+              state.hintMessage = `Deduction Check: The crown at Row ${r + 1}, Col ${c + 1} leads to a contradiction later. Try removing it.`;
+              this.renderMain();
+              return;
+            }
+          }
+        }
+
+        // 2. Check if any true Crown cell was mistakenly marked with a manual X
+        for (let r = 0; r < n; r++) {
+          const trueC = sol[r];
+          if (cells[r][trueC] === 1) {
+            state.hintCell = `${r},${trueC}`;
+            state.hintMessage = `Spot Check: Row ${r + 1}, Col ${trueC + 1} was marked ✕, but this cell is required for a valid arrangement.`;
+            this.renderMain();
+            return;
+          }
+        }
+
+        // 3. Look for a Colored Region with only 1 un-eliminated cell left
+        for (let reg = 0; reg < n; reg++) {
+          let hasCrown = false;
+          const openCells = [];
+          for (let r = 0; r < n; r++) {
+            for (let c = 0; c < n; c++) {
+              if (regions[r][c] === reg) {
+                if (cells[r][c] === 2) hasCrown = true;
+                else if (cells[r][c] === 0) openCells.push([r, c]);
+              }
+            }
+          }
+          if (!hasCrown && openCells.length === 1) {
+            const [hr, hc] = openCells[0];
+            state.hintCell = `${hr},${hc}`;
+            state.hintMessage = `Forced Region Move: This colored region has only 1 open cell left at Row ${hr + 1}, Col ${hc + 1}!`;
+            this.renderMain();
+            return;
+          }
+        }
+
+        // 4. Look for a Row or Column with only 1 un-eliminated cell left
+        for (let r = 0; r < n; r++) {
+          if (cells[r].includes(2)) continue;
+          const openCols = [];
+          for (let c = 0; c < n; c++) {
+            if (cells[r][c] === 0) openCols.push(c);
+          }
+          if (openCols.length === 1) {
+            state.hintCell = `${r},${openCols[0]}`;
+            state.hintMessage = `Forced Row Move: Row ${r + 1} has only 1 valid cell remaining at Col ${openCols[0] + 1}!`;
+            this.renderMain();
+            return;
+          }
+        }
+
+        for (let c = 0; c < n; c++) {
+          let hasCrown = false;
+          const openRows = [];
+          for (let r = 0; r < n; r++) {
+            if (cells[r][c] === 2) hasCrown = true;
+            else if (cells[r][c] === 0) openRows.push(r);
+          }
+          if (!hasCrown && openRows.length === 1) {
+            state.hintCell = `${openRows[0]},${c}`;
+            state.hintMessage = `Forced Column Move: Column ${c + 1} has only 1 valid cell remaining at Row ${openRows[0] + 1}!`;
+            this.renderMain();
+            return;
+          }
+        }
+
+        // 5. Otherwise highlight the most constrained unplaced Crown from the unique solution
+        let bestRow = -1;
+        let minOpen = 999;
+        for (let r = 0; r < n; r++) {
+          const tc = sol[r];
+          if (cells[r][tc] === 2) continue;
+          const reg = regions[r][tc];
+          let regCount = 0;
+          for (let rr = 0; rr < n; rr++) {
+            for (let cc = 0; cc < n; cc++) {
+              if (regions[rr][cc] === reg && cells[rr][cc] === 0) regCount++;
+            }
+          }
+          if (regCount < minOpen) {
+            minOpen = regCount;
+            bestRow = r;
+          }
+        }
+
+        if (bestRow !== -1) {
+          const hc = sol[bestRow];
+          state.hintCell = `${bestRow},${hc}`;
+          state.hintMessage = `Key Anchor: Focus on Row ${bestRow + 1}, Col ${hc + 1} — placing a 👑 here unlocks the surrounding regions.`;
+          this.renderMain();
+        }
+      }
+
+      completeQueensRun() {
+        const state = this.queensState;
+        this.clearTimers();
+        const elapsed = Math.max(1, Math.round((Date.now() - state.startedAt) / 1000));
+        state.elapsedSeconds = elapsed;
+        state.active = false;
+        state.phase = "complete";
+
+        const baseBySize = { 5: 120, 6: 180, 7: 250, 8: 340 };
+        const base = baseBySize[state.size] || 180;
+        const parSeconds = state.size === 5 ? 45 : state.size === 6 ? 75 : state.size === 7 ? 120 : 180;
+        const speedBonus = elapsed < parSeconds ? Math.round((parSeconds - elapsed) * 1.5) : 0;
+        const hintPenalty = (state.hintsUsed || 0) * 25;
+        state.streak = (state.streak || 0) + 1;
+        const mult = Math.min(1.5, 1 + Math.floor(state.streak / 2) * 0.1);
+        const totalPts = Math.max(40, Math.round((base + speedBonus - hintPenalty) * mult));
+
+        state.score = totalPts;
+        state.lastRunScore = totalPts;
+        state.lastSolveSeconds = elapsed;
+
+        this.state.arcade.xp = Number(this.state.arcade.xp || 0) + Math.round(totalPts / 8);
+        this.state.arcade.queensBest = Math.max(Number(this.state.arcade.queensBest || 0), totalPts);
+        this.state.arcade.queensSolved = Number(this.state.arcade.queensSolved || 0) + 1;
+        this.saveState();
+      }
+
+      formatClock(seconds) {
+        const s = Math.max(0, Math.floor(Number(seconds || 0)));
+        const mins = String(Math.floor(s / 60)).padStart(2, "0");
+        const secs = String(s % 60).padStart(2, "0");
+        return `${mins}:${secs}`;
+      }
+
       // -----------------------------------------------------------------------
-      // v4.0 FAULTLINE: complete source-linked challenge bank, one challenge per built-in concept card;
+      // v4.1 FAULTLINE: complete source-linked challenge bank, one challenge per built-in concept card;
       // source concept cards. No generated or cross-topic answer fabrication.
       // -----------------------------------------------------------------------
       getFaultlineChallenges() {
@@ -3224,29 +3704,17 @@
 
       tickGameTimers() {
         const now = Date.now();
-        const after = this.afterimageState;
-        if (after.active) {
-          if (after.phase === "preview") {
-            const remaining = Math.max(0, after.previewDurationMs - (now - after.phaseStartedAt));
-            const label = document.getElementById("after-time-label");
-            const bar = document.getElementById("after-preview-progress");
-            if (label) label.textContent = `Preview ${(remaining / 1000).toFixed(1)}s`;
-            if (bar) bar.style.width = `${(remaining / after.previewDurationMs) * 100}%`;
-            if (remaining <= 0) {
-              after.phase = "answer";
-              after.answerStartedAt = now;
-              this.renderMain();
-            }
-          } else if (after.phase === "answer") {
-            this.updateAnswerClock("after", now - after.answerStartedAt, 15000);
-            if (now - after.answerStartedAt >= 15000) this.resolveFormulaAnswer("afterimage", -1, true);
-          }
-        } else {
-          const fault = this.faultlineState;
-          if (fault.active && fault.phase === "answer") {
-            this.updateAnswerClock("faultline", now - fault.answerStartedAt, 25000);
-            if (now - fault.answerStartedAt >= 25000) this.resolveFormulaAnswer("faultline", -1, true);
-          }
+        const queens = this.queensState;
+        if (queens && queens.active && queens.phase === "playing") {
+          queens.elapsedSeconds = Math.floor((now - queens.startedAt) / 1000);
+          const qTimer = document.getElementById("queens-time-label");
+          if (qTimer) qTimer.textContent = this.formatClock(queens.elapsedSeconds);
+          return;
+        }
+        const fault = this.faultlineState;
+        if (fault.active && fault.phase === "answer") {
+          this.updateAnswerClock("faultline", now - fault.answerStartedAt, 25000);
+          if (now - fault.answerStartedAt >= 25000) this.resolveFormulaAnswer("faultline", -1, true);
         }
       }
 
@@ -3258,19 +3726,13 @@
         if (bar) bar.style.width = `${(remainingMs / limitMs) * 100}%`;
       }
 
-      answerAfterimage(index) {
-        this.resolveFormulaAnswer("afterimage", index, false);
-      }
-
       answerFaultline(index) {
         this.resolveFormulaAnswer("faultline", index, false);
       }
 
       resolveFormulaAnswer(gameName, selectedIndex, timedOut = false) {
-        const isAfterimage = gameName === "afterimage";
-        const isFaultline = gameName === "faultline";
-        if (!isAfterimage && !isFaultline) return;
-        const state = isAfterimage ? this.afterimageState : this.faultlineState;
+        if (gameName !== "faultline") return;
+        const state = this.faultlineState;
         if (!state.active || state.phase !== "answer" || !state.current) return;
         const elapsedMs = Math.max(0, Date.now() - state.answerStartedAt);
         const elapsedSeconds = elapsedMs / 1000;
@@ -3281,11 +3743,11 @@
         const base = correct ? 100 : 0;
         if (correct) {
           state.streak += 1;
-          if (isFaultline) state.maxStreak = Math.max(state.maxStreak || 0, state.streak);
-          const bonusCap = isAfterimage ? 100 : 30;
+          state.maxStreak = Math.max(state.maxStreak || 0, state.streak);
+          const bonusCap = 30;
           bonus = elapsedSeconds <= 10 ? Math.max(0, Math.round(bonusCap * (1 - elapsedSeconds / 10))) : 0;
           if (bonus > 0) state.speedBonusCount = (state.speedBonusCount || 0) + 1;
-          multiplier = Math.min(isAfterimage ? 1.5 : 1.3, 1 + Math.floor(state.streak / 3) * 0.1);
+          multiplier = Math.min(1.3, 1 + Math.floor(state.streak / 3) * 0.1);
           points = Math.round((base + bonus) * multiplier);
           state.score += points;
           this.state.arcade.xp += Math.max(1, Math.round(points / 10));
@@ -3293,41 +3755,20 @@
           state.streak = 0;
           if (!this.state.reviseQueue.includes(state.current.target.id)) this.state.reviseQueue.push(state.current.target.id);
         }
-        if (isFaultline) {
-          state.runResults = state.runResults || [];
-          state.runResults.push({
-            conceptId: state.current.target.id,
-            challengeId: state.current.id,
-            questionType: state.current.questionType || "error diagnosis",
-            correct, timedOut, elapsedSeconds, points, round: state.index + 1
-          });
-        }
+        state.runResults = state.runResults || [];
+        state.runResults.push({
+          conceptId: state.current.target.id,
+          challengeId: state.current.id,
+          questionType: state.current.questionType || "error diagnosis",
+          correct, timedOut, elapsedSeconds, points, round: state.index + 1
+        });
         state.current.selectedIndex = selectedIndex;
         state.current.result = { correct, timedOut, elapsedSeconds, base, bonus, multiplier, points };
         state.phase = "feedback";
         state.lastRunScore = state.score;
-        const bestKey = isAfterimage ? "afterimageBest" : "faultlineBest";
-        this.state.arcade[bestKey] = Math.max(this.state.arcade[bestKey] || 0, state.score);
+        this.state.arcade.faultlineBest = Math.max(this.state.arcade.faultlineBest || 0, state.score);
         this.clearTimers();
         this.saveState();
-        this.renderMain();
-      }
-
-      continueAfterimage() {
-        const state = this.afterimageState;
-        if (!state.active || state.phase !== "feedback") return;
-        if (state.index >= state.deck.length - 1) {
-          state.active = false;
-          state.phase = "complete";
-          state.lastRunScore = state.score;
-          this.state.arcade.afterimageRuns = (this.state.arcade.afterimageRuns || 0) + 1;
-          this.saveState();
-          this.renderMain();
-          return;
-        }
-        state.index += 1;
-        this.prepareAfterimageRound();
-        this.startGameTicker();
         this.renderMain();
       }
 
@@ -3539,7 +3980,7 @@
           levelBar.classList.add("hidden");
           bar.className = "flex space-x-2 overflow-x-auto no-scrollbar pb-1";
           const games = [
-            { id: "afterimage", label: "✧ Afterimage" },
+            { id: "queens", label: "👑 Queens" },
             { id: "faultline", label: "⌁ Faultline" }
           ];
           bar.innerHTML = games.map((g, index) => `
@@ -3547,7 +3988,7 @@
               this.arcadeGame === g.id
                 ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/25 scale-[1.02]"
                 : "bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500 hover:bg-slate-700"
-            }">${g.id === "afterimage" ? "✧ Afterimage" : "⌁ Faultline"}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.id === "afterimage" ? "Memory trace" : "Catch and repair errors"}</span></button>
+            }">${g.id === "queens" ? "👑 Queens" : "⌁ Faultline"}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.id === "queens" ? "Grid arrangement logic" : "Catch and repair errors"}</span></button>
           `).join("");
         }
       }
@@ -3622,8 +4063,8 @@
               <div class="text-base font-black text-amber-400">✦ ${Number(arcade.xp || 0)}</div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
-              <div class="text-[10px] font-mono-code uppercase text-slate-400">Afterimage Best</div>
-              <div class="text-base font-black text-violet-300">${Number(arcade.afterimageBest || 0)}</div>
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Queens Best</div>
+              <div class="text-base font-black text-violet-300">👑 ${Number(arcade.queensBest || 0)} <span class="text-[10px] font-normal text-slate-400">(${Number(arcade.queensSolved || 0)} won)</span></div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
               <div class="text-[10px] font-mono-code uppercase text-slate-400">Faultline Best</div>
@@ -3631,106 +4072,455 @@
             </div>
           </div>
         `;
-        return statsBar + (this.arcadeGame === "faultline" ? this.renderFaultlineGame() : this.renderAfterimageGame());
+        return statsBar + (this.arcadeGame === "faultline" ? this.renderFaultlineGame() : this.renderQueensGame());
+      }
+
+      exitQueensToSetup() {
+        this.clearTimers();
+        this.queensState.active = false;
+        this.queensState.phase = "idle";
+        this.renderMain();
+      }
+
+      exitFaultlineToSetup() {
+        this.clearTimers();
+        this.faultlineState.active = false;
+        this.faultlineState.phase = "idle";
+        this.renderMain();
       }
 
       renderGameLanding(gameName) {
-        const isAfter = gameName === "afterimage";
-        const state = isAfter ? this.afterimageState : this.faultlineState;
-        const complete = state.phase === "complete";
-        const title = isAfter ? "Afterimage" : "Faultline";
-        const subtitle = isAfter ? "Watch it. Hold it. Rebuild it." : "Spot the slip. Repair the reasoning.";
-        const description = isAfter
-          ? "A formula flashes, then vanishes. Choose the matching expression before the trace fades."
+        const isQueens = gameName === "queens";
+        const state = isQueens ? this.queensState : this.faultlineState;
+        const title = isQueens ? "Queens" : "Faultline";
+        const subtitle = isQueens ? "1 Crown per Row, Column & Colored Region." : "Spot the slip. Repair the reasoning.";
+        const description = isQueens
+          ? "Place exactly one 👑 Crown in every row, column, and colored region so that no two crowns touch — not even diagonally. Tap once for ✕, twice for 👑."
           : "Inspect a worked step. Find the fault. Choose the repair.";
         const missedCount = this.state.reviseQueue.length;
-        const scopePreview = isAfter
-          ? (this.subtopic !== "All" ? `Starts in ${this.subtopic}; expands only when needed.` : this.topic !== "All" ? `Starts within ${this.topic}; expands only when needed.` : "A varied run across the available concepts.")
-          : (this.subtopic !== "All" ? `Starting chapter: ${this.subtopic}.` : this.topic !== "All" ? `Starting topic: ${this.topic}.` : "Challenges across all chapters.");
-        const startButton = isAfter ? "Start Afterimage" : "Start Faultline";
-        const action = isAfter ? "startAfterimage" : "startFaultline";
-        const accent = isAfter ? "violet" : "amber";
+        const startButton = isQueens ? `Start ${state.size}×${state.size} Queens` : "Start Faultline";
+        const action = isQueens ? `startQueens(${state.size})` : "startFaultline()";
         const lastScore = Number(state.lastRunScore || 0);
-        const bestKey = isAfter ? "afterimageBest" : "faultlineBest";
-        const best = Number(this.state.arcade[bestKey] || 0);
+
+        const sizeSelectorHtml = isQueens ? `
+          <div class="mb-5">
+            <div class="text-[10px] font-mono-code uppercase tracking-wider text-slate-400 mb-2">Select Board Size &amp; Assist</div>
+            <div class="flex flex-wrap items-center gap-2">
+              ${[
+                { n: 5, tag: "5×5 Warmup" },
+                { n: 6, tag: "6×6 Standard" },
+                { n: 7, tag: "7×7 Classic" },
+                { n: 8, tag: "8×8 Master" }
+              ].map(item => `
+                <button
+                  type="button"
+                  onclick="window.app.setQueensSize(${item.n})"
+                  class="px-3.5 py-2 rounded-xl text-xs font-bold border transition ${
+                    state.size === item.n
+                      ? "bg-violet-300 text-slate-950 border-violet-200 shadow-md"
+                      : "bg-slate-900/90 text-slate-300 border-slate-700 hover:border-violet-400/50"
+                  }"
+                >${item.tag}</button>
+              `).join("")}
+              <button
+                type="button"
+                onclick="window.app.toggleQueensAutoX()"
+                class="px-3.5 py-2 rounded-xl text-xs font-mono-code font-bold border transition ${
+                  state.autoX
+                    ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/50"
+                    : "bg-slate-900 text-slate-400 border-slate-700"
+                }"
+              >Auto-✕: ${state.autoX ? "ON" : "OFF"}</button>
+            </div>
+          </div>
+        ` : "";
+
         return `
           <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
-            <div class="absolute -top-20 -right-16 w-56 h-56 rounded-full blur-3xl opacity-10 ${isAfter ? "bg-violet-400" : "bg-amber-400"}"></div>
+            <div class="absolute -top-20 -right-16 w-56 h-56 rounded-full blur-3xl opacity-10 ${isQueens ? "bg-violet-400" : "bg-amber-400"}"></div>
             <div class="relative">
-              <div class="flex items-start justify-between gap-3 mb-5">
+              <div class="flex items-start justify-between gap-3 mb-4">
                 <div>
-                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isAfter ? "text-violet-300" : "text-amber-300"}">${isAfter ? "MEMORY TRACE" : "ERROR ANALYSIS"}</div>
+                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isQueens ? "text-violet-300" : "text-amber-300"}">${isQueens ? "ARRANGEMENT & DEDUCTION" : "ERROR ANALYSIS"}</div>
                   <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">${title}</h2>
                   <p class="text-sm text-slate-300 mt-1">${subtitle}</p>
                 </div>
-                <div class="text-3xl sm:text-4xl ${isAfter ? "text-violet-300" : "text-amber-300"}">${isAfter ? "✧" : "⌁"}</div>
+                <div class="text-3xl sm:text-4xl ${isQueens ? "text-violet-300" : "text-amber-300"}">${isQueens ? "👑" : "⌁"}</div>
               </div>
-              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mb-2">${description}</p>
-              <p class="text-xs text-amber-200/80 leading-relaxed max-w-xl mb-5">${this.escapeHTML(scopePreview)}</p>
-              ${isAfter ? `<div class="grid grid-cols-2 gap-2 mb-5"><div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Rounds</div><div class="text-sm font-bold text-white">10 per run</div></div><div class="rounded-xl border border-white/10 bg-white/[.035] p-3"><div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Answer window</div><div class="text-sm font-bold text-white">15 seconds</div></div></div>` : `<div class="inline-flex flex-wrap gap-2 mb-5"><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">10 challenges per run</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">25 seconds each</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">Misses → Revise Queue</span></div>`}
-              ${complete ? `<div class="rounded-xl border ${isAfter ? "border-violet-400/30 bg-violet-400/10" : "border-amber-400/30 bg-amber-400/10"} p-4 mb-4"><div class="text-xs text-slate-300">Last run complete</div><div class="text-2xl font-black text-white mt-1">${lastScore.toLocaleString()} pts</div><div class="text-xs text-slate-400 mt-1">Best: ${best.toLocaleString()} pts</div>${!isAfter ? (() => { const rs = state.runResults || []; const right = rs.filter(r => r.correct).length; const avg = rs.length ? (rs.reduce((sum, r) => sum + r.elapsedSeconds, 0) / rs.length).toFixed(1) : "—"; return `<div class="grid grid-cols-3 gap-2 mt-3"><div class="rounded-lg bg-black/20 p-2"><div class="text-[9px] text-slate-400 uppercase">Accuracy</div><div class="text-sm font-black text-white">${rs.length ? Math.round(right / rs.length * 100) : 0}%</div></div><div class="rounded-lg bg-black/20 p-2"><div class="text-[9px] text-slate-400 uppercase">Avg. time</div><div class="text-sm font-black text-white">${avg}s</div></div><div class="rounded-lg bg-black/20 p-2"><div class="text-[9px] text-slate-400 uppercase">Best streak</div><div class="text-sm font-black text-white">${Number(state.maxStreak || 0)}</div></div></div>`; })() : ""}</div>` : (lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last run: <strong class="text-white">${lastScore.toLocaleString()} pts</strong></div>` : "")}
-              <button onclick="window.app.${action}()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-950 shadow-lg transition hover:brightness-110 ${isAfter ? "bg-violet-300 shadow-violet-500/15" : "bg-amber-300 shadow-amber-500/15"}">${startButton} <span aria-hidden="true">→</span></button>
-              ${missedCount ? `<button onclick="window.app.goToReviseQueue()" class="w-full sm:w-auto sm:ml-2 mt-3 px-5 py-3 rounded-xl border border-rose-400/40 bg-rose-400/10 text-rose-200 text-sm font-bold hover:bg-rose-400/20 transition">Review missed cards (${missedCount}) →</button>` : ""}
-              ${isAfter ? "" : `<p class="text-[10px] text-slate-500 mt-4">Diagnose first; speed is a bonus, not the goal.</p>`}
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mb-5">${description}</p>
+              ${sizeSelectorHtml}
+              ${isQueens ? `
+                <div class="grid grid-cols-3 gap-2 mb-5">
+                  <div class="rounded-xl border border-white/10 bg-white/[.035] p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Row &amp; Col</div>
+                    <div class="text-xs sm:text-sm font-bold text-white">1 👑 per line</div>
+                  </div>
+                  <div class="rounded-xl border border-white/10 bg-white/[.035] p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Color Region</div>
+                    <div class="text-xs sm:text-sm font-bold text-white">1 👑 per color</div>
+                  </div>
+                  <div class="rounded-xl border border-white/10 bg-white/[.035] p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">No Touching</div>
+                    <div class="text-xs sm:text-sm font-bold text-white">No diagonal touch</div>
+                  </div>
+                </div>
+              ` : `<div class="inline-flex flex-wrap gap-2 mb-5"><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">10 challenges per run</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">25 seconds each</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">Misses → Revise Queue</span></div>`}
+              ${lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last score: <strong class="text-white">${lastScore.toLocaleString()} pts</strong></div>` : ""}
+              <button onclick="window.app.${action}" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-950 shadow-lg transition hover:brightness-110 ${isQueens ? "bg-violet-300 shadow-violet-500/15" : "bg-amber-300 shadow-amber-500/15"}">${startButton} <span aria-hidden="true">→</span></button>
+              ${!isQueens && missedCount ? `<button onclick="window.app.goToReviseQueue()" class="w-full sm:w-auto sm:ml-2 mt-3 px-5 py-3 rounded-xl border border-rose-400/40 bg-rose-400/10 text-rose-200 text-sm font-bold hover:bg-rose-400/20 transition">Review missed cards (${missedCount}) →</button>` : ""}
             </div>
           </section>
         `;
       }
 
-      renderAfterimageGame() {
-        const state = this.afterimageState;
-        if (!state.active || !state.current) return this.renderGameLanding("afterimage");
-        const current = state.current;
-        const target = current.target;
-        const phase = state.phase;
-        const isPreview = phase === "preview";
-        const isAnswer = phase === "answer";
-        const result = current.result;
-        const formula = this.formatMathText(current.formula);
-        const title = this.escapeHTML(target.title);
-        const roundCount = `${state.index + 1} / ${state.deck.length}`;
-        const topic = this.escapeHTML(`${target.topic} · ${target.subtopic}`);
-        const progress = ((state.index + (isPreview ? 0.25 : isAnswer ? 0.6 : 1)) / state.deck.length) * 100;
-        const optionsHtml = current.options.map((option, idx) => {
-          let cls = "border-violet-400/20 bg-slate-900/90 text-slate-100 hover:border-violet-300/70 hover:bg-violet-950/30";
-          if (phase === "feedback") {
-            if (idx === current.correctIndex) cls = "border-emerald-400/80 bg-emerald-950/60 text-emerald-100";
-            else if (idx === current.selectedIndex) cls = "border-rose-400/80 bg-rose-950/50 text-rose-100";
-            else cls = "border-slate-800 bg-slate-950/50 text-slate-500 opacity-60";
+      renderQueensCompletedScreen() {
+        const state = this.queensState;
+        const n = state.size;
+        const cells = state.cells;
+        const regions = state.regions;
+        const palette = this.getQueensPalette();
+        const best = Number(this.state.arcade.queensBest || 0);
+        const totalWon = Number(this.state.arcade.queensSolved || 0);
+
+        let solvedGridHtml = "";
+        if (regions && regions.length === n && cells && cells.length === n) {
+          for (let r = 0; r < n; r++) {
+            for (let c = 0; c < n; c++) {
+              const reg = regions[r][c];
+              const color = palette[reg % palette.length].bg;
+              const isCrown = cells[r][c] === 2;
+              const topThick = r === 0 || regions[r - 1][c] !== reg;
+              const bottomThick = r === n - 1 || regions[r + 1][c] !== reg;
+              const leftThick = c === 0 || regions[r][c - 1] !== reg;
+              const rightThick = c === n - 1 || regions[r][c + 1] !== reg;
+
+              const borderStyle = [
+                `background-color: ${color}`,
+                `border-top: ${topThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
+                `border-bottom: ${bottomThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
+                `border-left: ${leftThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
+                `border-right: ${rightThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`
+              ].join("; ");
+
+              solvedGridHtml += `
+                <div style="${borderStyle}" class="queens-cell cursor-default">
+                  ${isCrown ? `<span class="queens-crown" aria-label="Crown">👑</span>` : ""}
+                </div>
+              `;
+            }
           }
-          return `<button ${isAnswer ? "" : "disabled"} onclick="window.app.answerAfterimage(${idx})" class="game-option w-full text-left rounded-xl border p-3 sm:p-4 font-mono-code text-xs sm:text-sm ${cls} ${phase === "feedback" ? "cursor-default" : ""}"><span class="text-violet-300/80 text-[10px] block mb-1">${String.fromCharCode(65 + idx)}</span>${this.formatMathText(option)}</button>`;
-        }).join("");
-        const feedback = result ? `
-          <div class="rounded-xl border ${result.correct ? "border-emerald-400/40 bg-emerald-400/10" : "border-rose-400/40 bg-rose-400/10"} p-4 mt-4">
-            <div class="font-bold text-sm ${result.correct ? "text-emerald-200" : "text-rose-200"}">${result.timedOut ? "Trace lost — time expired" : result.correct ? `Locked in · +${result.points} pts` : "Not this pattern · +0 pts"}</div>
-            <div class="text-xs text-slate-300 mt-1">${result.correct ? `Base 100 + speed bonus ${result.bonus}${result.multiplier > 1 ? ` · ${result.multiplier.toFixed(1)}× streak` : ""}` : `Correct pattern: ${formula}`}</div>
-            ${!result.correct ? `<div class="font-mono-code text-xs text-white whitespace-pre-line mt-2">${formula}</div><button onclick="window.app.goToReviseQueue()" class="mt-3 text-xs font-bold text-rose-200 underline underline-offset-2">Review missed cards in Revise Queue →</button>` : ""}
-          </div>
-          <button onclick="window.app.continueAfterimage()" class="w-full mt-3 px-4 py-3 rounded-xl bg-violet-300 hover:bg-violet-200 text-slate-950 text-sm font-black">${state.index >= state.deck.length - 1 ? "Finish run" : "Next trace →"}</button>
-        ` : "";
+        }
+
+        return `
+          <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
+            <div class="absolute -top-20 -right-16 w-60 h-60 rounded-full blur-3xl opacity-15 bg-emerald-400"></div>
+            <div class="relative">
+              <!-- Celebration Header -->
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-800">
+                <div>
+                  <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/40 text-emerald-300 text-[10px] font-mono-code uppercase tracking-widest mb-1.5">
+                    <span>✓ Level Completed</span>
+                  </div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-white">${n}×${n} Queens Cleared!</h2>
+                  <p class="text-xs sm:text-sm text-slate-300 mt-0.5">All ${n} crowns placed with zero row, column, region, or diagonal conflicts.</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Level Score</div>
+                  <div class="text-2xl sm:text-3xl font-black text-emerald-400">+${Number(state.lastRunScore || 0).toLocaleString()} <span class="text-xs font-bold text-emerald-300">pts</span></div>
+                </div>
+              </div>
+
+              <!-- Stats Summary Row -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Solve Time</div>
+                  <div class="text-base font-black text-white mt-0.5">⏱️ ${this.formatClock(state.lastSolveSeconds)}</div>
+                </div>
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Win Streak</div>
+                  <div class="text-base font-black text-amber-300 mt-0.5">🔥 ${Number(state.streak || 0)}</div>
+                </div>
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Hints Used</div>
+                  <div class="text-base font-black text-violet-300 mt-0.5">💡 ${Number(state.hintsUsed || 0)}</div>
+                </div>
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Personal Best</div>
+                  <div class="text-base font-black text-emerald-300 mt-0.5">🏆 ${best.toLocaleString()}</div>
+                </div>
+              </div>
+
+              <!-- Solved Board Snapshot -->
+              ${solvedGridHtml ? `
+                <div class="my-3">
+                  <div class="text-[10px] font-mono-code uppercase tracking-wider text-center text-slate-400 mb-2">Verified ${n}×${n} Solution Board (${totalWon} Total Solved)</div>
+                  <div class="queens-board max-w-[300px] sm:max-w-[330px] ring-2 ring-emerald-400/50" style="grid-template-columns: repeat(${n}, minmax(0, 1fr));">
+                    ${solvedGridHtml}
+                  </div>
+                </div>
+              ` : ""}
+
+              <!-- Next Level Actions -->
+              <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6 pt-4 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onclick="window.app.startQueens(${n})"
+                  class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition"
+                >Play Next ${n}×${n} Level →</button>
+                ${n < 8 ? `
+                  <button
+                    type="button"
+                    onclick="window.app.startQueens(${n + 1})"
+                    class="w-full sm:w-auto px-5 py-3 rounded-xl bg-violet-300 hover:bg-violet-200 text-slate-950 font-black text-sm shadow-lg shadow-violet-500/15 transition"
+                  >Step Up to ${n + 1}×${n + 1} →</button>
+                ` : ""}
+                <button
+                  type="button"
+                  onclick="window.app.exitQueensToSetup()"
+                  class="w-full sm:w-auto px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition"
+                >⚙️ Change Board Size</button>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      renderQueensGame() {
+        const state = this.queensState;
+        if (state.phase === "complete") return this.renderQueensCompletedScreen();
+        if (!state.active || state.phase !== "playing") return this.renderGameLanding("queens");
+
+        const n = state.size;
+        const cells = state.cells;
+        const regions = state.regions;
+        const palette = this.getQueensPalette();
+        const conflictSet = new Set(state.conflicts || []);
+        let crownCount = 0;
+
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (cells[r][c] === 2) crownCount++;
+          }
+        }
+
+        let gridCellsHtml = "";
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            const reg = regions[r][c];
+            const color = palette[reg % palette.length].bg;
+            const val = cells[r][c];
+            const key = `${r},${c}`;
+            const isConflict = conflictSet.has(key);
+            const isHint = state.hintCell === key;
+
+            // Thick dark borders between different colored regions, thin subtle borders within same region
+            const topThick = r === 0 || regions[r - 1][c] !== reg;
+            const bottomThick = r === n - 1 || regions[r + 1][c] !== reg;
+            const leftThick = c === 0 || regions[r][c - 1] !== reg;
+            const rightThick = c === n - 1 || regions[r][c + 1] !== reg;
+
+            const borderStyle = [
+              `background-color: ${color}`,
+              `border-top: ${topThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
+              `border-bottom: ${bottomThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
+              `border-left: ${leftThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
+              `border-right: ${rightThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`
+            ].join("; ");
+
+            let innerContent = "";
+            if (val === 2) {
+              innerContent = `<span class="queens-crown" aria-label="Crown">👑</span>`;
+            } else if (val === 1) {
+              innerContent = `<span class="queens-mark-manual" aria-label="Marked X">✕</span>`;
+            } else if (val === 3) {
+              innerContent = `<span class="queens-mark-auto" aria-label="Auto X">✕</span>`;
+            }
+
+            gridCellsHtml += `
+              <button
+                type="button"
+                onclick="window.app.cycleQueensCell(${r}, ${c})"
+                style="${borderStyle}"
+                class="queens-cell ${isConflict ? "is-conflict" : ""} ${isHint ? "is-hint" : ""}"
+                aria-label="Row ${r + 1} Column ${c + 1}"
+              >${innerContent}</button>
+            `;
+          }
+        }
+
+        const statusBanner = state.conflictReasons && state.conflictReasons.length > 0
+          ? `<div class="rounded-xl border border-rose-500/50 bg-rose-950/50 px-3.5 py-2.5 text-xs text-rose-200 font-semibold mb-3 flex items-center justify-between">
+               <span>⚠️ ${this.escapeHTML(state.conflictReasons[0])}</span>
+               <span class="font-mono-code text-[11px] text-rose-300">${state.conflicts.length} cells</span>
+             </div>`
+          : state.hintMessage
+          ? `<div class="rounded-xl border border-amber-400/50 bg-amber-950/40 px-3.5 py-2.5 text-xs text-amber-200 font-semibold mb-3">
+               💡 ${this.escapeHTML(state.hintMessage)}
+             </div>`
+          : `<div class="rounded-xl border border-white/10 bg-slate-900/70 px-3.5 py-2 text-xs text-slate-300 mb-3 flex items-center justify-between">
+               <span>Tap 1× for <strong>✕</strong> · Tap 2× for <strong>👑</strong> · No two 👑 can touch (even diagonally)</span>
+             </div>`;
+
         return `
           <section class="game-panel rounded-2xl p-4 sm:p-5 overflow-hidden">
-            <div class="flex items-center justify-between gap-2 mb-4">
-              <div><div class="text-[10px] uppercase tracking-[.2em] text-violet-300">AFTERIMAGE</div><div class="text-xs text-slate-400 mt-1">${this.escapeHTML(state.scopeLabel || topic)}</div></div>
-              <div class="text-right"><div class="text-[10px] text-slate-500">ROUND</div><div class="font-mono-code font-bold text-white">${roundCount}</div></div>
-              <div class="text-right"><div class="text-[10px] text-slate-500">SCORE</div><div class="font-mono-code font-black text-violet-200">${state.score.toLocaleString()}</div></div>
-              <div class="text-right"><div class="text-[10px] text-slate-500">STREAK</div><div class="font-mono-code font-bold text-amber-300">${state.streak}</div></div>
+            <!-- Top Telemetry Row -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+              <div>
+                <div class="text-[10px] font-mono-code uppercase tracking-[.2em] text-violet-300">QUEENS · ${n}×${n} LOGIC GRID</div>
+                <div class="text-xs text-slate-400 mt-0.5">1 👑 per Row, Col &amp; Color · Unique Solution</div>
+              </div>
+              <div class="flex items-center space-x-4">
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-500 uppercase">Crowns</div>
+                  <div class="font-mono-code font-black text-sm ${crownCount === n && !state.conflicts.length ? "text-emerald-400" : "text-violet-200"}">👑 ${crownCount} / ${n}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-500 uppercase">Time</div>
+                  <div id="queens-time-label" class="font-mono-code font-bold text-sm text-amber-300">${this.formatClock(state.elapsedSeconds)}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-500 uppercase">Streak</div>
+                  <div class="font-mono-code font-bold text-sm text-emerald-300">🔥 ${state.streak || 0}</div>
+                </div>
+              </div>
             </div>
-            <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mb-4"><div class="game-progress h-full rounded-full bg-violet-400" style="width:${progress}%"></div></div>
-            <div class="rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-950/60 to-slate-950 p-4 sm:p-6 mb-4 min-h-[176px] flex flex-col justify-center items-center text-center">
-              <div class="text-[10px] uppercase tracking-[.22em] text-violet-300 mb-2">${isPreview ? "Hold this trace" : isAnswer ? "Rebuild the pattern" : "Trace resolved"}</div>
-              <h2 class="text-base sm:text-lg font-bold text-white mb-4 max-w-2xl">${title}</h2>
-              ${isPreview ? `<div class="afterimage-glow w-full max-w-2xl rounded-xl border border-violet-300/35 bg-slate-950/80 p-4 sm:p-5"><div class="font-mono-code text-sm sm:text-lg text-violet-100 whitespace-pre-line break-words">${formula}</div></div><div id="after-time-label" class="text-xs text-violet-200 mt-3">Preview 2.3s</div><div class="w-full max-w-xs h-1 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="after-preview-progress" class="h-full bg-violet-300 rounded-full" style="width:100%"></div></div>` : isAnswer ? `<div class="text-sm text-slate-300">Which version matches the trace?</div><div class="mt-3 text-xs text-violet-200">Time left <strong id="after-time-label" class="font-mono-code">15.0s</strong></div><div class="w-full max-w-xs h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2"><div id="after-answer-progress" class="game-progress h-full bg-violet-300" style="width:100%"></div></div>` : `<div class="text-xs text-slate-300">Response time: ${result.elapsedSeconds.toFixed(2)}s</div>`}
+
+            <!-- Size & Auto-X Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center space-x-1.5">
+                ${[5, 6, 7, 8].map(sz => `
+                  <button
+                    type="button"
+                    onclick="window.app.setQueensSize(${sz})"
+                    class="px-2.5 py-1 rounded-lg text-xs font-mono-code font-bold border transition ${
+                      n === sz
+                        ? "bg-violet-300 text-slate-950 border-violet-200"
+                        : "bg-slate-900 text-slate-400 border-slate-700 hover:text-white"
+                    }"
+                  >${sz}×${sz}</button>
+                `).join("")}
+              </div>
+              <button
+                type="button"
+                onclick="window.app.toggleQueensAutoX()"
+                class="px-2.5 py-1 rounded-lg text-xs font-mono-code font-semibold border transition ${
+                  state.autoX
+                    ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/40"
+                    : "bg-slate-900 text-slate-400 border-slate-700"
+                }"
+              >Auto-✕: ${state.autoX ? "ON" : "OFF"}</button>
             </div>
-            ${isAnswer || phase === "feedback" ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optionsHtml}</div>` : ""}
-            ${feedback}
-            <div class="flex items-center justify-between gap-3 mt-4 text-[10px] text-slate-500"><span>Fast correct picks earn a bonus for the first 10 seconds.</span><span>${state.deck.length - state.index - (phase === "feedback" ? 1 : 0)} left</span></div>
+
+            ${statusBanner}
+
+            <!-- N x N Queens Grid -->
+            <div class="my-2">
+              <div class="queens-board" style="grid-template-columns: repeat(${n}, minmax(0, 1fr));">
+                ${gridCellsHtml}
+              </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800/80">
+              <button
+                type="button"
+                ${state.history.length ? "" : "disabled"}
+                onclick="window.app.undoQueensMove()"
+                class="py-2.5 px-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-xs font-bold text-slate-200 transition"
+              >↩ Undo</button>
+              <button
+                type="button"
+                onclick="window.app.clearQueensBoard()"
+                class="py-2.5 px-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 transition"
+              >🧹 Clear</button>
+              <button
+                type="button"
+                onclick="window.app.requestQueensHint()"
+                class="py-2.5 px-2 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/40 text-xs font-bold text-amber-200 transition"
+              >💡 Hint</button>
+              <button
+                type="button"
+                onclick="window.app.startQueens(${n})"
+                class="py-2.5 px-2 rounded-xl bg-violet-400/20 hover:bg-violet-400/30 border border-violet-400/40 text-xs font-bold text-violet-200 transition"
+              >↻ New</button>
+            </div>
+          </section>
+        `;
+      }
+
+      renderFaultlineCompletedScreen() {
+        const state = this.faultlineState;
+        const best = Number(this.state.arcade.faultlineBest || 0);
+        const rs = state.runResults || [];
+        const right = rs.filter(r => r.correct).length;
+        const acc = rs.length ? Math.round((right / rs.length) * 100) : 0;
+        const avg = rs.length ? (rs.reduce((sum, r) => sum + r.elapsedSeconds, 0) / rs.length).toFixed(1) : "—";
+        const missedCount = this.state.reviseQueue.length;
+
+        return `
+          <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
+            <div class="absolute -top-20 -right-16 w-60 h-60 rounded-full blur-3xl opacity-15 bg-amber-400"></div>
+            <div class="relative">
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-800">
+                <div>
+                  <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-[10px] font-mono-code uppercase tracking-widest mb-1.5">
+                    <span>✓ Run Completed</span>
+                  </div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-white">Faultline Run Complete!</h2>
+                  <p class="text-xs sm:text-sm text-slate-300 mt-0.5">You repaired ${right} of ${rs.length || 10} mathematical faults.</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Run Score</div>
+                  <div class="text-2xl sm:text-3xl font-black text-amber-300">${Number(state.lastRunScore || 0).toLocaleString()} <span class="text-xs font-bold text-amber-200">pts</span></div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Accuracy</div>
+                  <div class="text-base font-black text-white mt-0.5">${acc}%</div>
+                </div>
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Avg. Time</div>
+                  <div class="text-base font-black text-amber-300 mt-0.5">${avg}s</div>
+                </div>
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Best Streak</div>
+                  <div class="text-base font-black text-emerald-300 mt-0.5">🔥 ${Number(state.maxStreak || 0)}</div>
+                </div>
+                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                  <div class="text-[10px] font-mono-code uppercase text-slate-400">Personal Best</div>
+                  <div class="text-base font-black text-amber-200 mt-0.5">🏆 ${best.toLocaleString()}</div>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-center gap-2.5 pt-2 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onclick="window.app.startFaultline()"
+                  class="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-300 hover:bg-amber-200 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/20 transition"
+                >Play Next Run →</button>
+                ${missedCount ? `
+                  <button
+                    type="button"
+                    onclick="window.app.goToReviseQueue()"
+                    class="w-full sm:w-auto px-5 py-3 rounded-xl border border-rose-400/40 bg-rose-400/10 text-rose-200 text-sm font-bold hover:bg-rose-400/20 transition"
+                  >Review Missed Cards (${missedCount}) →</button>
+                ` : ""}
+                <button
+                  type="button"
+                  onclick="window.app.exitFaultlineToSetup()"
+                  class="w-full sm:w-auto px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition"
+                >Back to Overview</button>
+              </div>
+            </div>
           </section>
         `;
       }
 
       renderFaultlineGame() {
         const state = this.faultlineState;
+        if (state.phase === "complete") return this.renderFaultlineCompletedScreen();
         if (!state.active || !state.current) return this.renderGameLanding("faultline");
         const current = state.current;
         const phase = state.phase;
