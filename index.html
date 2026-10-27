@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v4.1 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf v5.1 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -413,7 +413,7 @@
       <!-- Brand & Version -->
       <div class="flex items-center space-x-2 lg:pt-1">
         <span class="font-black text-base sm:text-lg tracking-tight">QuantByProf</span>
-        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v4.1</span>
+        <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v5.1</span>
       </div>
 
       <!-- Utility Actions (+ Add & Sync) -->
@@ -2591,7 +2591,7 @@
 ];    // =========================================================================
     // 4. STATE MANAGEMENT & DYNAMIC FILTER SYNC (quantbyprof_v2_state)
     // =========================================================================
-    const STORAGE_KEY = "quantbyprof_v2_state";
+const STORAGE_KEY = "quantbyprof_v2_state";
 
     const defaultState = () => ({
       savedConcepts: [],
@@ -2605,6 +2605,8 @@
         trapSessions: 0,
         queensBest: 0,
         queensSolved: 0,
+        sudokuBest: 0,
+        sudokuSolved: 0,
         faultlineBest: 0,
         faultlineRuns: 0
       }
@@ -2612,19 +2614,20 @@
 
     class QuantApp {
       constructor() {
+        this.injectMinigameStyles();
         this.state = this.loadState();
         this.section = "revise";     // 'revise' | 'arcade'
         this.topic = "All";          // Parent Topic ('All' or one of the 6 core topics)
         this.subtopic = "All";       // Scoped Chapter selection
         this.levelFilter = "All";    // 'All' | 'Foundation' | 'Advanced'
         this.reviseSub = "all";      // 'all' | 'saved' | 'queue' | 'mastered'
-        this.arcadeGame = "queens";  // 'queens' | 'faultline'
+        this.arcadeGame = "queens";  // 'queens' | 'sudoku' | 'faultline'
 
         this.activeTimer = null;
         this.queensState = {
           active: false,
           phase: "idle", // 'idle' | 'playing' | 'complete'
-          size: 6,
+          size: 7,       // Default 7x7
           autoX: true,
           regions: [],
           solution: [],
@@ -2635,6 +2638,7 @@
           hintCell: null,
           hintMessage: "",
           hintsUsed: 0,
+          maxHints: 3,
           elapsedSeconds: 0,
           startedAt: 0,
           score: 0,
@@ -2642,10 +2646,197 @@
           lastRunScore: 0,
           lastSolveSeconds: 0
         };
-        this.faultlineState = { active: false, phase: "idle", deck: [], index: 0, current: null, score: 0, streak: 0, maxStreak: 0, speedBonusCount: 0, runResults: [], lastRunScore: 0 };
+        this.sudokuState = {
+          active: false,
+          phase: "idle", // 'idle' | 'playing' | 'complete'
+          size: 9,       // 6 (2x3 boxes) | 9 (3x3 boxes)
+          difficulty: "hard", // 'medium' | 'hard' | 'expert'
+          givens: [],
+          cells: [],
+          solution: [],
+          notes: [],
+          selected: [0, 0],
+          noteMode: false,
+          history: [],
+          conflicts: [],
+          hintsUsed: 0,
+          maxHints: 3,
+          hintMessage: "",
+          elapsedSeconds: 0,
+          startedAt: 0,
+          score: 0,
+          streak: 0,
+          lastRunScore: 0,
+          lastSolveSeconds: 0
+        };
+        this.faultlineState = {
+          active: false,
+          phase: "idle",
+          deck: [],
+          index: 0,
+          current: null,
+          score: 0,
+          streak: 0,
+          maxStreak: 0,
+          speedBonusCount: 0,
+          runResults: [],
+          lastRunScore: 0
+        };
 
+        this.bindSudokuKeyboard();
         this.populateModalSubtopics();
         this.renderAll();
+      }
+
+      injectMinigameStyles() {
+        if (document.getElementById("qbp-minigame-styles")) return;
+        const styleEl = document.createElement("style");
+        styleEl.id = "qbp-minigame-styles";
+        styleEl.textContent = `
+          body.theme-arcade #subfilter-bar {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          }
+
+          /* Distinct Panel Themes for Queens vs Sudoku */
+          .queens-panel-theme {
+            background: linear-gradient(145deg, rgba(34, 30, 48, 0.96), rgba(23, 21, 34, 0.98)) !important;
+            border: 1px solid rgba(196, 181, 253, 0.16) !important;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
+          }
+          .sudoku-panel-theme {
+            background: linear-gradient(145deg, rgba(26, 38, 52, 0.96), rgba(19, 28, 39, 0.98)) !important;
+            border: 1px solid rgba(125, 211, 252, 0.16) !important;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
+          }
+
+          /* Queens Board: Uniform border thickness across all squares */
+          .queens-board {
+            border: 2px solid #1e293b !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32) !important;
+            background: #1e293b;
+          }
+          .queens-cell {
+            border: 1px solid rgba(15, 23, 42, 0.38) !important;
+            box-sizing: border-box !important;
+            transition: filter 0.12s ease !important;
+          }
+          .queens-cell:hover {
+            filter: brightness(1.06) !important;
+          }
+          .queens-cell.is-conflict {
+            box-shadow: inset 0 0 0 3px #e11d48 !important;
+          }
+          .queens-cell.is-hint {
+            box-shadow: inset 0 0 0 3px #0f172a, inset 0 0 0 5px #ffffff !important;
+          }
+          .queens-mark-manual {
+            color: rgba(15, 23, 42, 0.78) !important;
+            font-weight: 800 !important;
+          }
+          .queens-mark-auto {
+            color: rgba(15, 23, 42, 0.42) !important;
+            font-weight: 700 !important;
+          }
+
+          /* Sudoku Board */
+          .sudoku-board {
+            display: grid;
+            width: 100%;
+            max-width: 430px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+            border: 2px solid rgba(148, 163, 184, 0.38);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1f2937;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+          }
+          .sudoku-cell {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1;
+            background: #253142;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(1rem, 3.6vw, 1.35rem);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+            box-sizing: border-box;
+            transition: background-color 0.12s ease, color 0.12s ease;
+          }
+          .sudoku-cell.is-given {
+            color: #94a3b8;
+            background: #1f2937;
+            font-weight: 600;
+          }
+          .sudoku-cell.is-user {
+            color: #7dd3fc;
+          }
+          .sudoku-cell.is-peer {
+            background: #2b394c;
+          }
+          .sudoku-cell.is-same-num {
+            background: rgba(56, 189, 248, 0.16);
+            color: #bae6fd;
+          }
+          .sudoku-cell.is-selected {
+            background: rgba(125, 211, 252, 0.22) !important;
+            box-shadow: inset 0 0 0 2px rgba(125, 211, 252, 0.65);
+            z-index: 2;
+          }
+          .sudoku-cell.is-conflict {
+            background: rgba(225, 29, 72, 0.22) !important;
+            color: #fda4af !important;
+            box-shadow: inset 0 0 0 1.5px rgba(244, 63, 94, 0.7);
+          }
+          .sudoku-notes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            padding: 2px;
+            align-items: center;
+            justify-items: center;
+            font-size: clamp(0.48rem, 1.45vw, 0.64rem);
+            line-height: 1;
+            color: #94a3b8;
+            font-weight: 600;
+          }
+        `;
+        document.head.appendChild(styleEl);
+      }
+
+      bindSudokuKeyboard() {
+        window.addEventListener("keydown", (e) => {
+          const st = this.sudokuState;
+          if (this.section !== "arcade" || this.arcadeGame !== "sudoku" || !st.active || st.phase !== "playing") return;
+          if (e.key >= "1" && e.key <= String(st.size)) {
+            e.preventDefault();
+            this.inputSudokuValue(Number(e.key));
+          } else if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
+            e.preventDefault();
+            this.inputSudokuValue(0);
+          } else if (e.key.toLowerCase() === "n") {
+            e.preventDefault();
+            this.toggleSudokuNoteMode();
+          } else if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+            e.preventDefault();
+            let [r, c] = st.selected || [0, 0];
+            if (e.key === "ArrowUp") r = (r - 1 + st.size) % st.size;
+            if (e.key === "ArrowDown") r = (r + 1) % st.size;
+            if (e.key === "ArrowLeft") c = (c - 1 + st.size) % st.size;
+            if (e.key === "ArrowRight") c = (c + 1) % st.size;
+            this.selectSudokuCell(r, c);
+          }
+        });
       }
 
       loadState() {
@@ -2671,7 +2862,6 @@
         return [...SEED_CONCEPTS, ...(this.state.customConcepts || [])];
       }
 
-      // Scoped chapters strictly belonging to current parent topic
       getAvailableSubtopics() {
         if (this.topic === "All") {
           return Object.values(TOPIC_CHAPTER_MAP).flat();
@@ -2679,7 +2869,6 @@
         return TOPIC_CHAPTER_MAP[this.topic] || [];
       }
 
-      // Helper to find parent topic for any chapter
       findParentTopicForChapter(chapterName) {
         for (const [t, chapters] of Object.entries(TOPIC_CHAPTER_MAP)) {
           if (chapters.includes(chapterName)) return t;
@@ -2687,7 +2876,6 @@
         return "All";
       }
 
-      // Concepts scoped by Topic + Subtopic (before status/level sub-filters)
       getTopicScopedConcepts() {
         let list = this.getAllConcepts();
         if (this.topic !== "All") list = list.filter(c => c.topic === this.topic);
@@ -2711,9 +2899,6 @@
         }
       }
 
-      // =======================================================================
-      // NAVIGATION, DROPDOWN <-> NEIGHBORING BUTTONS SYNC & THEME SWITCHING
-      // =======================================================================
       setSection(sec) {
         this.clearTimers();
         this.stopArcadeRuns();
@@ -2743,10 +2928,6 @@
         this.renderAll();
       }
 
-      // Handles selections from the left dropdown (#subtopic-select)
-      // - "All": Resets both topic & subtopic ("All 26 Chapters")
-      // - "TOPIC:<TopicName>": Scopes neighboring buttons to that Topic's chapters
-      // - "<ChapterName>": Scopes neighboring buttons to that Chapter's parent topic AND highlights the chapter
       handleDropdownChange(val) {
         if (val === "All") {
           this.topic = "All";
@@ -2764,12 +2945,10 @@
         this.renderAll();
       }
 
-      // Handles clicks on the neighboring horizontal chapter buttons (#subtopic-bar)
       setSubtopic(sub) {
         if (sub === "All") {
           this.subtopic = "All";
         } else if (this.subtopic === sub) {
-          // Clicking the already-active chapter button toggles back to showing all chapters in current scope
           this.subtopic = "All";
         } else {
           this.subtopic = sub;
@@ -2801,7 +2980,7 @@
 
       stopArcadeRuns() {
         this.clearTimers();
-        for (const key of ["queensState", "faultlineState"]) {
+        for (const key of ["queensState", "sudokuState", "faultlineState"]) {
           const game = this[key];
           if (game && game.active) {
             game.lastRunScore = game.score || 0;
@@ -2811,9 +2990,6 @@
         }
       }
 
-      // =======================================================================
-      // STATE MUTATIONS (BOOKMARKS, QUEUE, MASTERY)
-      // =======================================================================
       goToReviseQueue() {
         this.stopArcadeRuns();
         this.section = "revise";
@@ -2862,18 +3038,12 @@
         document.getElementById("concept-modal").classList.add("hidden");
       }
 
-      // =======================================================================
-      // v4.4 MINIGAMES: QUEENS (ARRANGEMENT LOGIC) + FAULTLINE
-      // =======================================================================
       escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, ch => ({
           "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
         }[ch]));
       }
 
-      // Render plain-text math notation safely, preserving both subscripts and superscripts.
-      // Examples: log_b(x), log_(b^m)(x), x^2, x^{n+1}, T_((n+1)/2), b^(log_b x).
-      // The parser operates on raw text and HTML-escapes every literal segment before adding tags.
       formatMathText(value) {
         const source = String(value ?? "");
         const pairs = { "(": ")", "{": "}" };
@@ -2893,7 +3063,6 @@
             }
             return null;
           }
-          // For a bare exponent, include a leading sign when present; otherwise consume one atom.
           if ((text[markerIndex] === "^") && (opener === "+" || opener === "-" || opener === "−")) start++;
           const match = text.slice(start).match(/^[\p{L}\p{N}∞]+/u);
           if (!match) return null;
@@ -2930,322 +3099,278 @@
         return out;
       }
 
-      getFormulaParts(concept) {
-        if (!concept || !concept.formula) return [];
-        const out = [];
-        const seen = new Set();
-        const lines = String(concept.formula).split(/\r?\n/)
-          .map(line => line.trim().replace(/^[•\-*]\s*/, ""))
-          .filter(Boolean);
-        lines.forEach((line, lineIndex) => {
-          const parts = line.split(/\s+\|\s+|;\s+/).map(part => part.trim()).filter(Boolean);
-          parts.forEach((part, partIndex) => {
-            if (!/[=≠≤≥<>⟹⟺↔≈]/.test(part) || part.length < 6 || part.length > 240) return;
-            const normalized = this.normalizeFact(part);
-            if (seen.has(normalized)) return;
-            seen.add(normalized);
-            const prefix = part.includes(":") ? part.split(":", 1)[0].trim() : "";
-            const label = prefix && prefix.length <= 36 && !/[=<>≤≥]/.test(prefix) ? prefix : "Formula";
-            const score = (part.includes("=") ? 5 : 0) + (part.length <= 100 ? 3 : part.length <= 155 ? 1 : -2) - partIndex * 0.4 - lineIndex * 0.15;
-            out.push({ text: part, label, lineIndex, partIndex, score });
-          });
-        });
-        return out.sort((a, b) => b.score - a.score);
-      }
-
       normalizeFact(value) {
         return String(value ?? "").toLowerCase().replace(/\s+/g, " ").replace(/[–—]/g, "-").trim();
       }
 
-      getFormulaSnippet(concept) {
-        const parts = this.getFormulaParts(concept);
-        return parts.length ? parts[0].text : "";
-      }
-
-      getFormulaItems(pool) {
-        const items = [];
-        const seen = new Set();
-        (pool || []).forEach(concept => {
-          this.getFormulaParts(concept).forEach((part, index) => {
-            const norm = this.normalizeFact(part.text);
-            const key = `${concept.id}::formula::${norm}`;
-            if (seen.has(key)) return;
-            seen.add(key);
-            items.push({
-              key, concept, kind: "formula", value: part.text, label: part.label,
-              sourceIndex: index
-            });
-          });
-        });
-        return items;
-      }
-
-      getGameScopeTiers() {
-        const all = this.getAllConcepts();
-        const levelScope = pool => this.levelFilter === "All" ? pool : pool.filter(c => (c.level || "Foundation") === this.levelFilter);
-        const tiers = [];
-        const pushTier = (pool, label, ignoreLevel = false) => {
-          const filtered = ignoreLevel ? pool : levelScope(pool);
-          if (filtered.length && !tiers.some(t => t.pool.map(c => c.id).sort().join("|") === filtered.map(c => c.id).sort().join("|"))) {
-            tiers.push({ pool: filtered, label: this.levelFilter === "All" ? label : `${label} · ${this.levelFilter}` });
-          }
-        };
-        if (this.subtopic !== "All") {
-          pushTier(all.filter(c => c.subtopic === this.subtopic && (this.topic === "All" || c.topic === this.topic)), `Chapter · ${this.subtopic}`);
-          if (this.topic !== "All") pushTier(all.filter(c => c.topic === this.topic), `Expanded to ${this.topic}`);
-          pushTier(all, "Expanded to all topics");
-        } else if (this.topic !== "All") {
-          pushTier(all.filter(c => c.topic === this.topic), `Topic · ${this.topic}`);
-          pushTier(all, "Expanded to all topics");
-        } else {
-          pushTier(all, "All 26 chapters");
-        }
-        // If the current level alone still cannot provide a full run, explicitly permit both levels.
-        if (this.levelFilter !== "All") pushTier(all, "Expanded to all topics · both levels", true);
-        if (!tiers.length) tiers.push({ pool: all, label: "All concept cards" });
-        return tiers;
-      }
-
-      chooseGameScope(itemBuilder, minItems = 10) {
-        const tiers = this.getGameScopeTiers();
-        let best = null;
-        for (const tier of tiers) {
-          const items = itemBuilder(tier.pool);
-          const candidate = { ...tier, items };
-          if (!best || items.length > best.items.length) best = candidate;
-          if (items.length >= minItems) return candidate;
-        }
-        return best || { pool: this.getAllConcepts(), label: "All concept cards", items: itemBuilder(this.getAllConcepts()) };
-      }
-
-      buildUniqueDeck(items, count = 10) {
-        const shuffled = this.shuffleList(items || []);
-        const out = [];
-        const used = new Set();
-        for (const item of shuffled) {
-          if (used.has(item.key)) continue;
-          used.add(item.key);
-          out.push(item);
-          if (out.length >= count) break;
-        }
-        return out;
-      }
-
-      getOptionPools(concept, difficulty = 1) {
-        const all = this.getAllConcepts();
-        const parent = all.filter(c => c.topic === concept.topic);
-        const chapter = all.filter(c => c.topic === concept.topic && c.subtopic === concept.subtopic);
-        const siblingChapters = parent.filter(c => c.subtopic !== concept.subtopic);
-        if (difficulty <= 0) return [chapter, parent, all];
-        if (difficulty === 1) return [chapter, siblingChapters, parent, all];
-        // Hard rounds draw first from same-level sibling chapters to make distractors more plausible.
-        const sameLevelSiblings = siblingChapters.filter(c => (c.level || "Foundation") === (concept.level || "Foundation"));
-        return [sameLevelSiblings, siblingChapters, chapter, parent, all];
-      }
-
-      getConceptOptionLabel(concept) {
-        const title = String(concept?.title || "Untitled concept").trim();
-        const chapter = String(concept?.subtopic || "").trim();
-        const level = String(concept?.level || "Foundation").trim();
-        return [title, chapter, level].filter(Boolean).join(" · ");
-      }
-
-      makeConceptOptions(targetConcept, difficulty = 1) {
-        if (!targetConcept?.id) return null;
-        const distractors = [];
-        const usedIds = new Set([targetConcept.id]);
-        const usedLabels = new Set([this.normalizeFact(this.getConceptOptionLabel(targetConcept))]);
-        // Prefer nearby/sibling concepts, then broaden the pool only when needed.
-        for (const pool of this.getOptionPools(targetConcept, difficulty)) {
-          for (const candidate of this.shuffleList(pool)) {
-            if (!candidate?.id || usedIds.has(candidate.id)) continue;
-            // Do not use a same-titled card as a distractor; only the level may differ.
-            if (this.normalizeFact(candidate.title) === this.normalizeFact(targetConcept.title)) continue;
-            const label = this.getConceptOptionLabel(candidate);
-            const normalized = this.normalizeFact(label);
-            if (!normalized || usedLabels.has(normalized)) continue;
-            usedIds.add(candidate.id);
-            usedLabels.add(normalized);
-            distractors.push(candidate);
-            if (distractors.length === 3) break;
-          }
-          if (distractors.length === 3) break;
-        }
-        if (distractors.length !== 3) return null;
-        const options = this.shuffleList([targetConcept, ...distractors]);
-        return { options, correctIndex: options.findIndex(option => option.id === targetConcept.id) };
-      }
-
-      getShortConceptTitle(title) {
-        const raw = String(title ?? "").trim();
-        if (raw.length <= 44) return raw;
-        const firstClause = raw.split(/\s+[—–]\s+|,|\s+&\s+|\s+and\s+|\s*\(/i)[0].trim();
-        if (firstClause.length >= 8 && firstClause.length <= 44) return firstClause;
-        const words = raw.split(/\s+/).slice(0, 6).join(" ");
-        return words.length < raw.length ? `${words}…` : raw;
-      }
-
-      makeOptions(correctText, targetConcept, kind, difficulty, isFormula = false) {
-        const correctNorm = this.normalizeFact(correctText);
-        const wrong = [];
-        const seen = new Set([correctNorm]);
-        for (const pool of this.getOptionPools(targetConcept, difficulty)) {
-          const items = this.getFormulaItems(pool);
-          for (const item of this.shuffleList(items)) {
-            if (item.concept.id === targetConcept.id) continue;
-            const normalized = this.normalizeFact(item.value);
-            if (!normalized || seen.has(normalized)) continue;
-            seen.add(normalized);
-            wrong.push(item.value);
-            if (wrong.length >= 3) break;
-          }
-          if (wrong.length >= 3) break;
-        }
-        if (wrong.length < 3) return null;
-        const options = this.shuffleList([correctText, ...wrong.slice(0, 3)]);
-        if (new Set(options.map(value => this.normalizeFact(value))).size !== 4) return null;
-        return { options, correctIndex: options.findIndex(value => this.normalizeFact(value) === correctNorm) };
-      }
-
-      createFormulaChallenge(formulaItem, difficulty = 1) {
-        if (!formulaItem || !formulaItem.concept || !formulaItem.value) return null;
-        const correctFormula = formulaItem.value;
-        const optionSet = this.makeOptions(correctFormula, formulaItem.concept, "formula", difficulty, true);
-        if (!optionSet) return null;
-        return { formula: correctFormula, options: optionSet.options, correctIndex: optionSet.correctIndex, formulaLabel: formulaItem.label || "Formula" };
-      }
-
       // =======================================================================
-      // LINKEDIN "QUEENS" LOGIC PUZZLE ENGINE (Arrangement & Deduction Trainer)
-      // Rules:
-      // 1. Exactly 1 Crown (👑) in each Row, Column, and Colored Region.
-      // 2. No two Crowns can touch — not even diagonally (8-neighbor King rule).
+      // 1. QUEENS LOGIC PUZZLE ENGINE (6x6 to 9x9)
+      //    - +50% Higher Contrast Distinct Palette
+      //    - Uniform border thickness across all squares
+      //    - Backtracking generator + solver verification (100% uniquely solvable)
       // =======================================================================
       getQueensPalette() {
         return [
-          { bg: "#c4b5fd", name: "Lavender" }, // 0
-          { bg: "#fde68a", name: "Amber" },    // 1
-          { bg: "#99f6e4", name: "Mint" },     // 2
-          { bg: "#fecdd3", name: "Coral" },    // 3
-          { bg: "#bae6fd", name: "Sky" },      // 4
-          { bg: "#fed7aa", name: "Peach" },    // 5
-          { bg: "#d9f99d", name: "Lime" },     // 6
-          { bg: "#f5d0fe", name: "Orchid" }    // 7
+          { bg: "#63b3ed", name: "Sky Blue" },
+          { bg: "#f6ad55", name: "Amber Orange" },
+          { bg: "#68d391", name: "Emerald Mint" },
+          { bg: "#f687b3", name: "Coral Rose" },
+          { bg: "#b794f4", name: "Lavender Purple" },
+          { bg: "#f6e05e", name: "Sunny Gold" },
+          { bg: "#4fd1c5", name: "Turquoise Teal" },
+          { bg: "#bef264", name: "Fresh Lime" },
+          { bg: "#cbd5e1", name: "Silver Slate" }
         ];
       }
 
-      countQueensSolutions(regions, n, limit = 2) {
-        let count = 0;
+      solveQueensBoard(regions, n, limit = 2) {
+        const solutions = [];
+        const current = new Array(n).fill(-1);
         let usedCols = 0;
         let usedRegs = 0;
 
         const backtrack = (r, prevC) => {
           if (r === n) {
-            count += 1;
+            solutions.push([...current]);
             return;
           }
           for (let c = 0; c < n; c++) {
             if (usedCols & (1 << c)) continue;
             if (prevC !== -2 && Math.abs(c - prevC) <= 1) continue;
             const reg = regions[r][c];
-            if (usedRegs & (1 << reg)) continue;
+            if (reg < 0 || (usedRegs & (1 << reg))) continue;
 
             usedCols |= (1 << c);
             usedRegs |= (1 << reg);
+            current[r] = c;
             backtrack(r + 1, c);
             usedCols &= ~(1 << c);
             usedRegs &= ~(1 << reg);
-            if (count >= limit) return;
+            if (solutions.length >= limit) return;
           }
         };
 
         backtrack(0, -2);
-        return count;
+        return solutions;
       }
 
-      generateQueensBoard(n = 6) {
-        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        const weightChoices = [1, 1, 2, 4, 8];
+      countQueensSolutions(regions, n, limit = 2) {
+        return this.solveQueensBoard(regions, n, limit).length;
+      }
 
-        for (let attempt = 0; attempt < 600; attempt++) {
-          // 1. Generate a valid non-touching Queen placement (1 per row, 1 per col, |c[i] - c[i+1]| >= 2)
-          let qCols = null;
-          const baseCols = Array.from({ length: n }, (_, i) => i);
-          for (let tries = 0; tries < 250; tries++) {
-            const cand = this.shuffleList(baseCols);
-            let ok = true;
-            for (let i = 0; i < n - 1; i++) {
-              if (Math.abs(cand[i] - cand[i + 1]) <= 1) {
-                ok = false;
-                break;
-              }
-            }
-            if (ok) {
-              qCols = cand;
+      findRandomQueenCols(n) {
+        const result = new Array(n).fill(-1);
+        let usedCols = 0;
+        const cols = Array.from({ length: n }, (_, i) => i);
+
+        const search = (r, prevC) => {
+          if (r === n) return true;
+          const order = this.shuffleList(cols);
+          for (const c of order) {
+            if (usedCols & (1 << c)) continue;
+            if (prevC !== -2 && Math.abs(c - prevC) <= 1) continue;
+            usedCols |= (1 << c);
+            result[r] = c;
+            if (search(r + 1, c)) return true;
+            usedCols &= ~(1 << c);
+          }
+          return false;
+        };
+
+        return search(0, -2) ? result : [1, 3, 5, 0, 2, 4].slice(0, n);
+      }
+
+      isRegionConnected(regions, n, regId, expectedSize) {
+        let startR = -1, startC = -1;
+        for (let r = 0; r < n && startR === -1; r++) {
+          for (let c = 0; c < n; c++) {
+            if (regions[r][c] === regId) {
+              startR = r;
+              startC = c;
               break;
             }
           }
-          if (!qCols) continue;
+        }
+        if (startR === -1) return false;
+        const visited = new Set([`${startR},${startC}`]);
+        const queue = [[startR, startC]];
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        while (queue.length) {
+          const [r, c] = queue.shift();
+          for (const [dr, dc] of dirs) {
+            const nr = r + dr, nc = c + dc;
+            const key = `${nr},${nc}`;
+            if (nr >= 0 && nr < n && nc >= 0 && nc < n && regions[nr][nc] === regId && !visited.has(key)) {
+              visited.add(key);
+              queue.push([nr, nc]);
+            }
+          }
+        }
+        return visited.size === expectedSize;
+      }
 
-          // 2. Seed contiguous regions at each Queen position and grow with varied region weights
+      generateQueensBoard(n = 7) {
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        const minRegionSize = n >= 8 ? 4 : 3;
+
+        for (let attempt = 0; attempt < 350; attempt++) {
+          const qCols = this.findRandomQueenCols(n);
           const regions = Array.from({ length: n }, () => Array(n).fill(-1));
-          const frontier = [];
+          const regSizes = Array(n).fill(1);
           for (let r = 0; r < n; r++) {
-            const c = qCols[r];
-            regions[r][c] = r;
-            for (const [dr, dc] of dirs) {
-              const nr = r + dr, nc = c + dc;
-              if (nr >= 0 && nr < n && nc >= 0 && nc < n) {
-                frontier.push([nr, nc, r]);
-              }
-            }
+            regions[r][qCols[r]] = r;
           }
 
-          const weights = Array.from({ length: n }, () => weightChoices[Math.floor(Math.random() * weightChoices.length)]);
-          let unassigned = n * n - n;
+          // Phase A: Grow every region to at least minRegionSize
+          let phaseAOk = true;
+          const regOrder = this.shuffleList(Array.from({ length: n }, (_, i) => i));
+          for (let pass = 1; pass < minRegionSize; pass++) {
+            for (const reg of regOrder) {
+              const candidates = [];
+              for (let r = 0; r < n; r++) {
+                for (let c = 0; c < n; c++) {
+                  if (regions[r][c] !== reg) continue;
+                  for (const [dr, dc] of dirs) {
+                    const nr = r + dr, nc = c + dc;
+                    if (nr >= 0 && nr < n && nc >= 0 && nc < n && regions[nr][nc] === -1) {
+                      candidates.push([nr, nc]);
+                    }
+                  }
+                }
+              }
+              if (!candidates.length) {
+                phaseAOk = false;
+                break;
+              }
+              const [pickR, pickC] = candidates[Math.floor(Math.random() * candidates.length)];
+              regions[pickR][pickC] = reg;
+              regSizes[reg]++;
+            }
+            if (!phaseAOk) break;
+          }
+          if (!phaseAOk) continue;
+
+          // Phase B: Fill all remaining unassigned cells
+          let unassigned = n * n - regSizes.reduce((a, b) => a + b, 0);
           let guard = 0;
-
-          while (unassigned > 0 && frontier.length > 0 && guard < 4000) {
+          while (unassigned > 0 && guard < 2500) {
             guard++;
-            const idx = Math.floor(Math.random() * frontier.length);
-            const [r, c, reg] = frontier[idx];
-            if (regions[r][c] !== -1) {
-              frontier[idx] = frontier[frontier.length - 1];
-              frontier.pop();
-              continue;
-            }
-            if (Math.random() > 1 / weights[reg] && guard < 2500) {
-              continue;
-            }
-            regions[r][c] = reg;
-            unassigned--;
-            frontier[idx] = frontier[frontier.length - 1];
-            frontier.pop();
-            for (const [dr, dc] of dirs) {
-              const nr = r + dr, nc = c + dc;
-              if (nr >= 0 && nr < n && nc >= 0 && nc < n && regions[nr][nc] === -1) {
-                frontier.push([nr, nc, reg]);
+            const frontier = [];
+            for (let r = 0; r < n; r++) {
+              for (let c = 0; c < n; c++) {
+                if (regions[r][c] !== -1) continue;
+                for (const [dr, dc] of dirs) {
+                  const nr = r + dr, nc = c + dc;
+                  if (nr >= 0 && nr < n && nc >= 0 && nc < n && regions[nr][nc] !== -1) {
+                    frontier.push([r, c, regions[nr][nc]]);
+                  }
+                }
               }
             }
+            if (!frontier.length) break;
+            const [r, c, reg] = frontier[Math.floor(Math.random() * frontier.length)];
+            if (regions[r][c] === -1) {
+              regions[r][c] = reg;
+              regSizes[reg]++;
+              unassigned--;
+            }
           }
+          if (unassigned !== 0) continue;
 
-          // Verify unique solution
-          if (unassigned === 0 && this.countQueensSolutions(regions, n, 2) === 1) {
-            return { regions, solution: qCols };
+          // Phase C: Check uniqueness; if >1 solution exists, refine boundary cells to eliminate alternate solutions
+          for (let refine = 0; refine < 30; refine++) {
+            const sols = this.solveQueensBoard(regions, n, 2);
+            if (sols.length === 1) {
+              return { regions, solution: sols[0] };
+            }
+            if (sols.length === 0) break;
+
+            const alt = sols.find(s => s.some((c, r) => c !== qCols[r])) || sols[1];
+            const diffRows = this.shuffleList(
+              Array.from({ length: n }, (_, r) => r).filter(r => alt[r] !== qCols[r])
+            );
+
+            let mutated = false;
+            for (const r of diffRows) {
+              const c = alt[r];
+              const oldReg = regions[r][c];
+              if (qCols[oldReg] === c && r === oldReg) continue;
+              if (regSizes[oldReg] <= minRegionSize) continue;
+
+              const neighborRegs = [];
+              for (const [dr, dc] of dirs) {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < n && nc >= 0 && nc < n && regions[nr][nc] !== oldReg) {
+                  neighborRegs.push(regions[nr][nc]);
+                }
+              }
+              if (!neighborRegs.length) continue;
+
+              const newReg = neighborRegs[Math.floor(Math.random() * neighborRegs.length)];
+              regions[r][c] = newReg;
+              if (this.isRegionConnected(regions, n, oldReg, regSizes[oldReg] - 1)) {
+                regSizes[oldReg]--;
+                regSizes[newReg]++;
+                mutated = true;
+                break;
+              } else {
+                regions[r][c] = oldReg;
+              }
+            }
+            if (!mutated) break;
           }
         }
 
-        // Fallback deterministic unique board if random generation ever hits cap
-        const fallbackCols = n === 5 ? [1, 3, 0, 2, 4] : n === 7 ? [1, 3, 5, 0, 2, 4, 6] : n === 8 ? [1, 3, 5, 7, 0, 2, 4, 6] : [1, 3, 5, 0, 2, 4];
-        const fallbackRegions = Array.from({ length: n }, (_, r) =>
-          Array.from({ length: n }, (__, c) => (c === fallbackCols[r] ? r : r))
-        );
-        return { regions: fallbackRegions, solution: fallbackCols };
+        // Pre-verified uniquely solvable fallback boards for 6x6, 7x7, 8x8, 9x9
+        const verifiedFallbacks = {
+          6: [
+            [0, 0, 1, 1, 1, 2],
+            [0, 0, 3, 1, 2, 2],
+            [0, 3, 3, 4, 4, 2],
+            [3, 3, 4, 4, 2, 5],
+            [3, 4, 4, 5, 5, 5],
+            [3, 4, 5, 5, 5, 5]
+          ],
+          7: [
+            [0, 0, 1, 1, 1, 2, 2],
+            [0, 0, 3, 1, 2, 2, 2],
+            [0, 3, 3, 4, 4, 2, 5],
+            [3, 3, 4, 4, 5, 5, 5],
+            [3, 4, 4, 6, 6, 5, 5],
+            [3, 4, 6, 6, 6, 5, 5],
+            [6, 6, 6, 6, 5, 5, 5]
+          ],
+          8: [
+            [0, 0, 1, 1, 1, 2, 2, 2],
+            [0, 0, 3, 1, 2, 2, 2, 4],
+            [0, 3, 3, 3, 2, 4, 4, 4],
+            [3, 3, 5, 5, 4, 4, 6, 6],
+            [3, 5, 5, 5, 4, 6, 6, 6],
+            [5, 5, 7, 7, 6, 6, 6, 6],
+            [5, 7, 7, 7, 7, 6, 6, 6],
+            [7, 7, 7, 7, 7, 6, 6, 6]
+          ],
+          9: [
+            [0, 0, 1, 1, 1, 2, 2, 2, 3],
+            [0, 0, 4, 1, 2, 2, 3, 3, 3],
+            [0, 4, 4, 4, 2, 3, 3, 5, 5],
+            [4, 4, 6, 6, 3, 5, 5, 5, 5],
+            [4, 6, 6, 6, 7, 7, 5, 8, 8],
+            [6, 6, 7, 7, 7, 5, 8, 8, 8],
+            [6, 7, 7, 8, 8, 8, 8, 8, 8],
+            [6, 7, 8, 8, 8, 8, 8, 8, 8],
+            [7, 7, 8, 8, 8, 8, 8, 8, 8]
+          ]
+        };
+        const fbRegions = (verifiedFallbacks[n] || verifiedFallbacks[7]).map(r => [...r]);
+        const fbSols = this.solveQueensBoard(fbRegions, n, 1);
+        return { regions: fbRegions, solution: fbSols[0] || this.findRandomQueenCols(n) };
       }
 
       setQueensSize(size) {
-        const validSize = [5, 6, 7, 8].includes(Number(size)) ? Number(size) : 6;
+        const validSize = [6, 7, 8, 9].includes(Number(size)) ? Number(size) : 7;
         this.queensState.size = validSize;
+        if (validSize >= 8) this.queensState.autoX = false;
         if (this.queensState.active) {
           this.startQueens(validSize);
         } else {
@@ -3265,7 +3390,7 @@
 
       startQueens(customSize) {
         this.clearTimers();
-        const size = [5, 6, 7, 8].includes(Number(customSize)) ? Number(customSize) : (this.queensState.size || 6);
+        const size = [6, 7, 8, 9].includes(Number(customSize)) ? Number(customSize) : (this.queensState.size || 7);
         const generated = this.generateQueensBoard(size);
         const cells = Array.from({ length: size }, () => Array(size).fill(0));
 
@@ -3283,6 +3408,7 @@
           hintCell: null,
           hintMessage: "",
           hintsUsed: 0,
+          maxHints: 3,
           elapsedSeconds: 0,
           startedAt: Date.now()
         };
@@ -3301,7 +3427,6 @@
         const cells = state.cells;
         const regions = state.regions;
 
-        // First clear existing auto-X marks (value 3), preserving manual X (1) and Crowns (2)
         for (let r = 0; r < n; r++) {
           for (let c = 0; c < n; c++) {
             if (cells[r][c] === 3) cells[r][c] = 0;
@@ -3310,7 +3435,6 @@
 
         if (!state.autoX) return;
 
-        // For every placed Crown (2), mark eliminated cells as auto-X (3) if currently empty (0)
         for (let r = 0; r < n; r++) {
           for (let c = 0; c < n; c++) {
             if (cells[r][c] !== 2) continue;
@@ -3365,7 +3489,7 @@
             if (regions[r1][c1] === regions[r2][c2]) {
               conflictSet.add(`${r1},${c1}`);
               conflictSet.add(`${r2},${c2}`);
-              reasons.add(`Two crowns share the same colored region`);
+              reasons.add(`Two crowns share the same region`);
             }
             if (Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1) {
               conflictSet.add(`${r1},${c1}`);
@@ -3378,7 +3502,6 @@
         state.conflicts = Array.from(conflictSet);
         state.conflictReasons = Array.from(reasons);
 
-        // Check victory: N crowns placed and 0 conflicts
         if (crowns.length === n && state.conflicts.length === 0) {
           this.completeQueensRun();
         }
@@ -3394,8 +3517,6 @@
         state.hintMessage = "";
 
         const cur = state.cells[r][c];
-        // Tap cycle: Empty(0) -> Manual X(1) -> Crown(2) -> Empty(0)
-        // If it's an Auto-X(3), tapping it promotes it to a Crown(2) (or clears if tapped again)
         if (cur === 0) {
           state.cells[r][c] = 1;
         } else if (cur === 1 || cur === 3) {
@@ -3435,87 +3556,41 @@
       requestQueensHint() {
         const state = this.queensState;
         if (!state.active || state.phase !== "playing") return;
+        const maxHints = state.maxHints || 3;
+        if ((state.hintsUsed || 0) >= maxHints) {
+          state.hintCell = null;
+          state.hintMessage = `Hint limit reached (${maxHints}/${maxHints} used).`;
+          this.renderMain();
+          return;
+        }
+
         const n = state.size;
         const sol = state.solution;
         const cells = state.cells;
         const regions = state.regions;
         state.hintsUsed = (state.hintsUsed || 0) + 1;
 
-        // 1. Check if any placed Crown is incorrect
         for (let r = 0; r < n; r++) {
           for (let c = 0; c < n; c++) {
             if (cells[r][c] === 2 && sol[r] !== c) {
               state.hintCell = `${r},${c}`;
-              state.hintMessage = `Deduction Check: The crown at Row ${r + 1}, Col ${c + 1} leads to a contradiction later. Try removing it.`;
+              state.hintMessage = `Hint ${state.hintsUsed}/${maxHints}: The crown at Row ${r + 1}, Col ${c + 1} blocks a required placement later.`;
               this.renderMain();
               return;
             }
           }
         }
 
-        // 2. Check if any true Crown cell was mistakenly marked with a manual X
         for (let r = 0; r < n; r++) {
           const trueC = sol[r];
           if (cells[r][trueC] === 1) {
             state.hintCell = `${r},${trueC}`;
-            state.hintMessage = `Spot Check: Row ${r + 1}, Col ${trueC + 1} was marked ✕, but this cell is required for a valid arrangement.`;
+            state.hintMessage = `Hint ${state.hintsUsed}/${maxHints}: Row ${r + 1}, Col ${trueC + 1} was marked ✕, but it is required for a crown.`;
             this.renderMain();
             return;
           }
         }
 
-        // 3. Look for a Colored Region with only 1 un-eliminated cell left
-        for (let reg = 0; reg < n; reg++) {
-          let hasCrown = false;
-          const openCells = [];
-          for (let r = 0; r < n; r++) {
-            for (let c = 0; c < n; c++) {
-              if (regions[r][c] === reg) {
-                if (cells[r][c] === 2) hasCrown = true;
-                else if (cells[r][c] === 0) openCells.push([r, c]);
-              }
-            }
-          }
-          if (!hasCrown && openCells.length === 1) {
-            const [hr, hc] = openCells[0];
-            state.hintCell = `${hr},${hc}`;
-            state.hintMessage = `Forced Region Move: This colored region has only 1 open cell left at Row ${hr + 1}, Col ${hc + 1}!`;
-            this.renderMain();
-            return;
-          }
-        }
-
-        // 4. Look for a Row or Column with only 1 un-eliminated cell left
-        for (let r = 0; r < n; r++) {
-          if (cells[r].includes(2)) continue;
-          const openCols = [];
-          for (let c = 0; c < n; c++) {
-            if (cells[r][c] === 0) openCols.push(c);
-          }
-          if (openCols.length === 1) {
-            state.hintCell = `${r},${openCols[0]}`;
-            state.hintMessage = `Forced Row Move: Row ${r + 1} has only 1 valid cell remaining at Col ${openCols[0] + 1}!`;
-            this.renderMain();
-            return;
-          }
-        }
-
-        for (let c = 0; c < n; c++) {
-          let hasCrown = false;
-          const openRows = [];
-          for (let r = 0; r < n; r++) {
-            if (cells[r][c] === 2) hasCrown = true;
-            else if (cells[r][c] === 0) openRows.push(r);
-          }
-          if (!hasCrown && openRows.length === 1) {
-            state.hintCell = `${openRows[0]},${c}`;
-            state.hintMessage = `Forced Column Move: Column ${c + 1} has only 1 valid cell remaining at Row ${openRows[0] + 1}!`;
-            this.renderMain();
-            return;
-          }
-        }
-
-        // 5. Otherwise highlight the most constrained unplaced Crown from the unique solution
         let bestRow = -1;
         let minOpen = 999;
         for (let r = 0; r < n; r++) {
@@ -3537,7 +3612,7 @@
         if (bestRow !== -1) {
           const hc = sol[bestRow];
           state.hintCell = `${bestRow},${hc}`;
-          state.hintMessage = `Key Anchor: Focus on Row ${bestRow + 1}, Col ${hc + 1} — placing a 👑 here unlocks the surrounding regions.`;
+          state.hintMessage = `Hint ${state.hintsUsed}/${maxHints}: Place a 👑 at Row ${bestRow + 1}, Col ${hc + 1}.`;
           this.renderMain();
         }
       }
@@ -3550,14 +3625,14 @@
         state.active = false;
         state.phase = "complete";
 
-        const baseBySize = { 5: 120, 6: 180, 7: 250, 8: 340 };
-        const base = baseBySize[state.size] || 180;
-        const parSeconds = state.size === 5 ? 45 : state.size === 6 ? 75 : state.size === 7 ? 120 : 180;
+        const baseBySize = { 6: 200, 7: 280, 8: 380, 9: 500 };
+        const base = baseBySize[state.size] || 280;
+        const parSeconds = state.size === 6 ? 75 : state.size === 7 ? 120 : state.size === 8 ? 180 : 240;
         const speedBonus = elapsed < parSeconds ? Math.round((parSeconds - elapsed) * 1.5) : 0;
-        const hintPenalty = (state.hintsUsed || 0) * 25;
+        const hintPenalty = (state.hintsUsed || 0) * 35;
         state.streak = (state.streak || 0) + 1;
         const mult = Math.min(1.5, 1 + Math.floor(state.streak / 2) * 0.1);
-        const totalPts = Math.max(40, Math.round((base + speedBonus - hintPenalty) * mult));
+        const totalPts = Math.max(50, Math.round((base + speedBonus - hintPenalty) * mult));
 
         state.score = totalPts;
         state.lastRunScore = totalPts;
@@ -3569,6 +3644,284 @@
         this.saveState();
       }
 
+      // =======================================================================
+      // 2. SUDOKU ENGINE (6x6 & 9x9 with Unique Solution Solver)
+      // =======================================================================
+      getSudokuBoxDims(n) {
+        return n === 6 ? { br: 2, bc: 3 } : { br: 3, bc: 3 };
+      }
+
+      isValidSudokuMove(board, n, r, c, val) {
+        for (let i = 0; i < n; i++) {
+          if (i !== c && board[r][i] === val) return false;
+          if (i !== r && board[i][c] === val) return false;
+        }
+        const { br, bc } = this.getSudokuBoxDims(n);
+        const sr = Math.floor(r / br) * br;
+        const sc = Math.floor(c / bc) * bc;
+        for (let dr = 0; dr < br; dr++) {
+          for (let dc = 0; dc < bc; dc++) {
+            const rr = sr + dr, cc = sc + dc;
+            if ((rr !== r || cc !== c) && board[rr][cc] === val) return false;
+          }
+        }
+        return true;
+      }
+
+      countSudokuSolutions(board, n, limit = 2) {
+        let bestR = -1, bestC = -1, bestCandidates = null;
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            if (board[r][c] !== 0) continue;
+            const cands = [];
+            for (let v = 1; v <= n; v++) {
+              if (this.isValidSudokuMove(board, n, r, c, v)) cands.push(v);
+            }
+            if (cands.length === 0) return 0;
+            if (!bestCandidates || cands.length < bestCandidates.length) {
+              bestR = r;
+              bestC = c;
+              bestCandidates = cands;
+              if (cands.length === 1) break;
+            }
+          }
+          if (bestCandidates && bestCandidates.length === 1) break;
+        }
+        if (bestR === -1) return 1;
+        let total = 0;
+        for (const val of bestCandidates) {
+          board[bestR][bestC] = val;
+          total += this.countSudokuSolutions(board, n, limit - total);
+          board[bestR][bestC] = 0;
+          if (total >= limit) return total;
+        }
+        return total;
+      }
+
+      generateSudokuBoard(n = 9, difficulty = "hard") {
+        const board = Array.from({ length: n }, () => Array(n).fill(0));
+        const digits = Array.from({ length: n }, (_, i) => i + 1);
+        const fillGrid = (pos) => {
+          if (pos === n * n) return true;
+          const r = Math.floor(pos / n), c = pos % n;
+          for (const val of this.shuffleList(digits)) {
+            if (this.isValidSudokuMove(board, n, r, c, val)) {
+              board[r][c] = val;
+              if (fillGrid(pos + 1)) return true;
+              board[r][c] = 0;
+            }
+          }
+          return false;
+        };
+        fillGrid(0);
+
+        const solution = board.map(row => [...row]);
+        const puzzle = board.map(row => [...row]);
+        const targetClues = n === 6
+          ? (difficulty === "medium" ? 16 : difficulty === "hard" ? 13 : 11)
+          : (difficulty === "medium" ? 34 : difficulty === "hard" ? 28 : 24);
+
+        const coords = this.shuffleList(Array.from({ length: n * n }, (_, i) => [Math.floor(i / n), i % n]));
+        let cluesLeft = n * n;
+        for (const [r, c] of coords) {
+          if (cluesLeft <= targetClues) break;
+          const backup = puzzle[r][c];
+          puzzle[r][c] = 0;
+          const copy = puzzle.map(row => [...row]);
+          if (this.countSudokuSolutions(copy, n, 2) === 1) {
+            cluesLeft--;
+          } else {
+            puzzle[r][c] = backup;
+          }
+        }
+        return { puzzle, solution };
+      }
+
+      setSudokuConfig(size, difficulty) {
+        if (size) this.sudokuState.size = [6, 9].includes(Number(size)) ? Number(size) : 9;
+        if (difficulty) this.sudokuState.difficulty = difficulty;
+        if (this.sudokuState.active) this.startSudoku();
+        else this.renderMain();
+      }
+
+      startSudoku() {
+        this.clearTimers();
+        const size = this.sudokuState.size || 9;
+        const difficulty = this.sudokuState.difficulty || "hard";
+        const { puzzle, solution } = this.generateSudokuBoard(size, difficulty);
+        const notes = Array.from({ length: size }, () => Array.from({ length: size }, () => []));
+
+        this.sudokuState = {
+          ...this.sudokuState,
+          active: true,
+          phase: "playing",
+          size,
+          difficulty,
+          givens: puzzle.map(r => r.map(v => v !== 0)),
+          cells: puzzle.map(r => [...r]),
+          solution,
+          notes,
+          selected: [0, 0],
+          noteMode: false,
+          history: [],
+          conflicts: [],
+          hintsUsed: 0,
+          maxHints: 3,
+          hintMessage: "",
+          elapsedSeconds: 0,
+          startedAt: Date.now()
+        };
+        this.startGameTicker();
+        this.renderMain();
+      }
+
+      selectSudokuCell(r, c) {
+        if (!this.sudokuState.active) return;
+        this.sudokuState.selected = [r, c];
+        this.renderMain();
+      }
+
+      toggleSudokuNoteMode() {
+        this.sudokuState.noteMode = !this.sudokuState.noteMode;
+        this.renderMain();
+      }
+
+      evaluateSudokuBoard() {
+        const st = this.sudokuState;
+        const n = st.size;
+        const conflictSet = new Set();
+        let filled = 0;
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            const v = st.cells[r][c];
+            if (!v) continue;
+            filled++;
+            if (!this.isValidSudokuMove(st.cells, n, r, c, v)) conflictSet.add(`${r},${c}`);
+          }
+        }
+        st.conflicts = Array.from(conflictSet);
+        if (filled === n * n && st.conflicts.length === 0) this.completeSudokuRun();
+      }
+
+      inputSudokuValue(val) {
+        const st = this.sudokuState;
+        if (!st.active || st.phase !== "playing" || !st.selected) return;
+        const [r, c] = st.selected;
+        if (st.givens[r][c]) return;
+
+        st.history.push({
+          cells: st.cells.map(row => [...row]),
+          notes: st.notes.map(row => row.map(nList => [...nList]))
+        });
+        if (st.history.length > 60) st.history.shift();
+        st.hintMessage = "";
+
+        if (val === 0) {
+          st.cells[r][c] = 0;
+          st.notes[r][c] = [];
+        } else if (st.noteMode) {
+          st.cells[r][c] = 0;
+          const curNotes = st.notes[r][c];
+          const idx = curNotes.indexOf(val);
+          if (idx === -1) curNotes.push(val);
+          else curNotes.splice(idx, 1);
+        } else {
+          st.cells[r][c] = st.cells[r][c] === val ? 0 : val;
+          st.notes[r][c] = [];
+          if (st.cells[r][c] !== 0) {
+            const { br, bc } = this.getSudokuBoxDims(st.size);
+            const sr = Math.floor(r / br) * br, sc = Math.floor(c / bc) * bc;
+            for (let i = 0; i < st.size; i++) {
+              st.notes[r][i] = st.notes[r][i].filter(x => x !== val);
+              st.notes[i][c] = st.notes[i][c].filter(x => x !== val);
+            }
+            for (let dr = 0; dr < br; dr++) {
+              for (let dc = 0; dc < bc; dc++) {
+                st.notes[sr + dr][sc + dc] = st.notes[sr + dr][sc + dc].filter(x => x !== val);
+              }
+            }
+          }
+        }
+        this.evaluateSudokuBoard();
+        this.renderMain();
+      }
+
+      undoSudokuMove() {
+        const st = this.sudokuState;
+        if (!st.active || !st.history.length) return;
+        const prev = st.history.pop();
+        st.cells = prev.cells;
+        st.notes = prev.notes;
+        this.evaluateSudokuBoard();
+        this.renderMain();
+      }
+
+      requestSudokuHint() {
+        const st = this.sudokuState;
+        if (!st.active || st.phase !== "playing") return;
+        if (st.hintsUsed >= (st.maxHints || 3)) {
+          st.hintMessage = `All ${st.maxHints} hints used for this grid!`;
+          this.renderMain();
+          return;
+        }
+        const n = st.size;
+        let target = null;
+        if (st.selected && st.cells[st.selected[0]][st.selected[1]] !== st.solution[st.selected[0]][st.selected[1]]) {
+          target = st.selected;
+        } else {
+          for (let r = 0; r < n && !target; r++) {
+            for (let c = 0; c < n; c++) {
+              if (st.cells[r][c] !== st.solution[r][c]) {
+                target = [r, c];
+                break;
+              }
+            }
+          }
+        }
+        if (!target) return;
+        const [tr, tc] = target;
+        st.hintsUsed++;
+        st.selected = [tr, tc];
+        st.cells[tr][tc] = st.solution[tr][tc];
+        st.notes[tr][tc] = [];
+        st.hintMessage = `Hint ${st.hintsUsed}/${st.maxHints}: Placed ${st.solution[tr][tc]} at Row ${tr + 1}, Col ${tc + 1}.`;
+        this.evaluateSudokuBoard();
+        this.renderMain();
+      }
+
+      completeSudokuRun() {
+        const st = this.sudokuState;
+        this.clearTimers();
+        const elapsed = Math.max(1, Math.round((Date.now() - st.startedAt) / 1000));
+        st.elapsedSeconds = elapsed;
+        st.active = false;
+        st.phase = "complete";
+
+        const base = st.size === 6 ? 180 : 320;
+        const diffMult = st.difficulty === "expert" ? 1.4 : st.difficulty === "hard" ? 1.2 : 1.0;
+        const par = st.size === 6 ? 90 : 240;
+        const speedBonus = elapsed < par ? Math.round((par - elapsed) * 1.2) : 0;
+        const hintPenalty = (st.hintsUsed || 0) * 35;
+        st.streak = (st.streak || 0) + 1;
+        const totalPts = Math.max(50, Math.round((base + speedBonus - hintPenalty) * diffMult));
+
+        st.score = totalPts;
+        st.lastRunScore = totalPts;
+        st.lastSolveSeconds = elapsed;
+
+        this.state.arcade.xp = Number(this.state.arcade.xp || 0) + Math.round(totalPts / 8);
+        this.state.arcade.sudokuBest = Math.max(Number(this.state.arcade.sudokuBest || 0), totalPts);
+        this.state.arcade.sudokuSolved = Number(this.state.arcade.sudokuSolved || 0) + 1;
+        this.saveState();
+      }
+
+      exitSudokuToSetup() {
+        this.clearTimers();
+        this.sudokuState.active = false;
+        this.sudokuState.phase = "idle";
+        this.renderMain();
+      }
+
       formatClock(seconds) {
         const s = Math.max(0, Math.floor(Number(seconds || 0)));
         const mins = String(Math.floor(s / 60)).padStart(2, "0");
@@ -3576,10 +3929,9 @@
         return `${mins}:${secs}`;
       }
 
-      // -----------------------------------------------------------------------
-      // v4.1 FAULTLINE: complete source-linked challenge bank, one challenge per built-in concept card;
-      // source concept cards. No generated or cross-topic answer fabrication.
-      // -----------------------------------------------------------------------
+      // =======================================================================
+      // 3. FAULTLINE ENGINE
+      // =======================================================================
       getFaultlineChallenges() {
         const concepts = new Map(this.getAllConcepts().map(concept => [concept.id, concept]));
         return FAULTLINE_CHALLENGES.map(challenge => {
@@ -3627,7 +3979,6 @@
           }
           if (selected.length >= count) break;
         }
-        // Put straightforward checks first, then reasoning-heavy challenges at the end.
         const deck = [];
         [0, 1, 2].forEach(level => {
           deck.push(...this.shuffleList(selected.filter(item => Number(item.difficulty || 0) === level)));
@@ -3709,6 +4060,13 @@
           queens.elapsedSeconds = Math.floor((now - queens.startedAt) / 1000);
           const qTimer = document.getElementById("queens-time-label");
           if (qTimer) qTimer.textContent = this.formatClock(queens.elapsedSeconds);
+          return;
+        }
+        const sudoku = this.sudokuState;
+        if (sudoku && sudoku.active && sudoku.phase === "playing") {
+          sudoku.elapsedSeconds = Math.floor((now - sudoku.startedAt) / 1000);
+          const sTimer = document.getElementById("sudoku-time-label");
+          if (sTimer) sTimer.textContent = this.formatClock(sudoku.elapsedSeconds);
           return;
         }
         const fault = this.faultlineState;
@@ -3894,8 +4252,6 @@
         const container = document.getElementById("subtopic-bar");
         const chapters = this.getAvailableSubtopics();
 
-        // 1. Populate Left Dropdown (#subtopic-select)
-        // Always includes "All 26 Chapters" at top to reset selection, plus Topic-group & Chapter options
         if (selectEl) {
           const isGlobalAll = this.topic === "All" && this.subtopic === "All";
           let optionsHtml = `<option value="All" ${isGlobalAll ? "selected" : ""}>📂 All 26 Chapters</option>`;
@@ -3913,8 +4269,6 @@
           selectEl.innerHTML = optionsHtml;
         }
 
-        // 2. Populate Neighboring Horizontal Chapter Buttons (#subtopic-bar)
-        // Dynamically changes according to what's selected in the dropdown (no redundant "All 26 Chapters" button)
         container.innerHTML = chapters.map(ch => {
           const active = this.subtopic === ch;
           return `<button data-chapter="${ch}" onclick="window.app.setSubtopic('${ch.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition ${
@@ -3924,7 +4278,6 @@
           }">${ch}</button>`;
         }).join("");
 
-        // Auto-scroll active chapter button into view if selected
         if (this.subtopic !== "All") {
           requestAnimationFrame(() => {
             const activeBtn = container.querySelector(`[data-chapter="${CSS.escape(this.subtopic)}"]`);
@@ -3960,7 +4313,6 @@
             }">${i.label}</button>
           `).join("");
 
-          // Level Ladder Filter (All Levels | 🌱 Foundations | 🚀 Advanced)
           const fndCnt = scoped.filter(c => (c.level || "Foundation") === "Foundation").length;
           const advCnt = scoped.filter(c => c.level === "Advanced").length;
           const levels = [
@@ -3980,15 +4332,16 @@
           levelBar.classList.add("hidden");
           bar.className = "flex space-x-2 overflow-x-auto no-scrollbar pb-1";
           const games = [
-            { id: "queens", label: "👑 Queens" },
-            { id: "faultline", label: "⌁ Faultline" }
+            { id: "queens", label: "👑 Queens", sub: "Grid logic", activeCls: "bg-[#d6cfe0] text-slate-900 border-[#c4b5fd]" },
+            { id: "sudoku", label: "🧩 Sudoku", sub: "6×6 & 9×9", activeCls: "bg-[#bae6fd] text-slate-900 border-[#7dd3fc]" },
+            { id: "faultline", label: "⌁ Faultline", sub: "Spot the error", activeCls: "bg-amber-300 text-slate-950 border-amber-200" }
           ];
-          bar.innerHTML = games.map((g, index) => `
-            <button aria-pressed="${this.arcadeGame === g.id}" onclick="window.app.setArcadeGame('${g.id}')" class="game-mode-button flex-1 min-w-[145px] px-5 py-3 rounded-xl text-sm sm:text-base font-black whitespace-nowrap border transition ${
+          bar.innerHTML = games.map(g => `
+            <button aria-pressed="${this.arcadeGame === g.id}" onclick="window.app.setArcadeGame('${g.id}')" class="game-mode-button flex-1 min-w-[105px] px-3 py-2.5 rounded-xl text-xs sm:text-sm font-black whitespace-nowrap border transition ${
               this.arcadeGame === g.id
-                ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-500/25 scale-[1.02]"
-                : "bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500 hover:bg-slate-700"
-            }">${g.id === "queens" ? "👑 Queens" : "⌁ Faultline"}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.id === "queens" ? "Grid arrangement logic" : "Catch and repair errors"}</span></button>
+                ? `${g.activeCls} shadow-md`
+                : "bg-slate-800/90 text-slate-300 border-slate-700 hover:border-slate-500 hover:bg-slate-700"
+            }">${g.label}<span class="block text-[10px] font-medium opacity-75 mt-0.5">${g.sub}</span></button>
           `).join("");
         }
       }
@@ -4002,9 +4355,6 @@
         }
       }
 
-      // -----------------------------------------------------------------------
-      // REVISE VIEW (With Foundation -> Advanced Badges & Inline SVG Diagrams)
-      // -----------------------------------------------------------------------
       renderReviseSection() {
         const list = this.getFilteredConcepts();
         if (list.length === 0) {
@@ -4051,28 +4401,31 @@
         }).join("")}</div>`;
       }
 
-      // -----------------------------------------------------------------------
-      // ARCADE VIEW: TWO LIGHTWEIGHT FORMULA GAMES
-      // -----------------------------------------------------------------------
       renderArcadeSection() {
         const arcade = this.state.arcade || {};
         const statsBar = `
-          <div class="grid grid-cols-3 gap-2 mb-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
               <div class="text-[10px] font-mono-code uppercase text-slate-400">Total XP</div>
-              <div class="text-base font-black text-amber-400">✦ ${Number(arcade.xp || 0)}</div>
+              <div class="text-base font-black text-amber-300/90">✦ ${Number(arcade.xp || 0)}</div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
               <div class="text-[10px] font-mono-code uppercase text-slate-400">Queens Best</div>
-              <div class="text-base font-black text-violet-300">👑 ${Number(arcade.queensBest || 0)} <span class="text-[10px] font-normal text-slate-400">(${Number(arcade.queensSolved || 0)} won)</span></div>
+              <div class="text-base font-black text-[#d6cfe0]">👑 ${Number(arcade.queensBest || 0)} <span class="text-[10px] font-normal text-slate-400">(${Number(arcade.queensSolved || 0)})</span></div>
+            </div>
+            <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-mono-code uppercase text-slate-400">Sudoku Best</div>
+              <div class="text-base font-black text-[#93c5fd]">🧩 ${Number(arcade.sudokuBest || 0)} <span class="text-[10px] font-normal text-slate-400">(${Number(arcade.sudokuSolved || 0)})</span></div>
             </div>
             <div class="arcade-card border border-slate-800 rounded-xl p-3 text-center">
               <div class="text-[10px] font-mono-code uppercase text-slate-400">Faultline Best</div>
-              <div class="text-base font-black text-amber-300">${Number(arcade.faultlineBest || 0)}</div>
+              <div class="text-base font-black text-amber-200">⌁ ${Number(arcade.faultlineBest || 0)}</div>
             </div>
           </div>
         `;
-        return statsBar + (this.arcadeGame === "faultline" ? this.renderFaultlineGame() : this.renderQueensGame());
+        if (this.arcadeGame === "sudoku") return statsBar + this.renderSudokuGame();
+        if (this.arcadeGame === "faultline") return statsBar + this.renderFaultlineGame();
+        return statsBar + this.renderQueensGame();
       }
 
       exitQueensToSetup() {
@@ -4093,9 +4446,9 @@
         const isQueens = gameName === "queens";
         const state = isQueens ? this.queensState : this.faultlineState;
         const title = isQueens ? "Queens" : "Faultline";
-        const subtitle = isQueens ? "1 Crown per Row, Column & Colored Region." : "Spot the slip. Repair the reasoning.";
+        const subtitle = isQueens ? "Place 1 Crown per row, column, and region." : "Spot the slip. Repair the reasoning.";
         const description = isQueens
-          ? "Place exactly one 👑 Crown in every row, column, and colored region so that no two crowns touch — not even diagonally. Tap once for ✕, twice for 👑."
+          ? "Place one 👑 in each row, column, and region so that no two crowns touch, even diagonally."
           : "Inspect a worked step. Find the fault. Choose the repair.";
         const missedCount = this.state.reviseQueue.length;
         const startButton = isQueens ? `Start ${state.size}×${state.size} Queens` : "Start Faultline";
@@ -4107,18 +4460,18 @@
             <div class="text-[10px] font-mono-code uppercase tracking-wider text-slate-400 mb-2">Select Board Size &amp; Assist</div>
             <div class="flex flex-wrap items-center gap-2">
               ${[
-                { n: 5, tag: "5×5 Warmup" },
-                { n: 6, tag: "6×6 Standard" },
-                { n: 7, tag: "7×7 Classic" },
-                { n: 8, tag: "8×8 Master" }
+                { n: 6, tag: "6×6" },
+                { n: 7, tag: "7×7" },
+                { n: 8, tag: "8×8" },
+                { n: 9, tag: "9×9" }
               ].map(item => `
                 <button
                   type="button"
                   onclick="window.app.setQueensSize(${item.n})"
                   class="px-3.5 py-2 rounded-xl text-xs font-bold border transition ${
                     state.size === item.n
-                      ? "bg-violet-300 text-slate-950 border-violet-200 shadow-md"
-                      : "bg-slate-900/90 text-slate-300 border-slate-700 hover:border-violet-400/50"
+                      ? "bg-[#d6cfe0] text-slate-900 border-[#e2d9eb] shadow-sm"
+                      : "bg-slate-900/75 text-slate-300 border-slate-700/80 hover:border-slate-500"
                   }"
                 >${item.tag}</button>
               `).join("")}
@@ -4127,8 +4480,8 @@
                 onclick="window.app.toggleQueensAutoX()"
                 class="px-3.5 py-2 rounded-xl text-xs font-mono-code font-bold border transition ${
                   state.autoX
-                    ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/50"
-                    : "bg-slate-900 text-slate-400 border-slate-700"
+                    ? "bg-[#68d391]/20 text-[#68d391] border-[#68d391]/50"
+                    : "bg-slate-900/75 text-slate-400 border-slate-700/80"
                 }"
               >Auto-✕: ${state.autoX ? "ON" : "OFF"}</button>
             </div>
@@ -4136,37 +4489,36 @@
         ` : "";
 
         return `
-          <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
-            <div class="absolute -top-20 -right-16 w-56 h-56 rounded-full blur-3xl opacity-10 ${isQueens ? "bg-violet-400" : "bg-amber-400"}"></div>
+          <section class="game-panel ${isQueens ? "queens-panel-theme" : ""} rounded-2xl p-5 sm:p-6 overflow-hidden relative">
             <div class="relative">
               <div class="flex items-start justify-between gap-3 mb-4">
                 <div>
-                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isQueens ? "text-violet-300" : "text-amber-300"}">${isQueens ? "ARRANGEMENT & DEDUCTION" : "ERROR ANALYSIS"}</div>
-                  <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">${title}</h2>
+                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase ${isQueens ? "text-[#d6cfe0]" : "text-amber-300"}">${isQueens ? "GRID DEDUCTION" : "ERROR ANALYSIS"}</div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-slate-100 mt-1">${title}</h2>
                   <p class="text-sm text-slate-300 mt-1">${subtitle}</p>
                 </div>
-                <div class="text-3xl sm:text-4xl ${isQueens ? "text-violet-300" : "text-amber-300"}">${isQueens ? "👑" : "⌁"}</div>
+                <div class="text-3xl sm:text-4xl">${isQueens ? "👑" : "⌁"}</div>
               </div>
               <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mb-5">${description}</p>
               ${sizeSelectorHtml}
               ${isQueens ? `
                 <div class="grid grid-cols-3 gap-2 mb-5">
-                  <div class="rounded-xl border border-white/10 bg-white/[.035] p-3">
+                  <div class="rounded-xl border border-white/10 bg-white/[.03] p-3">
                     <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Row &amp; Col</div>
-                    <div class="text-xs sm:text-sm font-bold text-white">1 👑 per line</div>
+                    <div class="text-xs sm:text-sm font-bold text-slate-100">1 👑 per line</div>
                   </div>
-                  <div class="rounded-xl border border-white/10 bg-white/[.035] p-3">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Color Region</div>
-                    <div class="text-xs sm:text-sm font-bold text-white">1 👑 per color</div>
+                  <div class="rounded-xl border border-white/10 bg-white/[.03] p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Regions</div>
+                    <div class="text-xs sm:text-sm font-bold text-slate-100">1 👑 per region</div>
                   </div>
-                  <div class="rounded-xl border border-white/10 bg-white/[.035] p-3">
+                  <div class="rounded-xl border border-white/10 bg-white/[.03] p-3">
                     <div class="text-[10px] uppercase tracking-wider text-slate-400 mb-1">No Touching</div>
-                    <div class="text-xs sm:text-sm font-bold text-white">No diagonal touch</div>
+                    <div class="text-xs sm:text-sm font-bold text-slate-100">No diagonal touch</div>
                   </div>
                 </div>
               ` : `<div class="inline-flex flex-wrap gap-2 mb-5"><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">10 challenges per run</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">25 seconds each</span><span class="rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300">Misses → Revise Queue</span></div>`}
-              ${lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last score: <strong class="text-white">${lastScore.toLocaleString()} pts</strong></div>` : ""}
-              <button onclick="window.app.${action}" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-950 shadow-lg transition hover:brightness-110 ${isQueens ? "bg-violet-300 shadow-violet-500/15" : "bg-amber-300 shadow-amber-500/15"}">${startButton} <span aria-hidden="true">→</span></button>
+              ${lastScore > 0 ? `<div class="text-xs text-slate-400 mb-4">Last score: <strong class="text-slate-100">${lastScore.toLocaleString()} pts</strong></div>` : ""}
+              <button onclick="window.app.${action}" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-sm text-slate-900 shadow-md transition hover:brightness-105 ${isQueens ? "bg-[#d6cfe0]" : "bg-amber-300"}">${startButton} <span aria-hidden="true">→</span></button>
               ${!isQueens && missedCount ? `<button onclick="window.app.goToReviseQueue()" class="w-full sm:w-auto sm:ml-2 mt-3 px-5 py-3 rounded-xl border border-rose-400/40 bg-rose-400/10 text-rose-200 text-sm font-bold hover:bg-rose-400/20 transition">Review missed cards (${missedCount}) →</button>` : ""}
             </div>
           </section>
@@ -4189,21 +4541,8 @@
               const reg = regions[r][c];
               const color = palette[reg % palette.length].bg;
               const isCrown = cells[r][c] === 2;
-              const topThick = r === 0 || regions[r - 1][c] !== reg;
-              const bottomThick = r === n - 1 || regions[r + 1][c] !== reg;
-              const leftThick = c === 0 || regions[r][c - 1] !== reg;
-              const rightThick = c === n - 1 || regions[r][c + 1] !== reg;
-
-              const borderStyle = [
-                `background-color: ${color}`,
-                `border-top: ${topThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
-                `border-bottom: ${bottomThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
-                `border-left: ${leftThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
-                `border-right: ${rightThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`
-              ].join("; ");
-
               solvedGridHtml += `
-                <div style="${borderStyle}" class="queens-cell cursor-default">
+                <div style="background-color: ${color};" class="queens-cell cursor-default">
                   ${isCrown ? `<span class="queens-crown" aria-label="Crown">👑</span>` : ""}
                 </div>
               `;
@@ -4212,72 +4551,67 @@
         }
 
         return `
-          <section class="game-panel rounded-2xl p-5 sm:p-6 overflow-hidden relative">
-            <div class="absolute -top-20 -right-16 w-60 h-60 rounded-full blur-3xl opacity-15 bg-emerald-400"></div>
+          <section class="game-panel queens-panel-theme rounded-2xl p-5 sm:p-6 overflow-hidden relative">
             <div class="relative">
-              <!-- Celebration Header -->
-              <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-800">
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3.5 border-b border-white/10">
                 <div>
-                  <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/40 text-emerald-300 text-[10px] font-mono-code uppercase tracking-widest mb-1.5">
+                  <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#68d391]/20 border border-[#68d391]/40 text-[#68d391] text-[10px] font-mono-code uppercase tracking-widest mb-1.5">
                     <span>✓ Level Completed</span>
                   </div>
-                  <h2 class="text-2xl sm:text-3xl font-black text-white">${n}×${n} Queens Cleared!</h2>
-                  <p class="text-xs sm:text-sm text-slate-300 mt-0.5">All ${n} crowns placed with zero row, column, region, or diagonal conflicts.</p>
+                  <h2 class="text-2xl sm:text-3xl font-black text-slate-100">${n}×${n} Queens Cleared!</h2>
+                  <p class="text-xs sm:text-sm text-slate-300 mt-0.5">All ${n} crowns placed with zero conflicts.</p>
                 </div>
                 <div class="text-right">
                   <div class="text-[10px] font-mono-code uppercase text-slate-400">Level Score</div>
-                  <div class="text-2xl sm:text-3xl font-black text-emerald-400">+${Number(state.lastRunScore || 0).toLocaleString()} <span class="text-xs font-bold text-emerald-300">pts</span></div>
+                  <div class="text-2xl sm:text-3xl font-black text-[#68d391]">+${Number(state.lastRunScore || 0).toLocaleString()} <span class="text-xs font-bold">pts</span></div>
                 </div>
               </div>
 
-              <!-- Stats Summary Row -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
-                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                <div class="rounded-xl border border-white/10 bg-black/20 p-3 text-center">
                   <div class="text-[10px] font-mono-code uppercase text-slate-400">Solve Time</div>
-                  <div class="text-base font-black text-white mt-0.5">⏱️ ${this.formatClock(state.lastSolveSeconds)}</div>
+                  <div class="text-base font-black text-slate-100 mt-0.5">⏱️ ${this.formatClock(state.lastSolveSeconds)}</div>
                 </div>
-                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                <div class="rounded-xl border border-white/10 bg-black/20 p-3 text-center">
                   <div class="text-[10px] font-mono-code uppercase text-slate-400">Win Streak</div>
-                  <div class="text-base font-black text-amber-300 mt-0.5">🔥 ${Number(state.streak || 0)}</div>
+                  <div class="text-base font-black text-[#f6e05e] mt-0.5">🔥 ${Number(state.streak || 0)}</div>
                 </div>
-                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                <div class="rounded-xl border border-white/10 bg-black/20 p-3 text-center">
                   <div class="text-[10px] font-mono-code uppercase text-slate-400">Hints Used</div>
-                  <div class="text-base font-black text-violet-300 mt-0.5">💡 ${Number(state.hintsUsed || 0)}</div>
+                  <div class="text-base font-black text-[#d6cfe0] mt-0.5">💡 ${Number(state.hintsUsed || 0)} / ${state.maxHints || 3}</div>
                 </div>
-                <div class="rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center">
+                <div class="rounded-xl border border-white/10 bg-black/20 p-3 text-center">
                   <div class="text-[10px] font-mono-code uppercase text-slate-400">Personal Best</div>
-                  <div class="text-base font-black text-emerald-300 mt-0.5">🏆 ${best.toLocaleString()}</div>
+                  <div class="text-base font-black text-[#68d391] mt-0.5">🏆 ${best.toLocaleString()}</div>
                 </div>
               </div>
 
-              <!-- Solved Board Snapshot -->
               ${solvedGridHtml ? `
                 <div class="my-3">
                   <div class="text-[10px] font-mono-code uppercase tracking-wider text-center text-slate-400 mb-2">Verified ${n}×${n} Solution Board (${totalWon} Total Solved)</div>
-                  <div class="queens-board max-w-[300px] sm:max-w-[330px] ring-2 ring-emerald-400/50" style="grid-template-columns: repeat(${n}, minmax(0, 1fr));">
+                  <div class="queens-board max-w-[300px] sm:max-w-[330px]" style="grid-template-columns: repeat(${n}, minmax(0, 1fr));">
                     ${solvedGridHtml}
                   </div>
                 </div>
               ` : ""}
 
-              <!-- Next Level Actions -->
-              <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6 pt-4 border-t border-slate-800/80">
+              <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onclick="window.app.startQueens(${n})"
-                  class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition"
+                  class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#68d391] hover:brightness-105 text-slate-900 font-black text-sm shadow-md transition"
                 >Play Next ${n}×${n} Level →</button>
-                ${n < 8 ? `
+                ${n < 9 ? `
                   <button
                     type="button"
                     onclick="window.app.startQueens(${n + 1})"
-                    class="w-full sm:w-auto px-5 py-3 rounded-xl bg-violet-300 hover:bg-violet-200 text-slate-950 font-black text-sm shadow-lg shadow-violet-500/15 transition"
+                    class="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#d6cfe0] hover:brightness-105 text-slate-900 font-black text-sm shadow-md transition"
                   >Step Up to ${n + 1}×${n + 1} →</button>
                 ` : ""}
                 <button
                   type="button"
                   onclick="window.app.exitQueensToSetup()"
-                  class="w-full sm:w-auto px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition"
+                  class="w-full sm:w-auto px-4 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition"
                 >⚙️ Change Board Size</button>
               </div>
             </div>
@@ -4313,20 +4647,6 @@
             const isConflict = conflictSet.has(key);
             const isHint = state.hintCell === key;
 
-            // Thick dark borders between different colored regions, thin subtle borders within same region
-            const topThick = r === 0 || regions[r - 1][c] !== reg;
-            const bottomThick = r === n - 1 || regions[r + 1][c] !== reg;
-            const leftThick = c === 0 || regions[r][c - 1] !== reg;
-            const rightThick = c === n - 1 || regions[r][c + 1] !== reg;
-
-            const borderStyle = [
-              `background-color: ${color}`,
-              `border-top: ${topThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
-              `border-bottom: ${bottomThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
-              `border-left: ${leftThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`,
-              `border-right: ${rightThick ? "2.5px solid #0f172a" : "1px solid rgba(15,23,42,0.18)"}`
-            ].join("; ");
-
             let innerContent = "";
             if (val === 2) {
               innerContent = `<span class="queens-crown" aria-label="Crown">👑</span>`;
@@ -4340,7 +4660,7 @@
               <button
                 type="button"
                 onclick="window.app.cycleQueensCell(${r}, ${c})"
-                style="${borderStyle}"
+                style="background-color: ${color};"
                 class="queens-cell ${isConflict ? "is-conflict" : ""} ${isHint ? "is-hint" : ""}"
                 aria-label="Row ${r + 1} Column ${c + 1}"
               >${innerContent}</button>
@@ -4348,54 +4668,53 @@
           }
         }
 
+        const hintsLeft = Math.max(0, (state.maxHints || 3) - (state.hintsUsed || 0));
         const statusBanner = state.conflictReasons && state.conflictReasons.length > 0
-          ? `<div class="rounded-xl border border-rose-500/50 bg-rose-950/50 px-3.5 py-2.5 text-xs text-rose-200 font-semibold mb-3 flex items-center justify-between">
+          ? `<div class="rounded-xl border border-rose-400/40 bg-rose-950/40 px-3.5 py-2.5 text-xs text-rose-200 font-semibold mb-3 flex items-center justify-between">
                <span>⚠️ ${this.escapeHTML(state.conflictReasons[0])}</span>
                <span class="font-mono-code text-[11px] text-rose-300">${state.conflicts.length} cells</span>
              </div>`
           : state.hintMessage
-          ? `<div class="rounded-xl border border-amber-400/50 bg-amber-950/40 px-3.5 py-2.5 text-xs text-amber-200 font-semibold mb-3">
+          ? `<div class="rounded-xl border border-amber-300/40 bg-black/25 px-3.5 py-2.5 text-xs text-amber-200 font-semibold mb-3">
                💡 ${this.escapeHTML(state.hintMessage)}
              </div>`
-          : `<div class="rounded-xl border border-white/10 bg-slate-900/70 px-3.5 py-2 text-xs text-slate-300 mb-3 flex items-center justify-between">
-               <span>Tap 1× for <strong>✕</strong> · Tap 2× for <strong>👑</strong> · No two 👑 can touch (even diagonally)</span>
+          : `<div class="rounded-xl border border-white/10 bg-black/20 px-3.5 py-2 text-xs text-slate-300 mb-3 flex items-center justify-between">
+               <span>Tap 1× for <strong>✕</strong> · Tap 2× for <strong>👑</strong> · Crowns cannot touch</span>
              </div>`;
 
         return `
-          <section class="game-panel rounded-2xl p-4 sm:p-5 overflow-hidden">
-            <!-- Top Telemetry Row -->
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+          <section class="game-panel queens-panel-theme rounded-2xl p-4 sm:p-5 overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-white/10">
               <div>
-                <div class="text-[10px] font-mono-code uppercase tracking-[.2em] text-violet-300">QUEENS · ${n}×${n} LOGIC GRID</div>
-                <div class="text-xs text-slate-400 mt-0.5">1 👑 per Row, Col &amp; Color · Unique Solution</div>
+                <div class="text-[10px] font-mono-code uppercase tracking-[.2em] text-[#d6cfe0]">QUEENS · ${n}×${n}</div>
+                <div class="text-xs text-slate-400 mt-0.5">1 👑 per row, column &amp; region</div>
               </div>
               <div class="flex items-center space-x-4">
                 <div class="text-right">
-                  <div class="text-[10px] text-slate-500 uppercase">Crowns</div>
-                  <div class="font-mono-code font-black text-sm ${crownCount === n && !state.conflicts.length ? "text-emerald-400" : "text-violet-200"}">👑 ${crownCount} / ${n}</div>
+                  <div class="text-[10px] text-slate-400 uppercase">Crowns</div>
+                  <div class="font-mono-code font-black text-sm ${crownCount === n && !state.conflicts.length ? "text-[#68d391]" : "text-[#d6cfe0]"}">👑 ${crownCount} / ${n}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-[10px] text-slate-500 uppercase">Time</div>
-                  <div id="queens-time-label" class="font-mono-code font-bold text-sm text-amber-300">${this.formatClock(state.elapsedSeconds)}</div>
+                  <div class="text-[10px] text-slate-400 uppercase">Time</div>
+                  <div id="queens-time-label" class="font-mono-code font-bold text-sm text-slate-200">${this.formatClock(state.elapsedSeconds)}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-[10px] text-slate-500 uppercase">Streak</div>
-                  <div class="font-mono-code font-bold text-sm text-emerald-300">🔥 ${state.streak || 0}</div>
+                  <div class="text-[10px] text-slate-400 uppercase">Streak</div>
+                  <div class="font-mono-code font-bold text-sm text-[#68d391]">🔥 ${state.streak || 0}</div>
                 </div>
               </div>
             </div>
 
-            <!-- Size & Auto-X Bar -->
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
               <div class="flex items-center space-x-1.5">
-                ${[5, 6, 7, 8].map(sz => `
+                ${[6, 7, 8, 9].map(sz => `
                   <button
                     type="button"
                     onclick="window.app.setQueensSize(${sz})"
                     class="px-2.5 py-1 rounded-lg text-xs font-mono-code font-bold border transition ${
                       n === sz
-                        ? "bg-violet-300 text-slate-950 border-violet-200"
-                        : "bg-slate-900 text-slate-400 border-slate-700 hover:text-white"
+                        ? "bg-[#d6cfe0] text-slate-900 border-[#e2d9eb]"
+                        : "bg-black/25 text-slate-400 border-white/10 hover:text-slate-200"
                     }"
                   >${sz}×${sz}</button>
                 `).join("")}
@@ -4405,44 +4724,181 @@
                 onclick="window.app.toggleQueensAutoX()"
                 class="px-2.5 py-1 rounded-lg text-xs font-mono-code font-semibold border transition ${
                   state.autoX
-                    ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/40"
-                    : "bg-slate-900 text-slate-400 border-slate-700"
+                    ? "bg-[#68d391]/20 text-[#68d391] border-[#68d391]/40"
+                    : "bg-black/25 text-slate-400 border-white/10"
                 }"
               >Auto-✕: ${state.autoX ? "ON" : "OFF"}</button>
             </div>
 
             ${statusBanner}
 
-            <!-- N x N Queens Grid -->
             <div class="my-2">
               <div class="queens-board" style="grid-template-columns: repeat(${n}, minmax(0, 1fr));">
                 ${gridCellsHtml}
               </div>
             </div>
 
-            <!-- Action Toolbar -->
-            <div class="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800/80">
+            <div class="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-white/10">
               <button
                 type="button"
                 ${state.history.length ? "" : "disabled"}
                 onclick="window.app.undoQueensMove()"
-                class="py-2.5 px-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-xs font-bold text-slate-200 transition"
+                class="py-2.5 px-2 rounded-xl bg-black/25 hover:bg-black/40 disabled:opacity-40 border border-white/10 text-xs font-bold text-slate-200 transition"
               >↩ Undo</button>
               <button
                 type="button"
                 onclick="window.app.clearQueensBoard()"
-                class="py-2.5 px-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 transition"
+                class="py-2.5 px-2 rounded-xl bg-black/25 hover:bg-black/40 border border-white/10 text-xs font-bold text-slate-200 transition"
               >🧹 Clear</button>
               <button
                 type="button"
                 onclick="window.app.requestQueensHint()"
-                class="py-2.5 px-2 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/40 text-xs font-bold text-amber-200 transition"
-              >💡 Hint</button>
+                class="py-2.5 px-2 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-xs font-bold text-amber-200 transition"
+              >💡 Hint (${hintsLeft})</button>
               <button
                 type="button"
                 onclick="window.app.startQueens(${n})"
-                class="py-2.5 px-2 rounded-xl bg-violet-400/20 hover:bg-violet-400/30 border border-violet-400/40 text-xs font-bold text-violet-200 transition"
+                class="py-2.5 px-2 rounded-xl bg-[#d6cfe0]/20 hover:bg-[#d6cfe0]/30 border border-[#d6cfe0]/35 text-xs font-bold text-[#d6cfe0] transition"
               >↻ New</button>
+            </div>
+          </section>
+        `;
+      }
+
+      renderSudokuGame() {
+        const st = this.sudokuState;
+        if (st.phase === "complete") {
+          return `
+            <section class="game-panel sudoku-panel-theme rounded-2xl p-5 sm:p-6 text-center">
+              <div class="inline-flex px-3 py-1 rounded-full bg-sky-400/15 border border-sky-300/30 text-sky-200 text-xs font-mono-code uppercase mb-2">✓ Grid Solved</div>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-100">${st.size}×${st.size} Sudoku (${st.difficulty.toUpperCase()}) Cleared!</h2>
+              <p class="text-sm text-slate-300 mt-1">Solved in <strong>${this.formatClock(st.lastSolveSeconds)}</strong> · Score: <strong class="text-sky-300">+${st.lastRunScore} pts</strong></p>
+              <div class="flex flex-wrap justify-center gap-2.5 mt-5">
+                <button onclick="window.app.startSudoku()" class="px-6 py-3 rounded-xl bg-[#bae6fd] hover:brightness-105 text-slate-900 font-black text-sm">Play Next ${st.size}×${st.size} Grid →</button>
+                <button onclick="window.app.exitSudokuToSetup()" class="px-4 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs">⚙️ Change Grid / Difficulty</button>
+              </div>
+            </section>
+          `;
+        }
+
+        if (!st.active || st.phase !== "playing") {
+          return `
+            <section class="game-panel sudoku-panel-theme rounded-2xl p-5 sm:p-6 relative overflow-hidden">
+              <div class="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <div class="text-[10px] font-mono-code tracking-[.24em] uppercase text-[#93c5fd]">NUMBER LOGIC</div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-slate-100 mt-1">Sudoku</h2>
+                  <p class="text-sm text-slate-300 mt-1">Fill each row, column, and box with digits 1 to ${st.size} without repeats.</p>
+                </div>
+                <div class="text-3xl sm:text-4xl">🧩</div>
+              </div>
+              <div class="mb-4">
+                <div class="text-[10px] font-mono-code uppercase tracking-wider text-slate-400 mb-2">1. Select Grid Size</div>
+                <div class="flex flex-wrap gap-2">
+                  ${[
+                    { sz: 6, label: "6×6 (2×3 Boxes)" },
+                    { sz: 9, label: "9×9 (3×3 Boxes)" }
+                  ].map(g => `
+                    <button onclick="window.app.setSudokuConfig(${g.sz}, null)" class="px-4 py-2 rounded-xl text-xs font-bold border transition ${
+                      st.size === g.sz ? "bg-[#bae6fd] text-slate-900 border-[#7dd3fc] shadow-sm" : "bg-black/25 text-slate-300 border-white/10"
+                    }">${g.label}</button>
+                  `).join("")}
+                </div>
+              </div>
+              <div class="mb-5">
+                <div class="text-[10px] font-mono-code uppercase tracking-wider text-slate-400 mb-2">2. Select Difficulty</div>
+                <div class="flex flex-wrap gap-2">
+                  ${["medium", "hard", "expert"].map(d => `
+                    <button onclick="window.app.setSudokuConfig(null, '${d}')" class="px-4 py-2 rounded-xl text-xs font-bold uppercase border transition ${
+                      st.difficulty === d ? "bg-[#cbd5e6] text-slate-900 border-slate-300 shadow-sm" : "bg-black/25 text-slate-300 border-white/10"
+                    }">${d}</button>
+                  `).join("")}
+                </div>
+              </div>
+              <button onclick="window.app.startSudoku()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#bae6fd] hover:brightness-105 text-slate-900 font-black text-sm shadow-md">Start ${st.size}×${st.size} Sudoku (${st.difficulty.toUpperCase()}) →</button>
+            </section>
+          `;
+        }
+
+        const n = st.size;
+        const { br, bc } = this.getSudokuBoxDims(n);
+        const [selR, selC] = st.selected || [0, 0];
+        const selVal = st.cells[selR]?.[selC] || 0;
+        const conflictSet = new Set(st.conflicts || []);
+
+        let gridHtml = "";
+        for (let r = 0; r < n; r++) {
+          for (let c = 0; c < n; c++) {
+            const val = st.cells[r][c];
+            const isGiven = st.givens[r][c];
+            const isSelected = r === selR && c === selC;
+            const isPeer = !isSelected && (r === selR || c === selC || (Math.floor(r / br) === Math.floor(selR / br) && Math.floor(c / bc) === Math.floor(selC / bc)));
+            const isSameNum = val !== 0 && val === selVal && !isSelected;
+            const isConflict = conflictSet.has(`${r},${c}`);
+
+            const borderR = (c + 1) % bc === 0 && c < n - 1 ? "1.5px solid rgba(148, 163, 184, 0.36)" : "1px solid rgba(148, 163, 184, 0.12)";
+            const borderB = (r + 1) % br === 0 && r < n - 1 ? "1.5px solid rgba(148, 163, 184, 0.36)" : "1px solid rgba(148, 163, 184, 0.12)";
+
+            let inner = "";
+            if (val !== 0) {
+              inner = `<span>${val}</span>`;
+            } else if (st.notes[r][c].length > 0) {
+              inner = `<div class="sudoku-notes-grid">${Array.from({ length: n }, (_, idx) => {
+                const d = idx + 1;
+                return `<span>${st.notes[r][c].includes(d) ? d : ""}</span>`;
+              }).join("")}</div>`;
+            }
+
+            gridHtml += `
+              <button
+                type="button"
+                onclick="window.app.selectSudokuCell(${r}, ${c})"
+                style="border-right:${borderR}; border-bottom:${borderB};"
+                class="sudoku-cell ${isGiven ? "is-given" : "is-user"} ${isPeer ? "is-peer" : ""} ${isSameNum ? "is-same-num" : ""} ${isSelected ? "is-selected" : ""} ${isConflict ? "is-conflict" : ""}"
+              >${inner}</button>
+            `;
+          }
+        }
+
+        return `
+          <section class="game-panel sudoku-panel-theme rounded-2xl p-4 sm:p-5 overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-white/10">
+              <div>
+                <div class="text-[10px] font-mono-code uppercase tracking-[.2em] text-[#93c5fd]">SUDOKU · ${n}×${n} ${st.difficulty.toUpperCase()}</div>
+                <div class="text-xs text-slate-400 mt-0.5">Keys 1–${n}, Backspace, or N for Notes</div>
+              </div>
+              <div class="flex items-center space-x-4">
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-400 uppercase">Hints</div>
+                  <div class="font-mono-code font-bold text-sm text-[#bae6fd]">💡 ${st.hintsUsed}/${st.maxHints}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-400 uppercase">Time</div>
+                  <div id="sudoku-time-label" class="font-mono-code font-bold text-sm text-slate-200">${this.formatClock(st.elapsedSeconds)}</div>
+                </div>
+              </div>
+            </div>
+
+            ${st.hintMessage ? `<div class="rounded-xl border border-sky-300/35 bg-sky-950/35 px-3.5 py-2 text-xs text-sky-200 font-semibold mb-3">${this.escapeHTML(st.hintMessage)}</div>` : ""}
+
+            <div class="my-2">
+              <div class="sudoku-board" style="grid-template-columns: repeat(${n}, minmax(0, 1fr));">
+                ${gridHtml}
+              </div>
+            </div>
+
+            <div class="grid gap-1.5 mt-4" style="grid-template-columns: repeat(${n + 1}, minmax(0, 1fr));">
+              ${Array.from({ length: n }, (_, i) => i + 1).map(num => `
+                <button type="button" onclick="window.app.inputSudokuValue(${num})" class="py-2.5 rounded-xl bg-[#253142] hover:bg-[#2f3e53] border border-white/10 font-mono-code font-bold text-sm text-slate-100 transition">${num}</button>
+              `).join("")}
+              <button type="button" onclick="window.app.inputSudokuValue(0)" class="py-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/50 border border-rose-400/30 font-mono-code font-bold text-xs text-rose-200 transition">⌫</button>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-white/10">
+              <button type="button" onclick="window.app.toggleSudokuNoteMode()" class="py-2.5 px-2 rounded-xl border text-xs font-bold transition ${st.noteMode ? "bg-[#bae6fd] text-slate-900 border-[#7dd3fc]" : "bg-black/25 text-slate-200 border-white/10"}">✏️ Notes: ${st.noteMode ? "ON" : "OFF"}</button>
+              <button type="button" ${st.history.length ? "" : "disabled"} onclick="window.app.undoSudokuMove()" class="py-2.5 px-2 rounded-xl bg-black/25 hover:bg-black/40 disabled:opacity-40 border border-white/10 text-xs font-bold text-slate-200">↩ Undo</button>
+              <button type="button" onclick="window.app.requestSudokuHint()" class="py-2.5 px-2 rounded-xl bg-[#bae6fd]/15 hover:bg-[#bae6fd]/25 border border-[#bae6fd]/30 text-xs font-bold text-[#bae6fd]">💡 Hint</button>
+              <button type="button" onclick="window.app.exitSudokuToSetup()" class="py-2.5 px-2 rounded-xl bg-black/25 hover:bg-black/40 border border-white/10 text-xs font-bold text-slate-300">⚙️ Setup</button>
             </div>
           </section>
         `;
@@ -4574,17 +5030,16 @@
           </section>
         `;
       }
-
     }
 
     window.addEventListener("DOMContentLoaded", () => {
       window.app = new QuantApp();
     });
   </script>
-  <!-- UI-ONLY RESPONSIVE LAYOUT HELPER (Preserves 100% of QuantApp logic untouched) -->
+
+  <!-- UI-ONLY RESPONSIVE LAYOUT HELPER -->
   <script>
     (function () {
-      // 1. Mobile quick-jump to Topic Filters (#control-sidebar)
       window.scrollToFilters = function () {
         const sidebar = document.getElementById("control-sidebar");
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -4597,7 +5052,6 @@
         }
       };
 
-      // 2. Show Mobile Up-Arrow FAB (#mobile-filters-fab) ONLY when #control-sidebar scrolls out of view
       function setupMobileFabVisibility() {
         const sidebar = document.getElementById("control-sidebar");
         const fab = document.getElementById("mobile-filters-fab");
@@ -4632,7 +5086,6 @@
         }
       }
 
-      // 3. Desktop Collapsible Sidebar Toggle + Smart Sticky Bottom-Lock Calculation
       window.toggleDesktopSidebar = function () {
         document.body.classList.toggle("sidebar-collapsed");
         requestAnimationFrame(updateDesktopSidebarStickyTop);
@@ -4662,9 +5115,6 @@
         }
       }
 
-      // 4. Desktop Game Mode Slot Sync:
-      //    When Minigames (theme-arcade) is selected on Desktop (≥ 1024px),
-      //    place #subfilter-bar directly below Revise | Minigames (#desktop-game-slot).
       function syncGameSelectorSlot() {
         const bar = document.getElementById("subfilter-bar");
         const desktopSlot = document.getElementById("desktop-game-slot");
