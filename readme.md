@@ -1,11 +1,11 @@
-# QuantByProf v4.0
+# QuantByProf v5.1
 
 A single-file study tool for CAT/GMAT quantitative concepts, quick revision, and short practice games.
 
 ## What's included
 
 - **Revise:** 52 built-in concept cards across 6 topics and 26 chapters, with Foundation and Advanced levels.
-- **Afterimage:** Memorise a formula during a brief preview, then identify it from multiple choices.
+- **Queens and Sudoku:** To get the brain running and ready!
 - **Faultline:** 52 curated, source-linked challenges. Diagnose a faulty mathematical step and choose the correction; missed concepts are added to the Revise Queue.
 - **Personalisation:** Add custom concept cards, save cards, mark concepts mastered, and manage the Revise Queue.
 - **Backup and sync:** Export/copy saved state as JSON and restore it later.
