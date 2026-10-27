@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>QuantByProf v5.1 — Foundation to CAT/GMAT Mastery</title>
+  <title>QuantByProf™ v5.1 — Foundation to CAT/GMAT Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
@@ -238,6 +238,26 @@
 
     .game-answer-copy { overflow-wrap: anywhere; white-space: pre-line; }
 
+    /* Chapter scope stays available in Revise and Faultline, but slides away for Sudoku/Queens. */
+    #chapter-scope-panel {
+      max-height: 900px;
+      opacity: 1;
+      transform: translateY(0);
+      overflow: hidden;
+      transition: max-height .28s ease, opacity .22s ease, transform .22s ease, margin .22s ease, padding .22s ease, border-width .22s ease;
+    }
+    #chapter-scope-panel.chapter-scope-collapsed {
+      max-height: 0 !important;
+      opacity: 0;
+      transform: translateY(-8px);
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      border-top-width: 0 !important;
+      pointer-events: none;
+    }
+
     /* Math scripts: keep subscript and superscript alignment independent. */
     .math-text sub { font-size: .72em; line-height: 0; vertical-align: sub; }
     .math-text sup { font-size: .72em; line-height: 0; vertical-align: super; }
@@ -412,7 +432,7 @@
     <div class="max-w-[1440px] mx-auto px-3.5 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center lg:items-start justify-between gap-2">
       <!-- Brand & Version -->
       <div class="flex items-center space-x-2 lg:pt-1">
-        <span class="font-black text-base sm:text-lg tracking-tight">QuantByProf</span>
+        <span class="font-black text-base sm:text-lg tracking-tight" aria-label="QuantByProf trademark">QuantByProf<sup class="ml-0.5 text-[9px] sm:text-[10px] align-super tracking-normal">™</sup></span>
         <span id="version-badge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-semibold">v5.1</span>
       </div>
 
@@ -506,7 +526,7 @@
         </div>
 
         <!-- 2. SCOPED CHAPTER SELECTOR (Full-width dropdown on mobile + Full-view wrapped chapter pills on desktop) -->
-        <div class="lg:border-t lg:border-white/10 lg:pt-3 space-y-2">
+        <div id="chapter-scope-panel" class="lg:border-t lg:border-white/10 lg:pt-3 space-y-2">
           <div class="hidden lg:flex items-center justify-between text-[10px] font-mono-code uppercase tracking-wider text-white/50">
             <span>Chapter Scope</span>
             <span>26 Chapters</span>
@@ -4217,7 +4237,17 @@ const STORAGE_KEY = "quantbyprof_v2_state";
       // =======================================================================
       // RENDERING PIPELINE
       // =======================================================================
+      syncChapterScopeVisibility() {
+        const panel = document.getElementById("chapter-scope-panel");
+        if (!panel) return;
+        const collapse = this.section === "arcade" && this.arcadeGame !== "faultline";
+        panel.classList.toggle("chapter-scope-collapsed", collapse);
+        panel.setAttribute("aria-hidden", collapse ? "true" : "false");
+        panel.inert = collapse;
+      }
+
       renderAll() {
+        this.syncChapterScopeVisibility();
         this.renderHeaderTabs();
         this.renderTopicBar();
         this.renderSubtopicBar();
@@ -4278,7 +4308,7 @@ const STORAGE_KEY = "quantbyprof_v2_state";
           }">${ch}</button>`;
         }).join("");
 
-        if (this.subtopic !== "All") {
+        if (this.subtopic !== "All" && !(this.section === "arcade" && this.arcadeGame !== "faultline")) {
           requestAnimationFrame(() => {
             const activeBtn = container.querySelector(`[data-chapter="${CSS.escape(this.subtopic)}"]`);
             if (activeBtn) {
@@ -4887,11 +4917,13 @@ const STORAGE_KEY = "quantbyprof_v2_state";
               </div>
             </div>
 
-            <div class="grid gap-1.5 mt-4" style="grid-template-columns: repeat(${n + 1}, minmax(0, 1fr));">
-              ${Array.from({ length: n }, (_, i) => i + 1).map(num => `
-                <button type="button" onclick="window.app.inputSudokuValue(${num})" class="py-2.5 rounded-xl bg-[#253142] hover:bg-[#2f3e53] border border-white/10 font-mono-code font-bold text-sm text-slate-100 transition">${num}</button>
-              `).join("")}
-              <button type="button" onclick="window.app.inputSudokuValue(0)" class="py-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/50 border border-rose-400/30 font-mono-code font-bold text-xs text-rose-200 transition">⌫</button>
+            <div class="grid items-stretch gap-1.5 mt-4" style="grid-template-columns: minmax(0, 5fr) minmax(58px, 1fr);">
+              <div class="grid grid-cols-3 gap-1.5">
+                ${Array.from({ length: n }, (_, i) => i + 1).map(num => `
+                  <button type="button" onclick="window.app.inputSudokuValue(${num})" class="min-h-11 py-2 rounded-xl bg-[#253142] hover:bg-[#2f3e53] border border-white/10 font-mono-code font-bold text-base text-slate-100 transition">${num}</button>
+                `).join("")}
+              </div>
+              <button type="button" onclick="window.app.inputSudokuValue(0)" aria-label="Delete selected Sudoku cell value" title="Delete value" class="min-h-full px-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/50 border border-rose-400/30 font-mono-code font-bold text-xs text-rose-200 transition flex flex-col items-center justify-center gap-1"><span class="text-base leading-none">⌫</span><span class="text-[10px] sm:text-xs">Delete</span></button>
             </div>
 
             <div class="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-white/10">
